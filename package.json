@@ -20,7 +20,9 @@
     "sgen:selfcheck": "node packages/site-gen/src/cli/compare.ts --selfcheck",
     "sgen:check": "node packages/site-gen/verify.mjs",
     "sgen:boolean": "node packages/site-gen/test/boolean.test.ts",
-    "sgen:feasibility": "node packages/site-gen/src/cli/feasibility.ts"
+    "sgen:feasibility": "node packages/site-gen/src/cli/feasibility.ts",
+    "urban:recon": "cd vendor/townforge && node node_modules/tsx/dist/cli.mjs src/diag/cli.ts",
+    "urban:check": "cd vendor/townforge && node node_modules/tsx/dist/cli.mjs src/diag/cli.ts --check"
   },
   "engines": {
     "node": ">=22.18"
