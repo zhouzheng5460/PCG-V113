@@ -151,6 +151,9 @@ export class View2D {
   private layerVis: (id: LayerId) => boolean = () => true;
 
   /** 换显隐后调用：场景要重建（三维与导出共用同一份过滤） */
+  /** 当前高亮的片区（一组街区）。空数组 = 不高亮 */
+  private districtPatches: Patch[] = [];
+
   setLayerVisibility(fn: (id: LayerId) => boolean): void {
     this.layerVis = fn;
     this.scene = null;
@@ -374,6 +377,18 @@ export class View2D {
   setSelectedPatch(p: Patch | null): void {
     if (this.selPatch === p) return;
     this.selPatch = p;
+    this.requestDraw();
+  }
+
+  /**
+   * 片区高亮（2026-11-03 粗规划重构）。
+   *
+   * 为什么需要它：新界面的操作单位是"片区"而不是"地块"，用户点一下应当看到
+   * **整片**被框出来，而不是只亮一块。地块级高亮仍由 `setSelectedPatch` 负责，
+   * 两者可以同时存在（片区框 + 地块实线）。
+   */
+  setDistrict(patches: Patch[]): void {
+    this.districtPatches = patches;
     this.requestDraw();
   }
 
@@ -1134,6 +1149,8 @@ export class View2D {
 
     const px = 1 / this.cam.scale; // 1 屏幕像素对应的世界单位
 
+
+
     // 地块轮廓（结构覆盖层）
     if (this.showBlocks) {
       // 地块轮廓：浅色晕圈 + 深色主线两遍描。
@@ -1558,6 +1575,26 @@ export class View2D {
           ctx.stroke();
         }
       }
+    }
+
+    // 片区高亮画在**最后**（地块填充之后），否则会被地块盖住。
+    // 粗规划的操作单位是片区而不是地块：点一下要看到"整片"被框出来。
+    if (this.districtPatches.length) {
+      ctx.save();
+      ctx.fillStyle = 'rgba(90, 160, 255, 0.14)';
+      ctx.strokeStyle = 'rgba(90, 160, 255, 0.95)';
+      ctx.lineWidth = 2.4 * px;
+      for (const dp of this.districtPatches) {
+        const pts = dp.shape;
+        if (!pts.length) continue;
+        ctx.beginPath();
+        ctx.moveTo(pts[0].x, pts[0].y);
+        for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+      }
+      ctx.restore();
     }
 
     ctx.restore();

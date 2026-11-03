@@ -65,9 +65,9 @@ await wait(1200);
 const both = await read();
 await shot('c3-content-both.png');
 
-// 并排时读左栏那一行（用户看到的计数）
+// 并排时读图层那一行（用户看到的计数）—— 图层已移到右栏「高级设置」
 const rowBoth = await page.evaluate(() => {
-  const rows = [...document.querySelectorAll('#leftbar .layer, #leftbar label, #leftbar .row')];
+  const rows = [...document.querySelectorAll('#adv-settings .layer, #adv-settings label, #adv-settings .row')];
   const hit = rows.find((r) => (r.textContent ?? '').includes('Placemaker 楼位'));
   return hit ? hit.textContent.replace(/\s+/g, ' ').trim() : null;
 });
@@ -82,9 +82,9 @@ const ui = await page.evaluate(async () => {
 });
 await shot('c4-content-ui-click.png');
 
-// 左栏的计数行（用户看到的就是这一行）
+// 图层计数行（用户看到的就是这一行，现在住在右栏「高级设置」）
 const leftRow = await page.evaluate(() => {
-  const rows = [...document.querySelectorAll('#leftbar .layer, #leftbar label, #leftbar .row')];
+  const rows = [...document.querySelectorAll('#adv-settings .layer, #adv-settings label, #adv-settings .row')];
   const hit = rows.find((r) => (r.textContent ?? '').includes('Placemaker 楼位'));
   return hit ? hit.textContent.replace(/\s+/g, ' ').trim() : null;
 });
@@ -111,8 +111,8 @@ const checks = {
   '楼位数是自排的 1.5~4 倍': pmSlots / Math.max(1, tfBuildings) > 1.5 && pmSlots / Math.max(1, tfBuildings) < 4,
   // 点击后面板会重建，手里那个 button 已经 detach，不能拿它的 class 判高亮
   '面板按钮点击生效': ui.clicked && ui.counts.contentSource === 'townforge' && ui.counts.solids === tf.solids,
-  '左栏有「Placemaker 楼位」一行': !!leftRow,
-  '并排时左栏计数 > 0': (() => {
+  '高级设置里有「Placemaker 楼位」一行': !!leftRow,
+  '并排时该行计数 > 0': (() => {
     const m = /(\d+)\s*$/.exec(rowBoth ?? '');
     return !!m && Number(m[1]) > 0;
   })(),

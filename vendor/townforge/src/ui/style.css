@@ -923,3 +923,143 @@ details.adv-sub > summary {
 .pat-group.off:hover {
   opacity: 0.75;
 }
+
+/* ── 粗规划界面（2026-11-03 重构） ─────────────────────────────────
+   目标：左栏只放"表达城市意图"，右栏只放"当前选中对象的属性"。
+   所有底层算法参数收进 #adv-settings（默认收起）。 */
+
+#maptools {
+  position: absolute;
+  left: 50%;
+  top: 12px;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 8px;
+  background: rgba(22, 26, 33, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+  z-index: 20;
+}
+#maptools button {
+  padding: 5px 12px;
+  border-radius: 6px;
+  border: 0;
+  background: transparent;
+  color: #b9c2cf;
+  font: 12px/1.4 inherit;
+  cursor: pointer;
+}
+#maptools button:hover { background: rgba(255, 255, 255, 0.06); color: #e8edf4; }
+#maptools button.active { background: #3a6ed8; color: #fff; }
+
+#legend {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  max-width: 420px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: rgba(22, 26, 33, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  font-size: 11px;
+  color: #98a2b3;
+  z-index: 15;
+}
+#legend i {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+  margin-right: 4px;
+  vertical-align: -1px;
+}
+
+/* 问号提示：替掉原来大段"文档式"说明（规范 §9） */
+.q {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 13px;
+  height: 13px;
+  margin-left: 4px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  color: #8b95a5;
+  font-size: 9px;
+  cursor: help;
+  user-select: none;
+}
+.q:hover { background: #3a6ed8; color: #fff; }
+
+/* 右栏层级标签（城市 / 片区 / 地块 / 留白区） */
+.scopes {
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+}
+.scopes button {
+  flex: 1;
+  padding: 5px 0;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: #99a3b2;
+  font: 12px/1.4 inherit;
+  cursor: pointer;
+}
+.scopes button.active { background: #2c3543; color: #eef2f8; }
+
+/* 局部刷新条 */
+.acts {
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
+  display: flex;
+  gap: 6px;
+  padding-top: 10px;
+  margin-top: auto;
+  background: linear-gradient(to top, var(--bg-panel, #161a21) 70%, transparent);
+}
+.acts button { flex: 1; }
+.acts button.primary { background: #3a6ed8; color: #fff; border-color: #3a6ed8; }
+
+/* 底部固定条不能盖住最后一个分组：给它让出高度 */
+#leftbar { padding-bottom: 66px; }
+
+/* 片区 / 留白区 卡片 */
+.card {
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+.card .name { font-size: 13px; color: #e8edf4; }
+.card .meta { font-size: 11px; color: #8b95a5; margin-top: 2px; }
+
+/* 粗规划面板里的按钮组不要溢出：四档/五档时允许换行，并压缩内边距 */
+/* 粗规划里的按钮组：**标签在上、按钮组在下**。
+   原来的 `.seg button{flex:1 1 0}` 会把「住宅」压成一个字（宽度 1/4、padding 2px、overflow hidden）。
+   堆叠布局给足整行宽度，按钮按内容宽自适应 + 允许换行。 */
+.row.stack {
+  display: block;
+  margin-bottom: 10px;
+}
+.row.stack > label {
+  display: block;
+  margin-bottom: 4px;
+}
+.row.stack .seg button,
+.seg.wrap button {
+  flex: 0 0 auto;
+  padding: 6px 11px;
+  white-space: nowrap;
+}
+.seg.wrap { flex-wrap: wrap; }

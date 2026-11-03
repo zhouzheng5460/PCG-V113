@@ -28,6 +28,14 @@
 
         <main id="stage">
           <canvas id="canvas2d"></canvas>
+          <!-- 地图工具条：只保留三类主操作（规范 §11）。工具真正的绘制逻辑仍在 view2d 里。 -->
+          <div id="maptools">
+            <button data-tool="select" class="active" title="选择片区 / 地块 / 留白区">选择</button>
+            <button data-tool="area" title="框选若干街区后指定功能">绘制区域</button>
+            <button data-tool="blank" title="为后续自定义建筑预留空间">绘制留白区</button>
+          </div>
+          <!-- 功能配色图例（规范 §12）：颜色直接对应用途，不再靠文字猜 -->
+          <div id="legend"></div>
           <div id="view3d"></div>
           <div id="hint"></div>
           <div id="stats"></div>
