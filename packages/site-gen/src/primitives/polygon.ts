@@ -135,3 +135,42 @@ export function longestEdge(ring: readonly Vec2[]): { a: Vec2; b: Vec2; dir: Vec
   const l = Math.hypot(dx, dy) || 1;
   return { a: best.a, b: best.b, dir: [dx / l, dy / l], len: best.len };
 }
+
+/**
+ * 取环上 v ∈ [vLo, vHi] 的**一片**（局部坐标系下按法向切板）。传 `null` 表示该侧不设限。
+ *
+ * 为什么需要它：行带类生成器（停车场 / 集市摊位 / 工业货架）的判断都是
+ * "这一排占了 v 的哪一段"。把环按 v 切成互补的几片，就能**精确**分出
+ * "车位区 / 前后边角"，且几片之和恒等于原环 —— 不需要布尔差集（见 D-060）。
+ *
+ * 返回 `null` 表示切完不足 3 个点或面积可忽略。
+ */
+export function clipVSlab(
+  ring: readonly Vec2[],
+  frame: { origin: Vec2; u: Vec2; v: Vec2 },
+  vLo: number | null,
+  vHi: number | null,
+): Vec2[] | null {
+  const at = (vv: number): Vec2 => [frame.origin[0] + frame.v[0] * vv, frame.origin[1] + frame.v[1] * vv];
+  let r: Vec2[] = ring.map((p) => [p[0], p[1]] as Vec2);
+  if (vLo !== null) r = clipHalfPlane(r, at(vLo), frame.v);
+  if (r.length >= 3 && vHi !== null) r = clipHalfPlane(r, at(vHi), [-frame.v[0], -frame.v[1]]);
+  if (r.length < 3) return null;
+  return Math.abs(ringArea(r)) > 0.5 ? r : null;
+}
+
+/** 局部坐标矩形 → 世界环（CCW）。行带切割、绿带、摊位都靠它。 */
+export function rectInFrame(
+  frame: { origin: Vec2; u: Vec2; v: Vec2 },
+  u0: number,
+  u1: number,
+  v0: number,
+  v1: number,
+): Vec2[] | null {
+  if (!(u1 - u0 > 1e-6) || !(v1 - v0 > 1e-6)) return null;
+  const at = (uu: number, vv: number): Vec2 => [
+    frame.origin[0] + frame.u[0] * uu + frame.v[0] * vv,
+    frame.origin[1] + frame.u[1] * uu + frame.v[1] * vv,
+  ];
+  return [at(u0, v0), at(u1, v0), at(u1, v1), at(u0, v1)];
+}

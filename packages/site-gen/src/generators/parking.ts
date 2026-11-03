@@ -19,7 +19,8 @@
 
 import { area as ringArea, pointInRing, type Vec2 } from '../../../plan-ir/src/geom.ts';
 import { emptyPlan } from '../backends.ts';
-import { offsetRing, longestEdge, clipHalfPlane } from '../primitives/polygon.ts';
+import { offsetRing, longestEdge, clipVSlab, rectInFrame, clipHalfPlane } from '../primitives/polygon.ts';
+import { differenceRegion, intersectRegion, unionRegions, outerRings, type PolygonRegion } from '../primitives/boolean.ts';
 import { parkingRows, pathAround, connectAisles } from '../primitives/parking.ts';
 import { rngOf, scatterAlongEdge } from '../primitives/scatter.ts';
 import type { Plan, SiteGenerator, SiteInput } from '../types.ts';
@@ -58,6 +59,12 @@ export const parking: SiteGenerator = {
     const treeSpacing = Math.max(4, num(s.treeSpacing, 12));
     const treeInset = num(s.treeInset, 2.5);
     const lampSpacing = Math.max(8, num(s.lampSpacing, 25));
+    // 绿篱 / 充电桩：golden 实测 271 个 bush / 500 m 周长 ≈ 1.8 m 一株；
+    // 充电桩 6 个 / 288 车位 ≈ 2%（`Stat.EvStalls` 是 12，说明一个桩服务两个位）
+    const hedgeSpacing = Math.max(1.2, num(s.hedgeSpacing, 1.9));
+    const hedgeInset = num(s.hedgeInset, 1.5);
+    const chargerShare = num(s.chargerShare, 0.02);
+    const islandEvery = Math.max(0, Math.round(num(s.islandEveryStalls, 5)));
 
     // ── ready：停车场至少要有一个接街的车行口，否则车开不进来
     // （和 Placemaker 的 `CheckReady` 一个语义：没有出入口 → 不 ready，而不是"给个空的停车场"）
@@ -69,8 +76,26 @@ export const parking: SiteGenerator = {
       return plan;
     }
 
-    // ── 1. 可用的地：内缩退线
-    const work = offsetRing(ring, setback);
+    // ── 1. 可用的地：内缩退线 + 环路
+    //
+    // 为什么要多内缩一条车道宽：golden 的 settings 里 `perimeterRoad: true`，
+    // 也就是地界内侧先绕一圈**服务性环路**，车位从环路以内才开始排。
+    // 这一条直接解释了"每米车道服务几个车位"这个比值：
+    //   golden 288 车位 / 1103 m 车道 = **0.26**；我原来是 438 / 1108 = **0.40**。
+    // 差的那 50% 不是"车位排得太密"，而是 golden 的车道网里有一段不挂车位的环路。
+    // 环路的**尺寸门槛**：环路面积 ≈ 周长 × 车道宽。小地块上一圈环路比场地本身还大
+    // （325 m² 的地块周长 ~72 m，环路 72×7 = 504 m² = 场地的 1.5 倍），做了纯亏。
+    // 实测：无条件上环路时均分 67→57，因为 15 例小地块的车道总长被推爆。
+    // 所以只在环路占地 < 30% 时才做 —— 这是几何条件，不是调参。
+    const perimeterLen = ring.reduce((acc, p, i) => {
+      const q = ring[(i + 1) % ring.length];
+      return acc + Math.hypot(q[0] - p[0], q[1] - p[1]);
+    }, 0);
+    const perimeterShare = (perimeterLen * aisleWidth) / Math.max(1, siteArea);
+    const perimeterW = bool(s.perimeterRoad, true) && perimeterShare < 0.12 ? aisleWidth : 0;
+    const work = offsetRing(ring, setback + perimeterW);
+    /** 环路中心线（内缩半个车道宽） */
+    const ringRoad = perimeterW > 0 ? offsetRing(ring, setback + perimeterW / 2) : null;
     if (work.clamped) plan.issues.push({ severity: 'info', key: 'offset.clamped', args: [setback] });
 
     // ── 2. 行带 + 车位
@@ -81,18 +106,35 @@ export const parking: SiteGenerator = {
       setback: 0,
       maxPerRow: crossEvery,
       doubleLoaded,
+      islandEveryStalls: islandEvery,
     });
     for (const n of layout.notes) plan.issues.push({ severity: 'info', key: 'parking.note', args: [n] });
 
-    // ── 3. 车道 + 连网 + 接出入口
+    // ── 3. 环路 + 车道 + 连网 + 接出入口
     let aisleLength = 0;
+    // 环路：沿中心线逐边铺成 driveAisle（和 golden 的 `perimeterRoad` 同一件事）
+    if (ringRoad && !ringRoad.clamped) {
+      const rr = ringRoad.ring;
+      for (let i = 0; i < rr.length; i++) {
+        const a = rr[i];
+        const b = rr[(i + 1) % rr.length];
+        const len = Math.hypot(b[0] - a[0], b[1] - a[1]);
+        if (len < 1) continue;
+        aisleLength += len;
+        plan.nets.push({ role: 'driveAisle', a, b: a, c: b, d: b, category: 'perimeter' });
+      }
+    }
     for (const a of layout.aisles) {
       aisleLength += a.length;
       plan.nets.push({ role: 'driveAisle', a: a.a, b: a.a, c: a.b, d: a.b });
     }
     // 连网：不连的话车开进去出不来（实测碎片 28 块 / 悬空端 56 个）
     let linkLength = 0;
-    for (const l of connectAisles(layout)) {
+    // 环路也交给连通判定：否则它是一个独立的连通块（实测 4 块 / 悬空端 8 个）
+    const perimeterSegs = plan.nets
+      .filter((n) => n.category === 'perimeter')
+      .map((n) => ({ a: n.a as Vec2, b: n.d as Vec2 }));
+    for (const l of connectAisles(layout, perimeterSegs)) {
       linkLength += Math.hypot(l.b[0] - l.a[0], l.b[1] - l.a[1]);
       plan.nets.push({ role: 'driveAisle', a: l.a, b: l.a, c: l.b, d: l.b, category: l.cross ? 'crossAisle' : undefined });
     }
@@ -109,32 +151,88 @@ export const parking: SiteGenerator = {
       // 障碍物要绕：v1 用"采样后断开"，被打断的部分直接不画，并记一条 issue（不静默）
       const blocked = input.obstacles.map((o) => o.quad.map(([x, z]) => [x, z] as Vec2));
       const segs = pathAround(p, best.end, blocked, 1);
-      for (const sg of segs) plan.nets.push({ role: 'driveConnector', a: sg.a, b: sg.a, c: sg.b, d: sg.b });
+      // 端点吸附：`pathAround` 是按 1 m 采样切出来的，最后一段常常差半米接不上车道端点，
+      // 于是在"按端点连图"的判定里就成了独立的一块（实测连通块 2 而非 1）。
+      // 这里把离车道端 2 m 以内的端点直接吸过去。
+      const snap = (q: Vec2): Vec2 =>
+        Math.hypot(q[0] - best!.end[0], q[1] - best!.end[1]) <= 2 ? [best!.end[0], best!.end[1]] : q;
+      for (let i = 0; i < segs.length; i++) {
+        const a0 = snap(segs[i].a);
+        const b0 = segs[i === segs.length - 1 ? segs.length - 1 : i].b;
+        const b1 = snap(b0);
+        plan.nets.push({ role: 'driveConnector', a: a0, b: a0, c: b1, d: b1 });
+      }
       if (!segs.length) plan.issues.push({ severity: 'warning', key: 'access.blocked' });
     }
 
-    // ── 4. 铺装：**沥青 + 两片边角草地**，绝不整块叠铺
+    // ── 4. 铺装：**按行带的 v 区间精确三分**，三片之和恒等于地块
     //
     // 这一条是自洽要求，不是"像不像 golden"：两块面铺在同一片地上本身就是错的。
-    // v1 一开始就是"整块草地打底 + 沥青覆盖"，实测铺装总面积 28555 m² vs 地块 14527 m²
+    // v1 一开始是"整块草地打底 + 沥青覆盖"，实测铺装总面积 28555 m² vs 地块 14527 m²
     // （覆盖 197%）、互相压住 14027 m² —— 而 golden 是 3174 + 11354 = 14527、重叠 0。
-    // 这里改成把地块沿行带的纵向范围切成三片：前边角（草地）/ 车位区（沥青）/ 后边角（草地）。
-    // 真正的"车位排之间的草岛"还需要布尔差集，见 D-060。
+    //
+    // 现在用 `clipVSlab` 把地块沿行带法向切成**互补**的三片：
+    //   前边角（草地）· 车位区（沥青）· 后边角（草地）。
+    // 互补的好处是**不需要布尔差集**就能保证"和 = 地块、重叠 = 0"（D-060）。
+    // 沥青取**地块环**而不是内缩后的工作环：退线只是"不放车位"，路面本来就铺到地界。
     const fr = layout.frame;
-    const at = (v: number): Vec2 => [fr.origin[0] + fr.v[0] * v, fr.origin[1] + fr.v[1] * v];
-    /** 取环上 v ∈ [vLo, vHi] 的那一片；传 null 表示该侧不设限 */
-    const strip = (vLo: number | null, vHi: number | null): Vec2[] | null => {
-      let r: Vec2[] = ring.map((p) => [p[0], p[1]] as Vec2);
-      if (vLo !== null) r = clipHalfPlane(r, at(vLo), fr.v);
-      if (r.length >= 3 && vHi !== null) r = clipHalfPlane(r, at(vHi), [-fr.v[0], -fr.v[1]]);
-      return r.length >= 3 && Math.abs(ringArea(r)) > 0.5 ? r : null;
-    };
-    const front = layout.bands.length ? layout.vSpan.v0 : null;
-    const back = layout.bands.length ? layout.vSpan.v1 : null;
-    for (const g of [strip(null, front), strip(back, null)]) {
-      if (g) plan.surfaces.push({ role: 'grass', ring: g, category: 'lawn' });
+    // 绿带要"切穿"整个车位区才不产生洞（`PlanSurface.ring` 是单环，没有洞的概念；
+    // 而 golden 的重叠也 ≈ 0，说明它的沥青同样是无洞的多块）。
+    // 所以走廊一律横跨 vSpan 的整个进深，用 `differenceRegion` 把铺装**切开**。
+    const corridorW = Math.max(1, stallWidth);
+    const corridorStep = Math.max(corridorW * 2, islandEvery * stallWidth);
+    const uAbs = ring.map((p) => (p[0] - fr.origin[0]) * fr.u[0] + (p[1] - fr.origin[1]) * fr.u[1]);
+    const uMinAbs = Math.min(...uAbs);
+    const uMaxAbs = Math.max(...uAbs);
+    const corridors: PolygonRegion[] = [];
+    if (layout.bands.length && islandEvery > 0) {
+      for (let uu = uMinAbs + corridorStep; uu + corridorW < uMaxAbs; uu += corridorStep) {
+        const q = rectInFrame(fr, uu, uu + corridorW, layout.vSpan.v0, layout.vSpan.v1);
+        if (q) corridors.push({ outer: q });
+      }
     }
-    if (layout.bands.length) plan.surfaces.push({ role: 'asphalt', ring: work.ring, category: 'parking' });
+    // 落在走廊里的车位去掉（走廊位置由生成器统一决定，原语只负责排满）
+    if (corridors.length) {
+      const inCorridor = (p: Vec2): boolean => {
+        const cu = (p[0] - fr.origin[0]) * fr.u[0] + (p[1] - fr.origin[1]) * fr.u[1];
+        return corridors.some((c) => {
+          const cu0 = (c.outer[0][0] - fr.origin[0]) * fr.u[0] + (c.outer[0][1] - fr.origin[1]) * fr.u[1];
+          const cu1 = (c.outer[2][0] - fr.origin[0]) * fr.u[0] + (c.outer[2][1] - fr.origin[1]) * fr.u[1];
+          return cu >= Math.min(cu0, cu1) && cu <= Math.max(cu0, cu1);
+        });
+      };
+      layout.stalls = layout.stalls.filter((st) => !inCorridor(st.center));
+    }
+
+    if (!layout.bands.length) {
+      // **一条行带都排不下**（实测 7 例小地块：309~1677 m²）。
+      // 这里必须显式处理：如果按"vSpan = 0 且无带"去切两片草地，
+      // `clipVSlab(null, null)` 会把整个环各返回一次 —— 草地铺两遍，
+      // 覆盖 200%、重叠 = 整块地。那一轮就是 7 例 × 3 个指标全 bad（D-062）。
+      // 排不下车位也仍然是块地，铺一片沥青即可（和 golden 在小地块上的做法一致）。
+      plan.surfaces.push({ role: 'asphalt', ring, category: 'parking' });
+    } else {
+      const front = layout.vSpan.v0;
+      const back = layout.vSpan.v1;
+      for (const g of [clipVSlab(ring, fr, null, front), clipVSlab(ring, fr, back, null)]) {
+        if (g) plan.surfaces.push({ role: 'grass', ring: g, category: 'lawn' });
+      }
+      const slab = clipVSlab(ring, fr, front, back);
+      if (!slab) {
+        plan.surfaces.push({ role: 'asphalt', ring, category: 'parking' });
+      } else {
+        // **P1：用布尔运算把铺装切开、绿带成面**。
+        // 顺序很重要：走廊先**裁到铺装里**（`intersectRegion`），再拿去当 cutter。
+        // 直接拿未裁的矩形当 cutter 会让草地超出铺装 —— 实测铺装总面积 +13%/+58%（D-063）。
+        const cut: PolygonRegion[] = [];
+        for (const c of corridors) {
+          for (const piece of intersectRegion({ outer: slab }, c)) cut.push(piece);
+        }
+        const paved = cut.length ? differenceRegion({ outer: slab }, cut) : [{ outer: slab }];
+        for (const r of paved) plan.surfaces.push({ role: 'asphalt', ring: r.outer, category: 'parking' });
+        for (const c of cut) plan.surfaces.push({ role: 'grass', ring: c.outer, category: 'planting' });
+      }
+    }
 
     // ── 5. 车位 + 灯 + 树
     for (const st of layout.stalls) {
@@ -168,6 +266,26 @@ export const parking: SiteGenerator = {
       plan.objects.push({ role: 'tree', x: t.p[0], z: t.p[1], scale: 1 + rng() * 0.4 });
     }
 
+    // 绿篱：比树更密的一圈灌木，紧贴边界内侧。
+    // 为什么要单独一种 role：golden 里 `bush` 有 **271 个**、`tree` 只有 39 个 ——
+    // 停车场边界的做法是"一圈密绿篱 + 稀疏点几棵树"，不是"一排树"。
+    // v1 缺这一种 role，物件总数就少了 40%（649 vs 534），密度也差 18%。
+    const hedge = scatterAlongEdge(ring, { spacing: hedgeSpacing, inset: hedgeInset, jitter: 0.35 }, rng);
+    for (const h of hedge) {
+      if (!pointInRing(h.p, ring)) continue;
+      plan.objects.push({ role: 'bush', x: h.p[0], z: h.p[1], scale: 0.9 + rng() * 0.3 });
+    }
+
+    // 充电桩：按车位数的固定比例布（golden: 288 车位 → 12 个充电位 / 6 个桩）
+    const chargerCount = Math.round(layout.stalls.length * chargerShare);
+    for (let i = 0; i < chargerCount; i++) {
+      // 均匀取车位，避免全挤在一起
+      const idx = Math.floor(((i + 0.5) * layout.stalls.length) / Math.max(1, chargerCount));
+      const st = layout.stalls[idx];
+      if (!st) break;
+      plan.objects.push({ role: 'charger', x: st.center[0], z: st.center[1], yaw: Math.atan2(st.heading[0], st.heading[1]) });
+    }
+
     // ── 6. 分区与具名区域（golden 有 1 条 areas + 44 条 regions，这里先给 1+1，差额进比对表）
     plan.areas = [{ role: 'lot', ring: work.ring }];
     plan.regions = [{ key: 'lot:0', tags: input.regionTags.length ? input.regionTags : ['root'], ring: work.ring }];
@@ -178,6 +296,7 @@ export const parking: SiteGenerator = {
       { key: 'Stat.Area', value: Math.round(siteArea), unit: 'm2' },
       { key: 'Stat.AisleLength', value: Math.round(aisleLength + linkLength), unit: 'm' },
       { key: 'Stat.Trees', value: plan.objects.filter((o) => o.role === 'tree').length, unit: 'count' },
+      { key: 'Stat.EvStalls', value: plan.objects.filter((o) => o.role === 'charger').length * 2, unit: 'count' },
     ];
 
     // 一个"最长边"读数，方便解释布局为什么是这个朝向

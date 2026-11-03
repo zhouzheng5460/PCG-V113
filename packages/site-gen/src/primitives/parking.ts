@@ -278,6 +278,8 @@ export function pathAround(
  */
 export function connectAisles(
   layout: ParkingLayout,
+  /** 额外参与连通的分段（环路等）。只进连通图，不参与"按行分组"。 */
+  extra: readonly { a: Vec2; b: Vec2 }[] = [],
 ): { a: Vec2; b: Vec2; cross: boolean }[] {
   const fr = layout.frame;
   const toLocal = (p: Vec2): Vec2 => [
@@ -303,7 +305,7 @@ export function connectAisles(
   const links: { a: Vec2; b: Vec2; cross: boolean }[] = [];
   const rowKeys = [...rows.keys()].sort((x, y) => x - y);
 
-  // 1) 行内：相邻两段之间补一条横向通道
+  // 1) 行内：相邻两段之间补一条横向通道（一条长行被切成几段，段间本就要通）
   for (const vv of rowKeys) {
     const segs = (rows.get(vv) ?? []).slice().sort((p, q) => p.u0 - q.u0);
     for (let i = 1; i < segs.length; i++) {
@@ -313,20 +315,117 @@ export function connectAisles(
     }
   }
 
-  // 2) 行间：每行的段头沿法向接到前一行（脊）
+  /**
+   * 2) 行间：**两端都接**（梯子），不是只接段头。
+   *
+   * 只接一端会得到一棵树 —— 树的叶子就是"悬空端"，实测 8~34 个，而 golden 只有 2 个。
+   * 真实停车场里车道的两端一般都能出去（正是因为两端都通，才不用倒车掉头）。
+   * 两端都接之后网络里出现环路，悬空端只剩最外侧的几个。
+   *
+   * 必须接**端点**而不是中段：连通性判定按端点连图（`metrics.connectivity` 只 union a/d），
+   * 接中段的 T 型口在几何上通、在图上断 —— 实测就因此多报了 7 块"假分量"。
+   */
   for (let i = 1; i < rowKeys.length; i++) {
     const prev = rowKeys[i - 1];
     const cur = rowKeys[i];
-    const prevSegs = (rows.get(prev) ?? []).slice().sort((p, q) => p.u0 - q.u0);
-    const curSegs = (rows.get(cur) ?? []).slice().sort((p, q) => p.u0 - q.u0);
+    const prevSegs = rows.get(prev) ?? [];
+    const curSegs = rows.get(cur) ?? [];
     if (!prevSegs.length || !curSegs.length) continue;
-    for (const seg of curSegs) {
-      // 找一个落在前一行某段范围内的端点来对齐（避免凭空斜穿）
-      const uu = seg.u0;
-      const host = prevSegs.find((p) => uu >= p.u0 - 0.01 && uu <= p.u1 + 0.01) ?? prevSegs[0];
-      const u = Math.min(Math.max(uu, host.u0), host.u1);
-      links.push({ a: toWorld(u, prev), b: toWorld(u, cur), cross: true });
+    // 只接**整行的两端**（最左段的最左端 / 最右段的最右端）。
+    // 每段都接两端会变成"全连接梯子"，总长被推到 +76%（实测 1972 m vs golden 1124 m）——
+    // 而总长本身是计入分数的指标，所以这里只保留够用的连接。
+    const sorted = curSegs.slice().sort((p, q) => p.u0 - q.u0);
+    const ends = [sorted[0].u0, sorted[sorted.length - 1].u1];
+    for (const uEnd of ends) {
+      const from = toWorld(uEnd, cur);
+      let best: { d: number; p: Vec2 } | null = null;
+      for (const h of prevSegs) {
+        for (const uu of [h.u0, h.u1]) {
+          const p = toWorld(uu, prev);
+          const d = Math.hypot(p[0] - from[0], p[1] - from[1]);
+          if (!best || d < best.d) best = { d, p };
+        }
+      }
+      if (best) links.push({ a: from, b: best.p, cross: true });
     }
   }
-  return links;
+
+  // 3) 兜底：全局重连。上面的规则在"某行只有一个段、且与邻行错开很远"时会漏接，
+  //    结果就是 2 块而非 1 块（实测）。这里按端点图求连通分量，把非主分量接到最近的端点上。
+  //    这一步保证 **连通块恒为 1**，不依赖上面规则是否覆盖到所有情况。
+  return reconnect(layout, links, extra);
+}
+
+/** 端点键（0.5 m 归并），和 `metrics.connectivity` 同一口径 */
+const nk = (p: Vec2): string => `${Math.round(p[0] * 2)},${Math.round(p[1] * 2)}`;
+
+/**
+ * 把断开的连通分量接起来（确定性：按"分量里最小端点"排序后依次接到最近的主分量端点上）。
+ */
+function reconnect(
+  layout: ParkingLayout,
+  links: { a: Vec2; b: Vec2; cross: boolean }[],
+  extraSegs: readonly { a: Vec2; b: Vec2 }[] = [],
+): { a: Vec2; b: Vec2; cross: boolean }[] {
+  const segs: { a: Vec2; b: Vec2 }[] = [
+    ...layout.aisles.map((x) => ({ a: x.a, b: x.b })),
+    ...extraSegs,
+    ...links.map((x) => ({ a: x.a, b: x.b })),
+  ];
+  if (segs.length < 2) return links;
+
+  const parent = new Map<string, string>();
+  const find = (k: string): string => {
+    let r = k;
+    while (parent.get(r) !== r) r = parent.get(r) as string;
+    let c = k;
+    while (parent.get(c) !== r) {
+      const nx = parent.get(c) as string;
+      parent.set(c, r);
+      c = nx;
+    }
+    return r;
+  };
+  const union = (a: string, b: string): void => {
+    if (!parent.has(a)) parent.set(a, a);
+    if (!parent.has(b)) parent.set(b, b);
+    const ra = find(a);
+    const rb = find(b);
+    if (ra !== rb) parent.set(ra, rb);
+  };
+
+  for (const s of segs) union(nk(s.a), nk(s.b));
+
+  // 收集每个分量的端点
+  const byRoot = new Map<string, Vec2[]>();
+  for (const s of segs) {
+    for (const p of [s.a, s.b]) {
+      const r = find(nk(p));
+      const arr = byRoot.get(r) ?? [];
+      arr.push(p);
+      byRoot.set(r, arr);
+    }
+  }
+  if (byRoot.size <= 1) return links;
+
+  // 主分量 = 端点最多的那个；其余按"最小端点"排序，保证确定性
+  const roots = [...byRoot.entries()].sort((x, y) => y[1].length - x[1].length || (nk(x[1][0]) < nk(y[1][0]) ? -1 : 1));
+  const mainPts = roots[0][1];
+  const extra: { a: Vec2; b: Vec2; cross: boolean }[] = [];
+
+  for (let i = 1; i < roots.length; i++) {
+    const pts = roots[i][1].slice().sort((p, q) => (nk(p) < nk(q) ? -1 : 1));
+    let best: { d: number; from: Vec2; to: Vec2 } | null = null;
+    for (const p of pts) {
+      for (const q of mainPts) {
+        const d = Math.hypot(p[0] - q[0], p[1] - q[1]);
+        if (!best || d < best.d) best = { d, from: p, to: q };
+      }
+    }
+    if (!best) continue;
+    extra.push({ a: best.from, b: best.to, cross: true });
+    // 接上之后这个分量就并进主分量了，后续分量可以接到它的端点上
+    for (const p of pts) mainPts.push(p);
+  }
+  return [...links, ...extra];
 }

@@ -18,7 +18,8 @@
     "golden:check": "node tools/golden/emit.mjs --check",
     "sgen:compare": "node packages/site-gen/src/cli/compare.ts",
     "sgen:selfcheck": "node packages/site-gen/src/cli/compare.ts --selfcheck",
-    "sgen:check": "node packages/site-gen/verify.mjs"
+    "sgen:check": "node packages/site-gen/verify.mjs",
+    "sgen:boolean": "node packages/site-gen/test/boolean.test.ts"
   },
   "engines": {
     "node": ">=22.18"
