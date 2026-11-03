@@ -1,0 +1,58 @@
+{
+ "generator": "plaza",
+ "seed": 1234,
+ "note": "220×45 狭长广场，只在两条长边临街。看关键节点与铺装是否沿长轴组织。",
+ "settings": {},
+ "shape": {
+  "ring": [
+   [
+    0,
+    0
+   ],
+   [
+    220,
+    0
+   ],
+   [
+    220,
+    45
+   ],
+   [
+    0,
+    45
+   ]
+  ]
+ },
+ "streets": [
+  {
+   "id": 1,
+   "a": [
+    0,
+    -6
+   ],
+   "b": [
+    220,
+    -6
+   ],
+   "width": 12,
+   "category": "road",
+   "sidewalk": true,
+   "speed": 50
+  },
+  {
+   "id": 2,
+   "a": [
+    220,
+    51
+   ],
+   "b": [
+    0,
+    51
+   ],
+   "width": 12,
+   "category": "road",
+   "sidewalk": true,
+   "speed": 50
+  }
+ ]
+}

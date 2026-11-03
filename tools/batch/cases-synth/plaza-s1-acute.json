@@ -1,0 +1,39 @@
+{
+ "generator": "plaza",
+ "seed": 1234,
+ "note": "160×14 收成一点的锐角楔形（最窄处 < 1 m）。验 boolean / 内缩在退化几何上的稳健性。",
+ "settings": {},
+ "shape": {
+  "ring": [
+   [
+    0,
+    0
+   ],
+   [
+    160,
+    0
+   ],
+   [
+    0,
+    14
+   ]
+  ]
+ },
+ "streets": [
+  {
+   "id": 1,
+   "a": [
+    0,
+    -6
+   ],
+   "b": [
+    160,
+    -6
+   ],
+   "width": 10,
+   "category": "road",
+   "sidewalk": true,
+   "speed": 50
+  }
+ ]
+}

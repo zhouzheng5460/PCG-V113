@@ -1,7 +1,11 @@
 {
  "protocol": "site-gen-golden/1",
+ "bySource": {
+  "bake": 54,
+  "synth": 9
+ },
  "note": "由 tools/golden/emit.mjs 生成。plans/ 是 C# 的权威输出，用来做原生 TS 实现的对照基准。",
- "generatedAt": "2026-11-03 02:21:22",
+ "generatedAt": "2026-11-03 03:41:26",
  "channels": [
   "surfaces",
   "nets",
@@ -14,7 +18,7 @@
   "stats",
   "issues"
  ],
- "count": 54,
+ "count": 63,
  "byGenerator": {
   "parking": 19,
   "pitch": 2,
@@ -47,12 +51,13 @@
   "shopsPark": 1,
   "sportsPark": 1,
   "stripMall": 1,
-  "plaza": 1
+  "plaza": 10
  },
  "cases": [
   {
    "name": "city24-s8-p0-parking",
    "generator": "parking",
+   "source": "bake",
    "ok": true,
    "why": "",
    "ready": true,
@@ -79,6 +84,7 @@
   {
    "name": "city24-s8-p0-pitch",
    "generator": "pitch",
+   "source": "bake",
    "ok": true,
    "why": "",
    "ready": true,
@@ -105,6 +111,7 @@
   {
    "name": "city24-s8-p1-parking",
    "generator": "parking",
+   "source": "bake",
    "ok": true,
    "why": "",
    "ready": true,
@@ -131,6 +138,7 @@
   {
    "name": "city24-s8-p42-abandonedLot-demolished",
    "generator": "abandonedLot",
+   "source": "bake",
    "ok": true,
    "why": "",
    "ready": true,
@@ -157,6 +165,7 @@
   {
    "name": "city24-s8-p42-abandonedLot",
    "generator": "abandonedLot",
+   "source": "bake",
    "ok": true,
    "why": "",
    "ready": true,
@@ -183,6 +192,7 @@
   {
    "name": "city24-s8-p42-botanicalGarden",
    "generator": "botanicalGarden",
+   "source": "bake",
    "ok": true,
    "why": "",
    "ready": true,
@@ -209,6 +219,7 @@
   {
    "name": "city24-s8-p42-campground",
    "generator": "campground",
+   "source": "bake",
    "ok": true,
    "why": "",
    "ready": true,
@@ -235,6 +246,7 @@
   {
    "name": "city24-s8-p42-carYard",
    "generator": "carYard",
+   "source": "bake",
    "ok": true,
    "why": "",
    "ready": true,
@@ -261,6 +273,7 @@
   {
    "name": "city24-s8-p42-communityGarden",
    "generator": "communityGarden",
+   "source": "bake",
    "ok": true,
    "why": "",
    "ready": true,
@@ -287,6 +300,7 @@
   {
    "name": "city24-s8-p42-dogPark",
    "generator": "dogPark",
+   "source": "bake",
    "ok": true,
    "why": "",
    "ready": true,
@@ -313,6 +327,7 @@
   {
    "name": "city24-s8-p42-formalGarden",
    "generator": "formalGarden",
+   "source": "bake",
    "ok": true,
    "why": "",
    "ready": true,
@@ -339,6 +354,7 @@
   {
    "name": "city24-s8-p42-greenwayPark",
    "generator": "greenwayPark",
+   "source": "bake",
    "ok": true,
    "why": "",
    "ready": true,
@@ -365,6 +381,7 @@
   {
    "name": "city24-s8-p42-junkYard",
    "generator": "junkYard",
+   "source": "bake",
    "ok": true,
    "why": "",
    "ready": true,
@@ -391,6 +408,7 @@
   {
    "name": "city24-s8-p42-mallPark",
    "generator": "mallPark",
+   "source": "bake",
    "ok": true,
    "why": "",
    "ready": true,
@@ -417,6 +435,7 @@
   {
    "name": "city24-s8-p42-marketSquare",
    "generator": "marketSquare",
+   "source": "bake",
    "ok": true,
    "why": "",
    "ready": true,
@@ -443,6 +462,7 @@
   {
    "name": "city24-s8-p42-natureReserve",
    "generator": "natureReserve",
+   "source": "bake",
    "ok": true,
    "why": "",
    "ready": true,
@@ -469,6 +489,7 @@
   {
    "name": "city24-s8-p42-outdoorMall",
    "generator": "outdoorMall",
+   "source": "bake",
    "ok": true,
    "why": "",
    "ready": true,
@@ -495,6 +516,7 @@
   {
    "name": "city24-s8-p42-park",
    "generator": "park",
+   "source": "bake",
    "ok": true,
    "why": "",
    "ready": true,
@@ -521,6 +543,7 @@
   {
    "name": "city24-s8-p42-parking",
    "generator": "parking",
+   "source": "bake",
    "ok": true,
    "why": "",
    "ready": true,
@@ -547,6 +570,7 @@
   {
    "name": "city24-s8-p42-picnicGrounds",
    "generator": "picnicGrounds",
+   "source": "bake",
    "ok": true,
    "why": "",
    "ready": true,
@@ -573,6 +597,7 @@
   {
    "name": "city24-s8-p42-pitch",
    "generator": "pitch",
+   "source": "bake",
    "ok": true,
    "why": "",
    "ready": true,
@@ -599,6 +624,7 @@
   {
    "name": "city24-s8-p42-polishCoastal",
    "generator": "polishCoastal",
+   "source": "bake",
    "ok": true,
    "why": "",
    "ready": true,
@@ -625,6 +651,7 @@
   {
    "name": "city24-s8-p42-polishGarden",
    "generator": "polishGarden",
+   "source": "bake",
    "ok": true,
    "why": "",
    "ready": true,
@@ -651,6 +678,7 @@
   {
    "name": "city24-s8-p42-polishManicured",
    "generator": "polishManicured",
+   "source": "bake",
    "ok": true,
    "why": "",
    "ready": true,
@@ -677,6 +705,7 @@
   {
    "name": "city24-s8-p42-polishMeadow",
    "generator": "polishMeadow",
+   "source": "bake",
    "ok": true,
    "why": "",
    "ready": true,
@@ -703,6 +732,7 @@
   {
    "name": "city24-s8-p42-polishNatural",
    "generator": "polishNatural",
+   "source": "bake",
    "ok": true,
    "why": "",
    "ready": true,
@@ -729,6 +759,7 @@
   {
    "name": "city24-s8-p42-polishRustic",
    "generator": "polishRustic",
+   "source": "bake",
    "ok": true,
    "why": "",
    "ready": true,
@@ -755,6 +786,7 @@
   {
    "name": "city24-s8-p42-polishTidy",
    "generator": "polishTidy",
+   "source": "bake",
    "ok": true,
    "why": "",
    "ready": true,
@@ -781,6 +813,7 @@
   {
    "name": "city24-s8-p42-polishYard",
    "generator": "polishYard",
+   "source": "bake",
    "ok": true,
    "why": "",
    "ready": true,
@@ -807,6 +840,7 @@
   {
    "name": "city24-s8-p42-pond",
    "generator": "pond",
+   "source": "bake",
    "ok": true,
    "why": "",
    "ready": true,
@@ -833,6 +867,7 @@
   {
    "name": "city24-s8-p42-runningTrack",
    "generator": "runningTrack",
+   "source": "bake",
    "ok": true,
    "why": "",
    "ready": true,
@@ -859,6 +894,7 @@
   {
    "name": "city24-s8-p42-scrapyard",
    "generator": "scrapyard",
+   "source": "bake",
    "ok": true,
    "why": "",
    "ready": true,
@@ -885,6 +921,7 @@
   {
    "name": "city24-s8-p42-shopsPark",
    "generator": "shopsPark",
+   "source": "bake",
    "ok": true,
    "why": "",
    "ready": true,
@@ -911,6 +948,7 @@
   {
    "name": "city24-s8-p42-sportsPark",
    "generator": "sportsPark",
+   "source": "bake",
    "ok": true,
    "why": "",
    "ready": true,
@@ -937,6 +975,7 @@
   {
    "name": "city24-s8-p42-stripMall",
    "generator": "stripMall",
+   "source": "bake",
    "ok": true,
    "why": "",
    "ready": true,
@@ -963,6 +1002,7 @@
   {
    "name": "city24-s8-p90-carYard",
    "generator": "carYard",
+   "source": "bake",
    "ok": true,
    "why": "",
    "ready": true,
@@ -989,6 +1029,7 @@
   {
    "name": "city24-s8-p90-park",
    "generator": "park",
+   "source": "bake",
    "ok": true,
    "why": "",
    "ready": true,
@@ -1015,6 +1056,7 @@
   {
    "name": "city24-s8-p90-parking",
    "generator": "parking",
+   "source": "bake",
    "ok": true,
    "why": "",
    "ready": true,
@@ -1041,6 +1083,7 @@
   {
    "name": "city24-s8-p90-parking.part0",
    "generator": "parking",
+   "source": "bake",
    "ok": true,
    "why": "",
    "ready": true,
@@ -1067,6 +1110,7 @@
   {
    "name": "city24-s8-p90-parking.part1",
    "generator": "parking",
+   "source": "bake",
    "ok": true,
    "why": "",
    "ready": true,
@@ -1093,6 +1137,7 @@
   {
    "name": "city24-s8-p90-parking.part10",
    "generator": "parking",
+   "source": "bake",
    "ok": true,
    "why": "",
    "ready": true,
@@ -1119,6 +1164,7 @@
   {
    "name": "city24-s8-p90-parking.part11",
    "generator": "parking",
+   "source": "bake",
    "ok": true,
    "why": "",
    "ready": true,
@@ -1145,6 +1191,7 @@
   {
    "name": "city24-s8-p90-parking.part12",
    "generator": "parking",
+   "source": "bake",
    "ok": true,
    "why": "",
    "ready": true,
@@ -1171,6 +1218,7 @@
   {
    "name": "city24-s8-p90-parking.part13",
    "generator": "parking",
+   "source": "bake",
    "ok": true,
    "why": "",
    "ready": true,
@@ -1197,6 +1245,7 @@
   {
    "name": "city24-s8-p90-parking.part14",
    "generator": "parking",
+   "source": "bake",
    "ok": true,
    "why": "",
    "ready": true,
@@ -1223,6 +1272,7 @@
   {
    "name": "city24-s8-p90-parking.part2",
    "generator": "parking",
+   "source": "bake",
    "ok": true,
    "why": "",
    "ready": true,
@@ -1249,6 +1299,7 @@
   {
    "name": "city24-s8-p90-parking.part3",
    "generator": "parking",
+   "source": "bake",
    "ok": true,
    "why": "",
    "ready": true,
@@ -1275,6 +1326,7 @@
   {
    "name": "city24-s8-p90-parking.part4",
    "generator": "parking",
+   "source": "bake",
    "ok": true,
    "why": "",
    "ready": true,
@@ -1301,6 +1353,7 @@
   {
    "name": "city24-s8-p90-parking.part5",
    "generator": "parking",
+   "source": "bake",
    "ok": true,
    "why": "",
    "ready": true,
@@ -1327,6 +1380,7 @@
   {
    "name": "city24-s8-p90-parking.part6",
    "generator": "parking",
+   "source": "bake",
    "ok": true,
    "why": "",
    "ready": false,
@@ -1353,6 +1407,7 @@
   {
    "name": "city24-s8-p90-parking.part7",
    "generator": "parking",
+   "source": "bake",
    "ok": true,
    "why": "",
    "ready": true,
@@ -1379,6 +1434,7 @@
   {
    "name": "city24-s8-p90-parking.part8",
    "generator": "parking",
+   "source": "bake",
    "ok": true,
    "why": "",
    "ready": true,
@@ -1405,6 +1461,7 @@
   {
    "name": "city24-s8-p90-parking.part9",
    "generator": "parking",
+   "source": "bake",
    "ok": true,
    "why": "",
    "ready": true,
@@ -1431,6 +1488,7 @@
   {
    "name": "city24-s8-p90-plaza",
    "generator": "plaza",
+   "source": "bake",
    "ok": true,
    "why": "",
    "ready": true,
@@ -1453,6 +1511,249 @@
     "markers": 6
    },
    "bytes": 81763
+  },
+  {
+   "name": "plaza-r0-rect",
+   "generator": "plaza",
+   "source": "synth",
+   "ok": true,
+   "why": "",
+   "ready": true,
+   "channels": {
+    "surfaces": 123,
+    "nets": 0,
+    "objects": 123,
+    "areas": 1,
+    "regions": 4,
+    "zoning": 0,
+    "paint": 0,
+    "terraform": 0,
+    "stats": 5,
+    "issues": 0
+   },
+   "input": {
+    "ring": 4,
+    "nets": 4,
+    "settings": 82,
+    "markers": 4
+   },
+   "bytes": 73929
+  },
+  {
+   "name": "plaza-r1-elongated",
+   "generator": "plaza",
+   "source": "synth",
+   "ok": true,
+   "why": "",
+   "ready": true,
+   "channels": {
+    "surfaces": 135,
+    "nets": 0,
+    "objects": 106,
+    "areas": 1,
+    "regions": 5,
+    "zoning": 0,
+    "paint": 0,
+    "terraform": 0,
+    "stats": 5,
+    "issues": 0
+   },
+   "input": {
+    "ring": 4,
+    "nets": 2,
+    "settings": 82,
+    "markers": 6
+   },
+   "bytes": 70421
+  },
+  {
+   "name": "plaza-r2-lshape",
+   "generator": "plaza",
+   "source": "synth",
+   "ok": true,
+   "why": "",
+   "ready": true,
+   "channels": {
+    "surfaces": 131,
+    "nets": 0,
+    "objects": 120,
+    "areas": 1,
+    "regions": 5,
+    "zoning": 0,
+    "paint": 0,
+    "terraform": 0,
+    "stats": 5,
+    "issues": 0
+   },
+   "input": {
+    "ring": 6,
+    "nets": 4,
+    "settings": 82,
+    "markers": 3
+   },
+   "bytes": 78434
+  },
+  {
+   "name": "plaza-r3-concave",
+   "generator": "plaza",
+   "source": "synth",
+   "ok": true,
+   "why": "",
+   "ready": true,
+   "channels": {
+    "surfaces": 157,
+    "nets": 0,
+    "objects": 138,
+    "areas": 1,
+    "regions": 5,
+    "zoning": 0,
+    "paint": 0,
+    "terraform": 0,
+    "stats": 5,
+    "issues": 0
+   },
+   "input": {
+    "ring": 8,
+    "nets": 3,
+    "settings": 82,
+    "markers": 3
+   },
+   "bytes": 85541
+  },
+  {
+   "name": "plaza-r4-multientrance",
+   "generator": "plaza",
+   "source": "synth",
+   "ok": true,
+   "why": "",
+   "ready": true,
+   "channels": {
+    "surfaces": 134,
+    "nets": 0,
+    "objects": 120,
+    "areas": 1,
+    "regions": 5,
+    "zoning": 0,
+    "paint": 0,
+    "terraform": 0,
+    "stats": 5,
+    "issues": 0
+   },
+   "input": {
+    "ring": 4,
+    "nets": 6,
+    "settings": 82,
+    "markers": 5
+   },
+   "bytes": 75725
+  },
+  {
+   "name": "plaza-r5-rotated",
+   "generator": "plaza",
+   "source": "synth",
+   "ok": true,
+   "why": "",
+   "ready": true,
+   "channels": {
+    "surfaces": 141,
+    "nets": 0,
+    "objects": 106,
+    "areas": 1,
+    "regions": 4,
+    "zoning": 0,
+    "paint": 0,
+    "terraform": 0,
+    "stats": 5,
+    "issues": 0
+   },
+   "input": {
+    "ring": 4,
+    "nets": 2,
+    "settings": 82,
+    "markers": 6
+   },
+   "bytes": 73313
+  },
+  {
+   "name": "plaza-r6-obstacles",
+   "generator": "plaza",
+   "source": "synth",
+   "ok": true,
+   "why": "",
+   "ready": true,
+   "channels": {
+    "surfaces": 130,
+    "nets": 0,
+    "objects": 113,
+    "areas": 3,
+    "regions": 4,
+    "zoning": 0,
+    "paint": 0,
+    "terraform": 0,
+    "stats": 5,
+    "issues": 0
+   },
+   "input": {
+    "ring": 4,
+    "nets": 3,
+    "settings": 82,
+    "markers": 3
+   },
+   "bytes": 75256
+  },
+  {
+   "name": "plaza-s0-tiny",
+   "generator": "plaza",
+   "source": "synth",
+   "ok": true,
+   "why": "",
+   "ready": true,
+   "channels": {
+    "surfaces": 5,
+    "nets": 0,
+    "objects": 9,
+    "areas": 1,
+    "regions": 2,
+    "zoning": 0,
+    "paint": 0,
+    "terraform": 0,
+    "stats": 5,
+    "issues": 0
+   },
+   "input": {
+    "ring": 3,
+    "nets": 1,
+    "settings": 82,
+    "markers": 1
+   },
+   "bytes": 8372
+  },
+  {
+   "name": "plaza-s1-acute",
+   "generator": "plaza",
+   "source": "synth",
+   "ok": true,
+   "why": "",
+   "ready": true,
+   "channels": {
+    "surfaces": 5,
+    "nets": 0,
+    "objects": 35,
+    "areas": 1,
+    "regions": 3,
+    "zoning": 0,
+    "paint": 0,
+    "terraform": 0,
+    "stats": 5,
+    "issues": 0
+   },
+   "input": {
+    "ring": 3,
+    "nets": 1,
+    "settings": 82,
+    "markers": 3
+   },
+   "bytes": 12063
   }
  ]
 }

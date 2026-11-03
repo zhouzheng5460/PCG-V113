@@ -1,0 +1,315 @@
+{
+ "protocol": "placemaker-input/1",
+ "generator": "plaza",
+ "seed": 1234,
+ "shape": {
+  "ring": [
+   [
+    0,
+    0
+   ],
+   [
+    130,
+    0
+   ],
+   [
+    130,
+    110
+   ],
+   [
+    0,
+    110
+   ]
+  ]
+ },
+ "layoutScale": 1,
+ "edgeMargin": 2,
+ "nearbyNets": [
+  {
+   "externalId": 1,
+   "a": [
+    0,
+    -6
+   ],
+   "b": [
+    43.333,
+    -6
+   ],
+   "c": [
+    86.667,
+    -6
+   ],
+   "d": [
+    130,
+    -6
+   ],
+   "width": 12,
+   "category": "road",
+   "hasSidewalk": true,
+   "isOneWay": false,
+   "isHighway": false,
+   "speedLimit": 50
+  },
+  {
+   "externalId": 2,
+   "a": [
+    136,
+    0
+   ],
+   "b": [
+    136,
+    36.667
+   ],
+   "c": [
+    136,
+    73.333
+   ],
+   "d": [
+    136,
+    110
+   ],
+   "width": 12,
+   "category": "road",
+   "hasSidewalk": true,
+   "isOneWay": false,
+   "isHighway": false,
+   "speedLimit": 50
+  },
+  {
+   "externalId": 3,
+   "a": [
+    -6,
+    110
+   ],
+   "b": [
+    -6,
+    73.333
+   ],
+   "c": [
+    -6,
+    36.667
+   ],
+   "d": [
+    -6,
+    0
+   ],
+   "width": 12,
+   "category": "road",
+   "hasSidewalk": true,
+   "isOneWay": false,
+   "isHighway": false,
+   "speedLimit": 50
+  }
+ ],
+ "zoneGrids": [],
+ "obstacles": [
+  {
+   "quad": [
+    [
+     18,
+     20
+    ],
+    [
+     42,
+     20
+    ],
+    [
+     42,
+     38
+    ],
+    [
+     18,
+     38
+    ]
+   ],
+   "kind": "building"
+  },
+  {
+   "quad": [
+    [
+     78,
+     24
+    ],
+    [
+     118,
+     24
+    ],
+    [
+     118,
+     46
+    ],
+    [
+     78,
+     46
+    ]
+   ],
+   "kind": "building"
+  },
+  {
+   "quad": [
+    [
+     26,
+     68
+    ],
+    [
+     50,
+     68
+    ],
+    [
+     50,
+     92
+    ],
+    [
+     26,
+     92
+    ]
+   ],
+   "kind": "building"
+  },
+  {
+   "quad": [
+    [
+     86,
+     72
+    ],
+    [
+     112,
+     72
+    ],
+    [
+     112,
+     94
+    ],
+    [
+     86,
+     94
+    ]
+   ],
+   "kind": "building"
+  }
+ ],
+ "settings": {
+  "centerpiece": "",
+  "centerMode": "single",
+  "palette": "auto",
+  "paletteBase": "auto",
+  "borderSurface": "",
+  "focalSurface": "",
+  "pathSurface": "",
+  "inlaySurface": "",
+  "surface": "",
+  "paveStyle": "auto",
+  "furniture": 0,
+  "centerSize": 5,
+  "centerSpacing": 20,
+  "arrangement": [
+   "bench",
+   "lamp",
+   "bench"
+  ],
+  "arrangementMode": "center",
+  "arrangementGap": 4,
+  "benchAsset": "",
+  "lampAsset": "",
+  "binAsset": "",
+  "treeAsset": "",
+  "bushAsset": "",
+  "planterAsset": "",
+  "flowerbedAsset": "",
+  "kioskAsset": "",
+  "walkable": true,
+  "paving": true,
+  "fence": false,
+  "fenceAsset": "",
+  "design": "classic",
+  "centerKind": "any",
+  "pattern": "border",
+  "lighting": "standard",
+  "bollards": false,
+  "bollardAsset": "",
+  "levels": "flat",
+  "levelCount": 3,
+  "levelHeight": 1.5,
+  "levelPlanters": true,
+  "amphitheatre": false,
+  "rows": 4,
+  "amphiRaise": true,
+  "stageAsset": "",
+  "lawns": 0,
+  "beds": 4,
+  "planters": 0,
+  "treeLayout": "edge",
+  "border": "none",
+  "pool": false,
+  "realWater": false,
+  "poolSurface": "",
+  "jets": false,
+  "jetAsset": "",
+  "shade": 0,
+  "shelterAsset": "",
+  "cafe": 0,
+  "cafeAsset": "",
+  "stalls": 0,
+  "stallAsset": "",
+  "games": false,
+  "performance": false,
+  "shopAmount": "some",
+  "shopLayout": "band",
+  "shopDepth": 24,
+  "volleyballAt": "edge",
+  "basketballAt": "corner",
+  "tableTennisAt": "centre",
+  "chessAt": "centre",
+  "fitnessAt": "edge",
+  "splashPadAt": "centre",
+  "bandstandAt": "centre",
+  "noticeboardAt": "entrance",
+  "bigStatueAt": "centre",
+  "follyAt": "edge",
+  "obeliskAt": "entrance",
+  "triumphalArchAt": "entrance",
+  "sculptureWalkAt": "edge",
+  "terraceGardenAt": "centre",
+  "dressStyle": "livedIn",
+  "dressPaintWear": 100,
+  "dressDesirePaths": true,
+  "dressMulch": true,
+  "dressPaintClear": false
+ },
+ "markers": [
+  {
+   "kind": "access",
+   "ringSegment": 3,
+   "ringT": 0.497,
+   "position": [
+    0,
+    55.333
+   ],
+   "crosswalk": false
+  },
+  {
+   "kind": "access",
+   "ringSegment": 1,
+   "ringT": 0.521,
+   "position": [
+    130,
+    57.333
+   ],
+   "crosswalk": false
+  },
+  {
+   "kind": "access",
+   "ringSegment": 0,
+   "ringT": 0.508,
+   "position": [
+    66,
+    0
+   ],
+   "crosswalk": false
+  }
+ ],
+ "regionTags": [
+  "root"
+ ],
+ "water": null
+}

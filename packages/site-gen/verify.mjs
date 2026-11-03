@@ -112,10 +112,13 @@ const index = JSON.parse(readFileSync(join(GOLDEN, 'index.json'), 'utf8'));
     const inFile = join(GOLDEN, 'plans', `${c.name}.input.json`);
     if (!existsSync(inFile)) badInput++;
   }
+  // 真实烘焙至少 54 份（合成用例是补充，不能替代它）；总数 = bake + synth
+  const bake = index.bySource?.bake ?? index.count;
+  const synth = index.bySource?.synth ?? 0;
   check(
-    'golden 语料 54 份 / 10 通道 / 有输入 dump / 无 elapsedMs',
-    index.count === 54 && index.channels.length === 10 && badChannel === 0 && badInput === 0 && badElapsed === 0,
-    `${index.count} 份 · 缺通道 ${badChannel} · 缺输入 ${badInput} · 有耗时 ${badElapsed}`,
+    'golden 语料完整 / 10 通道 / 有输入 dump / 无 elapsedMs',
+    bake >= 54 && index.count === bake + synth && index.channels.length === 10 && badChannel === 0 && badInput === 0 && badElapsed === 0,
+    `${index.count} 份（真实 ${bake} + 合成 ${synth}）· 缺通道 ${badChannel} · 缺输入 ${badInput} · 有耗时 ${badElapsed}`,
   );
 
   const out = execFileSync('node', [join(HERE, 'src', 'cli', 'compare.ts'), '--selfcheck'], { encoding: 'utf8', cwd: ROOT });
@@ -126,6 +129,10 @@ const index = JSON.parse(readFileSync(join(GOLDEN, 'index.json'), 'utf8'));
 
   const splitOut = execFileSync('node', [join(HERE, 'test', 'split-region.test.ts')], { encoding: 'utf8', cwd: ROOT });
   check('区域分解原语 18 项', /^PASS/m.test(splitOut), (splitOut.trim().split('\n').pop() ?? '').slice(0, 40));
+
+  // 原语复用硬门禁：生成器不许自建第二套几何、不许绕开 boolean.ts
+  const primOut = execFileSync('node', [join(HERE, 'src', 'cli', 'primitives.ts')], { encoding: 'utf8', cwd: ROOT });
+  check('原语复用（无第二套几何）', /^PASS/m.test(primOut), (primOut.trim().split('\n').find((l) => l.startsWith('PASS') || l.startsWith('FAIL')) ?? '').slice(0, 44));
 }
 
 // ── 层 1 + 层 2

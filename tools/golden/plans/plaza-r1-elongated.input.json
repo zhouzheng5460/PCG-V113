@@ -1,0 +1,235 @@
+{
+ "protocol": "placemaker-input/1",
+ "generator": "plaza",
+ "seed": 1234,
+ "shape": {
+  "ring": [
+   [
+    0,
+    0
+   ],
+   [
+    220,
+    0
+   ],
+   [
+    220,
+    45
+   ],
+   [
+    0,
+    45
+   ]
+  ]
+ },
+ "layoutScale": 1,
+ "edgeMargin": 2,
+ "nearbyNets": [
+  {
+   "externalId": 1,
+   "a": [
+    0,
+    -6
+   ],
+   "b": [
+    73.333,
+    -6
+   ],
+   "c": [
+    146.667,
+    -6
+   ],
+   "d": [
+    220,
+    -6
+   ],
+   "width": 12,
+   "category": "road",
+   "hasSidewalk": true,
+   "isOneWay": false,
+   "isHighway": false,
+   "speedLimit": 50
+  },
+  {
+   "externalId": 2,
+   "a": [
+    220,
+    51
+   ],
+   "b": [
+    146.667,
+    51
+   ],
+   "c": [
+    73.333,
+    51
+   ],
+   "d": [
+    0,
+    51
+   ],
+   "width": 12,
+   "category": "road",
+   "hasSidewalk": true,
+   "isOneWay": false,
+   "isHighway": false,
+   "speedLimit": 50
+  }
+ ],
+ "zoneGrids": [],
+ "obstacles": [],
+ "settings": {
+  "centerpiece": "",
+  "centerMode": "single",
+  "palette": "auto",
+  "paletteBase": "auto",
+  "borderSurface": "",
+  "focalSurface": "",
+  "pathSurface": "",
+  "inlaySurface": "",
+  "surface": "",
+  "paveStyle": "auto",
+  "furniture": 0,
+  "centerSize": 5,
+  "centerSpacing": 20,
+  "arrangement": [
+   "bench",
+   "lamp",
+   "bench"
+  ],
+  "arrangementMode": "center",
+  "arrangementGap": 4,
+  "benchAsset": "",
+  "lampAsset": "",
+  "binAsset": "",
+  "treeAsset": "",
+  "bushAsset": "",
+  "planterAsset": "",
+  "flowerbedAsset": "",
+  "kioskAsset": "",
+  "walkable": true,
+  "paving": true,
+  "fence": false,
+  "fenceAsset": "",
+  "design": "classic",
+  "centerKind": "any",
+  "pattern": "border",
+  "lighting": "standard",
+  "bollards": false,
+  "bollardAsset": "",
+  "levels": "flat",
+  "levelCount": 3,
+  "levelHeight": 1.5,
+  "levelPlanters": true,
+  "amphitheatre": false,
+  "rows": 4,
+  "amphiRaise": true,
+  "stageAsset": "",
+  "lawns": 0,
+  "beds": 4,
+  "planters": 0,
+  "treeLayout": "edge",
+  "border": "none",
+  "pool": false,
+  "realWater": false,
+  "poolSurface": "",
+  "jets": false,
+  "jetAsset": "",
+  "shade": 0,
+  "shelterAsset": "",
+  "cafe": 0,
+  "cafeAsset": "",
+  "stalls": 0,
+  "stallAsset": "",
+  "games": false,
+  "performance": false,
+  "shopAmount": "some",
+  "shopLayout": "band",
+  "shopDepth": 24,
+  "volleyballAt": "edge",
+  "basketballAt": "corner",
+  "tableTennisAt": "centre",
+  "chessAt": "centre",
+  "fitnessAt": "edge",
+  "splashPadAt": "centre",
+  "bandstandAt": "centre",
+  "noticeboardAt": "entrance",
+  "bigStatueAt": "centre",
+  "follyAt": "edge",
+  "obeliskAt": "entrance",
+  "triumphalArchAt": "entrance",
+  "sculptureWalkAt": "edge",
+  "terraceGardenAt": "centre",
+  "dressStyle": "livedIn",
+  "dressPaintWear": 100,
+  "dressDesirePaths": true,
+  "dressMulch": true,
+  "dressPaintClear": false
+ },
+ "markers": [
+  {
+   "kind": "access",
+   "ringSegment": 0,
+   "ringT": 0.15,
+   "position": [
+    33,
+    0
+   ],
+   "crosswalk": false
+  },
+  {
+   "kind": "access",
+   "ringSegment": 2,
+   "ringT": 0.153,
+   "position": [
+    186.333,
+    45
+   ],
+   "crosswalk": false
+  },
+  {
+   "kind": "access",
+   "ringSegment": 0,
+   "ringT": 0.505,
+   "position": [
+    111,
+    0
+   ],
+   "crosswalk": false
+  },
+  {
+   "kind": "access",
+   "ringSegment": 0,
+   "ringT": 0.859,
+   "position": [
+    189,
+    0
+   ],
+   "crosswalk": false
+  },
+  {
+   "kind": "access",
+   "ringSegment": 2,
+   "ringT": 0.505,
+   "position": [
+    109,
+    45
+   ],
+   "crosswalk": false
+  },
+  {
+   "kind": "access",
+   "ringSegment": 2,
+   "ringT": 0.856,
+   "position": [
+    31.667,
+    45
+   ],
+   "crosswalk": false
+  }
+ ],
+ "regionTags": [
+  "root"
+ ],
+ "water": null
+}

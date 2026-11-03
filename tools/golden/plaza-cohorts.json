@@ -1,0 +1,51 @@
+{
+ "protocol": "site-gen-cohorts/1",
+ "note": "Plaza 用例的 cohort 在**生成时**就显式声明（用户 2026-11-03 要求），不按面积事后猜。",
+ "cases": {
+  "plaza-r0-rect": {
+   "generator": "plaza",
+   "cohort": "primary",
+   "note": "120×100 规则矩形，四面临街。基线用例：不看几何差异，只看 plaza 的基本构成。"
+  },
+  "plaza-r1-elongated": {
+   "generator": "plaza",
+   "cohort": "primary",
+   "note": "220×45 狭长广场，只在两条长边临街。看关键节点与铺装是否沿长轴组织。"
+  },
+  "plaza-r2-lshape": {
+   "generator": "plaza",
+   "cohort": "primary",
+   "note": "L 形（横腿 120×50 + 竖腿 50×90）。两条腿的走向互相垂直 —— 这是 splitRegion 存在的理由。"
+  },
+  "plaza-r3-concave": {
+   "generator": "plaza",
+   "cohort": "primary",
+   "note": "U 形（120×120 挖掉中间 60×70）。凹口两侧是两条窄臂，路径进不去就是\"断头\"。"
+  },
+  "plaza-r4-multientrance": {
+   "generator": "plaza",
+   "cohort": "primary",
+   "note": "140×110 两侧各 3 个路口（共 6 段街，交错布置）。看是否每个口都被接进铺装。"
+  },
+  "plaza-r5-rotated": {
+   "generator": "plaza",
+   "cohort": "primary",
+   "note": "150×90 矩形整体旋转 25°，街道跟着转。朝向不该被世界坐标轴锁死。"
+  },
+  "plaza-r6-obstacles": {
+   "generator": "plaza",
+   "cohort": "primary",
+   "note": "130×110 地块内有 4 栋既有建筑（各 24×18 ~ 40×22）。验证 boolean 挖洞 + SiteSafety 裁铺装。"
+  },
+  "plaza-s0-tiny": {
+   "generator": "plaza",
+   "cohort": "stress",
+   "note": "约 200 m² 的三角碎地。只验不崩与\"不硬塞\"。"
+  },
+  "plaza-s1-acute": {
+   "generator": "plaza",
+   "cohort": "stress",
+   "note": "160×14 收成一点的锐角楔形（最窄处 < 1 m）。验 boolean / 内缩在退化几何上的稳健性。"
+  }
+ }
+}

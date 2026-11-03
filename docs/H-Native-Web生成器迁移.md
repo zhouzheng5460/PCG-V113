@@ -349,6 +349,49 @@ stallsPerAisleMeter  位/m 车道
 | **P6** | 19 例 golden 比对 + 门禁 | ✅ 已接入，68 分 |
 
 ---
+## 6.5 架构原则：原语扩展需要证据
+
+> **Primitive expansion requires evidence from ≥2 generators,
+> unless the missing operation is a fundamental geometry operation.**
+>
+> 原语扩展需要**至少两个生成器**的证据；唯一例外是"缺失的是一个基础几何运算"
+> （比如布尔差集、内缩）—— 那种东西本来就不该由某个生成器私藏。
+
+这条是硬约束，理由是它挡住的是**我自己的行为模式**：这一路最容易走偏的就是
+"某个生成器不通 → 给它加一个特例 → 下一个生成器再加重写一遍"，最后得到一个 TS 版 Placemaker。
+
+三个执行细则：
+
+1. **先让第二个生成器用现有原语硬做一遍**。做不动的地方记成具体缺口（不是"加个参数"），
+   等**两个**生成器都卡在同一件事上，再动原语层。
+2. **`splitRegion` 已冻结**。18 项测试过了就不要再加 `"plaza"` / `"radial"` / `"garden"` 策略 ——
+   让 Plaza 通过 `evaluator` 去用它。
+3. **生成器不许绕开 `primitives/boolean.ts` 直接 import 布尔内核**，
+   也不许自己写 `clip/offset/difference/inset` 这类函数。
+   这条由 `node packages/site-gen/src/cli/primitives.ts <id>` 检查，已接进门禁（见 §6.6）。
+
+### 6.6 原语复用门禁（`primitives.ts`）
+
+报告每个原生生成器的"复用 vs 自建"：
+
+```
+── parking ──
+  生成器 337 行 · 顶层定义 3 个
+  复用 polygon.ts    230 行 · offsetRing, longestEdge, clipVSlab, rectInFrame, clipHalfPlane
+  复用 boolean.ts    199 行 · differenceRegion, intersectRegion, unionRegions, PolygonRegion
+  复用 parking.ts    483 行 · parkingRows, pathAround, connectAisles
+  复用 scatter.ts    237 行 · rngOf, scatterAlongEdge
+  复用合计 1149 行
+  本地函数：num, bool, parking
+PASS — 1 个生成器，0 处违规
+```
+
+判据不是"行数比"，是**有没有第二套几何**：
+本地出现几何味函数名（`clip|offset|inset|difference|union|intersect|area|split|...`）
+或直接 import `polygon-clipping` → 违规。
+
+---
+
 ## 7. 明确不做
 
 1. **不再逐文件翻译 C#**。要什么行为，先把 golden 的输入输出量出来，再写原语。

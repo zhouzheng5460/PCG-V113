@@ -1,0 +1,39 @@
+{
+ "generator": "plaza",
+ "seed": 1234,
+ "note": "约 200 m² 的三角碎地。只验不崩与\"不硬塞\"。",
+ "settings": {},
+ "shape": {
+  "ring": [
+   [
+    0,
+    0
+   ],
+   [
+    24,
+    0
+   ],
+   [
+    0,
+    18
+   ]
+  ]
+ },
+ "streets": [
+  {
+   "id": 1,
+   "a": [
+    0,
+    -6
+   ],
+   "b": [
+    24,
+    -6
+   ],
+   "width": 8,
+   "category": "road",
+   "sidewalk": true,
+   "speed": 50
+  }
+ ]
+}

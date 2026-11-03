@@ -1,280 +1,401 @@
 {
  "protocol": "site-gen-cohorts/1",
- "note": "显式标注每个 golden 用例的用途。**不要用面积阈值代替这个标注** —— 面积阈值会让\"area>=N\"偷偷变成业务规则。primary=完整设计样本（判保真）；stress=碎块/退化/稳健性样本（只验不崩/确定性/不越界/不重叠/拓扑）。",
+ "note": "显式标注每个 golden 用例的用途。**不要用面积阈值代替这个标注** —— 面积阈值会让\"area>=N\"偷偷变成业务规则。primary=完整设计样本（判保真）；stress=碎块/退化/稳健性样本（只验不崩/确定性/不越界/不重叠/拓扑）。生成时声明的 cohort 优先，其余只对 .partN 自动标 stress。",
  "classes": {
   "primary": "完整设计样本：golden 自己在这类样本上自洽（同族密度一致），可以做保真判据",
   "stress": "碎块 / 退化输入 / 稳健性样本：golden 在此退化，不拿它当保真目标"
+ },
+ "bySource": {
+  "bake": 54,
+  "synth": 9
  },
  "cases": {
   "city24-s8-p0-parking": {
    "generator": "parking",
    "cohort": "primary",
+   "source": "bake",
    "area": 14527
   },
   "city24-s8-p0-pitch": {
    "generator": "pitch",
    "cohort": "primary",
+   "source": "bake",
    "area": 15448
   },
   "city24-s8-p1-parking": {
    "generator": "parking",
    "cohort": "primary",
+   "source": "bake",
    "area": 16614
   },
   "city24-s8-p42-abandonedLot-demolished": {
    "generator": "abandonedLot",
    "cohort": "primary",
+   "source": "bake",
    "area": 12491
   },
   "city24-s8-p42-abandonedLot": {
    "generator": "abandonedLot",
    "cohort": "primary",
+   "source": "bake",
    "area": 12491
   },
   "city24-s8-p42-botanicalGarden": {
    "generator": "botanicalGarden",
    "cohort": "primary",
+   "source": "bake",
    "area": 12491
   },
   "city24-s8-p42-campground": {
    "generator": "campground",
    "cohort": "primary",
+   "source": "bake",
    "area": 12491
   },
   "city24-s8-p42-carYard": {
    "generator": "carYard",
    "cohort": "primary",
+   "source": "bake",
    "area": 12491
   },
   "city24-s8-p42-communityGarden": {
    "generator": "communityGarden",
    "cohort": "primary",
+   "source": "bake",
    "area": 12491
   },
   "city24-s8-p42-dogPark": {
    "generator": "dogPark",
    "cohort": "primary",
+   "source": "bake",
    "area": 12491
   },
   "city24-s8-p42-formalGarden": {
    "generator": "formalGarden",
    "cohort": "primary",
+   "source": "bake",
    "area": 12491
   },
   "city24-s8-p42-greenwayPark": {
    "generator": "greenwayPark",
    "cohort": "primary",
+   "source": "bake",
    "area": 12491
   },
   "city24-s8-p42-junkYard": {
    "generator": "junkYard",
    "cohort": "primary",
+   "source": "bake",
    "area": 12491
   },
   "city24-s8-p42-mallPark": {
    "generator": "mallPark",
    "cohort": "primary",
+   "source": "bake",
    "area": 12491
   },
   "city24-s8-p42-marketSquare": {
    "generator": "marketSquare",
    "cohort": "primary",
+   "source": "bake",
    "area": 12491
   },
   "city24-s8-p42-natureReserve": {
    "generator": "natureReserve",
    "cohort": "primary",
+   "source": "bake",
    "area": 12491
   },
   "city24-s8-p42-outdoorMall": {
    "generator": "outdoorMall",
    "cohort": "primary",
+   "source": "bake",
    "area": 12491
   },
   "city24-s8-p42-park": {
    "generator": "park",
    "cohort": "primary",
+   "source": "bake",
    "area": 12491
   },
   "city24-s8-p42-parking": {
    "generator": "parking",
    "cohort": "primary",
+   "source": "bake",
    "area": 12491
   },
   "city24-s8-p42-picnicGrounds": {
    "generator": "picnicGrounds",
    "cohort": "primary",
+   "source": "bake",
    "area": 12491
   },
   "city24-s8-p42-pitch": {
    "generator": "pitch",
    "cohort": "primary",
+   "source": "bake",
    "area": 12491
   },
   "city24-s8-p42-polishCoastal": {
    "generator": "polishCoastal",
    "cohort": "primary",
+   "source": "bake",
    "area": 12491
   },
   "city24-s8-p42-polishGarden": {
    "generator": "polishGarden",
    "cohort": "primary",
+   "source": "bake",
    "area": 12491
   },
   "city24-s8-p42-polishManicured": {
    "generator": "polishManicured",
    "cohort": "primary",
+   "source": "bake",
    "area": 12491
   },
   "city24-s8-p42-polishMeadow": {
    "generator": "polishMeadow",
    "cohort": "primary",
+   "source": "bake",
    "area": 12491
   },
   "city24-s8-p42-polishNatural": {
    "generator": "polishNatural",
    "cohort": "primary",
+   "source": "bake",
    "area": 12491
   },
   "city24-s8-p42-polishRustic": {
    "generator": "polishRustic",
    "cohort": "primary",
+   "source": "bake",
    "area": 12491
   },
   "city24-s8-p42-polishTidy": {
    "generator": "polishTidy",
    "cohort": "primary",
+   "source": "bake",
    "area": 12491
   },
   "city24-s8-p42-polishYard": {
    "generator": "polishYard",
    "cohort": "primary",
+   "source": "bake",
    "area": 12491
   },
   "city24-s8-p42-pond": {
    "generator": "pond",
    "cohort": "primary",
+   "source": "bake",
    "area": 12491
   },
   "city24-s8-p42-runningTrack": {
    "generator": "runningTrack",
    "cohort": "primary",
+   "source": "bake",
    "area": 12491
   },
   "city24-s8-p42-scrapyard": {
    "generator": "scrapyard",
    "cohort": "primary",
+   "source": "bake",
    "area": 12491
   },
   "city24-s8-p42-shopsPark": {
    "generator": "shopsPark",
    "cohort": "primary",
+   "source": "bake",
    "area": 12491
   },
   "city24-s8-p42-sportsPark": {
    "generator": "sportsPark",
    "cohort": "primary",
+   "source": "bake",
    "area": 12491
   },
   "city24-s8-p42-stripMall": {
    "generator": "stripMall",
    "cohort": "primary",
+   "source": "bake",
    "area": 12491
   },
   "city24-s8-p90-carYard": {
    "generator": "carYard",
    "cohort": "primary",
+   "source": "bake",
    "area": 13123
   },
   "city24-s8-p90-park": {
    "generator": "park",
    "cohort": "primary",
+   "source": "bake",
    "area": 13123
   },
   "city24-s8-p90-parking": {
    "generator": "parking",
    "cohort": "primary",
+   "source": "bake",
    "area": 13123
   },
   "city24-s8-p90-parking.part0": {
    "generator": "parking",
    "cohort": "stress",
+   "source": "bake",
    "area": 1677
   },
   "city24-s8-p90-parking.part1": {
    "generator": "parking",
    "cohort": "stress",
+   "source": "bake",
    "area": 1604
   },
   "city24-s8-p90-parking.part10": {
    "generator": "parking",
    "cohort": "stress",
+   "source": "bake",
    "area": 325
   },
   "city24-s8-p90-parking.part11": {
    "generator": "parking",
    "cohort": "stress",
+   "source": "bake",
    "area": 309
   },
   "city24-s8-p90-parking.part12": {
    "generator": "parking",
    "cohort": "stress",
+   "source": "bake",
    "area": 297
   },
   "city24-s8-p90-parking.part13": {
    "generator": "parking",
    "cohort": "stress",
+   "source": "bake",
    "area": 293
   },
   "city24-s8-p90-parking.part14": {
    "generator": "parking",
    "cohort": "stress",
+   "source": "bake",
    "area": 284
   },
   "city24-s8-p90-parking.part2": {
    "generator": "parking",
    "cohort": "stress",
+   "source": "bake",
    "area": 1335
   },
   "city24-s8-p90-parking.part3": {
    "generator": "parking",
    "cohort": "stress",
+   "source": "bake",
    "area": 1219
   },
   "city24-s8-p90-parking.part4": {
    "generator": "parking",
    "cohort": "stress",
+   "source": "bake",
    "area": 906
   },
   "city24-s8-p90-parking.part5": {
    "generator": "parking",
    "cohort": "stress",
+   "source": "bake",
    "area": 603
   },
   "city24-s8-p90-parking.part6": {
    "generator": "parking",
    "cohort": "stress",
+   "source": "bake",
    "area": 160
   },
   "city24-s8-p90-parking.part7": {
    "generator": "parking",
    "cohort": "stress",
+   "source": "bake",
    "area": 425
   },
   "city24-s8-p90-parking.part8": {
    "generator": "parking",
    "cohort": "stress",
+   "source": "bake",
    "area": 401
   },
   "city24-s8-p90-parking.part9": {
    "generator": "parking",
    "cohort": "stress",
+   "source": "bake",
    "area": 359
   },
   "city24-s8-p90-plaza": {
    "generator": "plaza",
    "cohort": "primary",
+   "source": "bake",
    "area": 13123
+  },
+  "plaza-r0-rect": {
+   "generator": "plaza",
+   "cohort": "primary",
+   "source": "synth",
+   "area": 12000,
+   "note": "120×100 规则矩形，四面临街。基线用例：不看几何差异，只看 plaza 的基本构成。"
+  },
+  "plaza-r1-elongated": {
+   "generator": "plaza",
+   "cohort": "primary",
+   "source": "synth",
+   "area": 9900,
+   "note": "220×45 狭长广场，只在两条长边临街。看关键节点与铺装是否沿长轴组织。"
+  },
+  "plaza-r2-lshape": {
+   "generator": "plaza",
+   "cohort": "primary",
+   "source": "synth",
+   "area": 10500,
+   "note": "L 形（横腿 120×50 + 竖腿 50×90）。两条腿的走向互相垂直 —— 这是 splitRegion 存在的理由。"
+  },
+  "plaza-r3-concave": {
+   "generator": "plaza",
+   "cohort": "primary",
+   "source": "synth",
+   "area": 10200,
+   "note": "U 形（120×120 挖掉中间 60×70）。凹口两侧是两条窄臂，路径进不去就是\"断头\"。"
+  },
+  "plaza-r4-multientrance": {
+   "generator": "plaza",
+   "cohort": "primary",
+   "source": "synth",
+   "area": 15400,
+   "note": "140×110 两侧各 3 个路口（共 6 段街，交错布置）。看是否每个口都被接进铺装。"
+  },
+  "plaza-r5-rotated": {
+   "generator": "plaza",
+   "cohort": "primary",
+   "source": "synth",
+   "area": 13500,
+   "note": "150×90 矩形整体旋转 25°，街道跟着转。朝向不该被世界坐标轴锁死。"
+  },
+  "plaza-r6-obstacles": {
+   "generator": "plaza",
+   "cohort": "primary",
+   "source": "synth",
+   "area": 14300,
+   "note": "130×110 地块内有 4 栋既有建筑（各 24×18 ~ 40×22）。验证 boolean 挖洞 + SiteSafety 裁铺装。"
+  },
+  "plaza-s0-tiny": {
+   "generator": "plaza",
+   "cohort": "stress",
+   "source": "synth",
+   "area": 216,
+   "note": "约 200 m² 的三角碎地。只验不崩与\"不硬塞\"。"
+  },
+  "plaza-s1-acute": {
+   "generator": "plaza",
+   "cohort": "stress",
+   "source": "synth",
+   "area": 1120,
+   "note": "160×14 收成一点的锐角楔形（最窄处 < 1 m）。验 boolean / 内缩在退化几何上的稳健性。"
   }
  }
 }

@@ -1,0 +1,88 @@
+{
+ "generator": "plaza",
+ "seed": 1234,
+ "note": "120×100 规则矩形，四面临街。基线用例：不看几何差异，只看 plaza 的基本构成。",
+ "settings": {},
+ "shape": {
+  "ring": [
+   [
+    0,
+    0
+   ],
+   [
+    120,
+    0
+   ],
+   [
+    120,
+    100
+   ],
+   [
+    0,
+    100
+   ]
+  ]
+ },
+ "streets": [
+  {
+   "id": 1,
+   "a": [
+    0,
+    -6
+   ],
+   "b": [
+    120,
+    -6
+   ],
+   "width": 12,
+   "category": "road",
+   "sidewalk": true,
+   "speed": 50
+  },
+  {
+   "id": 2,
+   "a": [
+    126,
+    0
+   ],
+   "b": [
+    126,
+    100
+   ],
+   "width": 12,
+   "category": "road",
+   "sidewalk": true,
+   "speed": 50
+  },
+  {
+   "id": 3,
+   "a": [
+    120,
+    106
+   ],
+   "b": [
+    0,
+    106
+   ],
+   "width": 12,
+   "category": "road",
+   "sidewalk": true,
+   "speed": 50
+  },
+  {
+   "id": 4,
+   "a": [
+    -6,
+    100
+   ],
+   "b": [
+    -6,
+    0
+   ],
+   "width": 12,
+   "category": "road",
+   "sidewalk": true,
+   "speed": 50
+  }
+ ]
+}

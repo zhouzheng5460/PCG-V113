@@ -21,6 +21,9 @@ import { fileURLToPath } from 'node:url';
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, '..', '..');
 const CASES = join(ROOT, 'tools', 'batch', 'cases');
+/** 合成用例（我们自己造的，用于 golden 语料里没有足够样本的生成器）。与真实烘焙分开记。 */
+const SYNTH = join(ROOT, 'tools', 'batch', 'cases-synth');
+/** 合成用例（我们自己造的，用于 golden 语料里没有足够样本的生成器）。与真实烘焙分开记。 */
 const OUT = join(HERE, 'plans');
 const DLL = join(ROOT, 'tools', 'oracle', 'driver', 'bin', 'Release', 'net6.0', 'PlacemakerDriver.dll');
 
@@ -32,7 +35,17 @@ const args = process.argv.slice(2);
 const only = args.includes('--only') ? args[args.indexOf('--only') + 1] : null;
 const checkOnly = args.includes('--check');
 
-const files = readdirSync(CASES).filter((f) => f.endsWith('.json')).sort();
+// 两处都扫：真实烘焙（tools/batch/cases）+ 合成（tools/batch/cases-synth）。
+// **来源要记进 index**：合成用例是我们按设计意图造的，论证力和真实烘焙不一样，
+// 以后的报告必须能区分，不能混为一谈。
+const scan = (dir, source) =>
+  existsSync(dir)
+    ? readdirSync(dir)
+        .filter((f) => f.endsWith('.json'))
+        .sort()
+        .map((f) => ({ dir, f, source }))
+    : [];
+const files = [...scan(CASES, 'bake'), ...scan(SYNTH, 'synth')];
 const rows = [];
 let emitted = 0;
 
@@ -67,9 +80,10 @@ function emitOnce(caseFile, outFile) {
   return { plan, input };
 }
 
-for (const f of files) {
+for (const entry of files) {
+  const { dir, f, source } = entry;
   const name = f.replace(/\.json$/, '');
-  const caseFile = join(CASES, f);
+  const caseFile = join(dir, f);
   const planFile = join(OUT, `${name}.plan.json`);
   const raw = JSON.parse(readFileSync(caseFile, 'utf8'));
   const generator = raw.generator ?? raw.settings?.generator ?? '?';
@@ -78,19 +92,20 @@ for (const f of files) {
 
   if (checkOnly) {
     if (!existsSync(planFile)) {
-      rows.push({ name, generator, ok: false, why: '快照缺失' });
+      rows.push({ name, generator, source, ok: false, why: '快照缺失' });
       continue;
     }
     const plan = JSON.parse(readFileSync(planFile, 'utf8'));
     const missing = CHANNELS.filter((c) => !Array.isArray(plan[c]));
     const inFile = join(OUT, `${name}.input.json`);
     if (!existsSync(inFile)) {
-      rows.push({ name, generator, ok: false, why: '缺输入快照' });
+      rows.push({ name, generator, source, ok: false, why: '缺输入快照' });
       continue;
     }
     rows.push({
       name,
       generator,
+      source,
       ok: plan.protocol === PROTOCOL && missing.length === 0 && plan.elapsedMs === undefined,
       why: missing.length
         ? `缺通道 ${missing.join(',')}`
@@ -131,6 +146,7 @@ for (const f of files) {
   rows.push({
     name,
     generator,
+    source,
     ok,
     why: !stable
       ? '两次 emit 不一致'
@@ -154,6 +170,8 @@ process.stdout.write('\n');
 // 索引：只存"契约层"的事实（通道条数 + ready），不存几何
 const index = {
   protocol: 'site-gen-golden/1',
+  bySource: rows.reduce((m, r) => ((m[r.source] = (m[r.source] ?? 0) + 1), m), {}),
+  bySource: rows.reduce((m, r) => ((m[r.source] = (m[r.source] ?? 0) + 1), m), {}),
   note: '由 tools/golden/emit.mjs 生成。plans/ 是 C# 的权威输出，用来做原生 TS 实现的对照基准。',
   generatedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
   channels: CHANNELS,

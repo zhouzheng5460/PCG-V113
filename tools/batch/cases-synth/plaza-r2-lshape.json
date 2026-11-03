@@ -1,0 +1,96 @@
+{
+ "generator": "plaza",
+ "seed": 1234,
+ "note": "L 形（横腿 120×50 + 竖腿 50×90）。两条腿的走向互相垂直 —— 这是 splitRegion 存在的理由。",
+ "settings": {},
+ "shape": {
+  "ring": [
+   [
+    0,
+    0
+   ],
+   [
+    120,
+    0
+   ],
+   [
+    120,
+    50
+   ],
+   [
+    50,
+    50
+   ],
+   [
+    50,
+    140
+   ],
+   [
+    0,
+    140
+   ]
+  ]
+ },
+ "streets": [
+  {
+   "id": 1,
+   "a": [
+    0,
+    -6
+   ],
+   "b": [
+    120,
+    -6
+   ],
+   "width": 12,
+   "category": "road",
+   "sidewalk": true,
+   "speed": 50
+  },
+  {
+   "id": 2,
+   "a": [
+    126,
+    0
+   ],
+   "b": [
+    126,
+    50
+   ],
+   "width": 12,
+   "category": "road",
+   "sidewalk": true,
+   "speed": 50
+  },
+  {
+   "id": 3,
+   "a": [
+    -6,
+    140
+   ],
+   "b": [
+    -6,
+    0
+   ],
+   "width": 12,
+   "category": "road",
+   "sidewalk": true,
+   "speed": 50
+  },
+  {
+   "id": 4,
+   "a": [
+    0,
+    146
+   ],
+   "b": [
+    50,
+    146
+   ],
+   "width": 12,
+   "category": "road",
+   "sidewalk": true,
+   "speed": 50
+  }
+ ]
+}
