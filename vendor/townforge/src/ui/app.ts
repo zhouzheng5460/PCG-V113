@@ -667,6 +667,29 @@ function buildLeft(): void {
   renderLegend();
 }
 
+/**
+ * 粗控的**解析结果**（用户 2026-11-03 的第二个约束）。
+ *
+ * 为什么需要："道路密度 = 高"背后到底是哪两个参数？以后出现"高密度这次反而路少"时，
+ * 不该重新去猜 UI→算法的映射。这里把最终生效的值直接摊开，只读、不做交互。
+ */
+function resolvedParamsHtml(): string {
+  const b = state.params.block;
+  const bd = state.params.building;
+  const rows: [string, string][] = [
+    ['城市规模', `nPatches = ${state.nPatches}`],
+    ['道路密度', `parcelPitchM = ${b.parcelPitchM} · parcelTargetA = ${b.parcelTargetA}`],
+    ['建筑密度', `spacingM = ${bd.spacingM} · maxPerParcel = ${bd.maxPerParcel}`],
+    ['绿地比例', `${state.greenLevel} → 约 ${Math.round((state.greenLevel === 'low' ? 0.06 : state.greenLevel === 'mid' ? 0.12 : 0.22) * 100)}% 地块设为 park`],
+    ['城市方向感', `layout = ${state.layout}`],
+    ['建筑高度档', `${state.buildingPreset}`],
+    ['楼高缩放', `×${state.heightScale.toFixed(1)}`],
+  ];
+  return `
+    <div class="grp-label" style="margin-top:10px">解析结果（只读）</div>
+    ${rows.map(([k, v]) => `<div class="row"><label>${k}</label><span class="val" style="font-size:11px">${v}</span></div>`).join('')}`;
+}
+
 /** 图例：颜色 → 用途（规范 §12） */
 function renderLegend(): void {
   const el = document.getElementById('legend');
@@ -1590,7 +1613,7 @@ function buildRight(): void {
     scopeTabsHtml() +
     `<div id="scope-body">${scopeBodyHtml()}</div>` +
     `<details class="sec" id="adv-settings"><summary><span class="dot"></span>高级设置<span class="sec-tag">算法参数 · 显示</span></summary>` +
-    `<div class="sec-body">${displayControlsHtml()}${sel}${city}${road}${guide}${zone}${parcel}${building}${io}</div></details>`;
+    `<div class="sec-body">${displayControlsHtml()}${sel}${city}${road}${guide}${zone}${parcel}${building}${io}${resolvedParamsHtml()}</div></details>`;
 
   bindScopes();
   bindRight();

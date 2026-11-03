@@ -23,6 +23,7 @@ import { NATIVE_GENERATORS } from './src/generators/index.ts';
 import { loadGoldenPlan, loadIndex, loadSiteInput } from './src/golden.ts';
 import { measure } from './src/metrics.ts';
 import { checkParkingReady } from './src/eligibility.ts';
+import { plazaGate } from './src/plaza-gates.ts';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, '..', '..');
@@ -136,7 +137,7 @@ const index = JSON.parse(readFileSync(join(GOLDEN, 'index.json'), 'utf8'));
 }
 
 // ── 层 1 + 层 2
-for (const gen of NATIVE_GENERATORS) {
+for (const gen of NATIVE_GENERATORS.filter((g) => g.id === 'parking')) {
   const cases = index.cases.filter((c) => c.generator === gen.id && c.ok);
   if (!cases.length) {
     check(`${gen.id} 有 golden 用例`, false, '0 份');
@@ -310,6 +311,69 @@ for (const gen of NATIVE_GENERATORS) {
     if (notes.length > 12) console.log(`    … 另有 ${notes.length - 12} 条`);
   }
 }
+
+// ── Plaza（P3.1）：docs/I 定的 7 条 fidelity 判据
+{
+  const gen = NATIVE_GENERATORS.find((g) => g.id === 'plaza');
+  const cases = index.cases.filter((c) => c.generator === 'plaza' && c.ok);
+  if (!gen || !cases.length) {
+    check('plaza 已注册且有 golden 用例', false, `${cases.length} 份`);
+  } else {
+    let crash = 0;
+    let nondet = 0;
+    let coverBad = 0;
+    let overlapBad = 0;
+    let obsBad = 0;
+    let compBad = 0;
+    let largestBad = 0;
+    let accessBad = 0;
+    let objBad = 0;
+    const scores = [];
+    const w = { cov: 0, ov: 0, obs: 0, comp: 0, largest: 1, acc: 1, obj: 1 };
+    for (const c of cases) {
+      const input = loadSiteInput(c.name);
+      let a;
+      let b;
+      try {
+        a = gen.generate(input);
+        b = gen.generate(input);
+      } catch {
+        crash++;
+        continue;
+      }
+      if (JSON.stringify(a) !== JSON.stringify(b)) nondet++;
+      const g = plazaGate(input, a);
+      scores.push(g.score);
+      if (g.usableCoverage < 0.98 || g.usableCoverage > 1.02) coverBad++;
+      if (g.surfaceOverlap > 0.005) overlapBad++;
+      if (g.obstacleOverlap > 1e-6) obsBad++;
+      if (g.pavingComponents < 0 || g.pavingComponents > 2) compBad++;
+      if (g.largestPavedRatio < 0.9) largestBad++;
+      if (g.accessReachable < 0.999) accessBad++;
+      if (g.objectsOutsideObstacles < 0.999) objBad++;
+      w.cov = Math.max(w.cov, Math.abs(g.usableCoverage - 1));
+      w.ov = Math.max(w.ov, g.surfaceOverlap);
+      w.obs = Math.max(w.obs, g.obstacleOverlap);
+      w.comp = Math.max(w.comp, g.pavingComponents);
+      w.largest = Math.min(w.largest, g.largestPavedRatio);
+      w.acc = Math.min(w.acc, g.accessReachable);
+      w.obj = Math.min(w.obj, g.objectsOutsideObstacles);
+    }
+    const avg = Math.round(scores.reduce((a2, v) => a2 + v, 0) / Math.max(1, scores.length));
+    console.log(`\n  [plaza] ${cases.length} 份 · 均分 ${avg}`);
+    check('plaza 不崩溃', crash === 0, `${cases.length - crash}/${cases.length}`);
+    check('plaza deterministic', nondet === 0, `${cases.length - nondet}/${cases.length}`);
+    check('plaza usable 覆盖 98~102%', coverBad === 0, `最大偏差 ${(w.cov * 100).toFixed(2)}%`);
+    check('plaza 铺装重叠 < 0.5%', overlapBad === 0, `最差 ${(w.ov * 100).toFixed(2)}%`);
+    check('plaza 障碍重叠 = 0', obsBad === 0, `最差 ${(w.obs * 100).toFixed(3)}%`);
+    check('plaza 铺装连通块 ≤ 2', compBad === 0, `最差 ${w.comp} 块`);
+    check('plaza 最大铺装块 ≥ 90%', largestBad === 0, `最差 ${(w.largest * 100).toFixed(0)}%`);
+    check('plaza 出入口可达 100%', accessBad === 0, `最差 ${(w.acc * 100).toFixed(0)}%`);
+    check('plaza 物件全在障碍物外', objBad === 0, `最差 ${(w.obj * 100).toFixed(0)}%`);
+    check('plaza primary 均分 ≥ 75', avg >= 75, `实际 ${avg}`);
+  }
+}
+
 
 /**
  * 分数 = **Fidelity Gate 指标**的均值（按档给分）。

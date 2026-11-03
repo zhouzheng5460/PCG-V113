@@ -80,6 +80,14 @@ export interface PlanMetrics {
   stallsServed: number;
 }
 
+/** 面的有效面积：外环 − 洞。带洞的面不能只算外环，否则面积虚高（会把障碍物算成铺装）。 */
+const surfaceArea = (s: { ring: readonly Vec2[]; holes?: readonly (readonly Vec2[])[] }): number =>
+  Math.abs(ringArea(s.ring)) - (s.holes ?? []).reduce((a, h) => a + Math.abs(ringArea(h)), 0);
+
+/** 点是否落在面里（排除洞） */
+const insideSurface = (p: Vec2, s: { ring: readonly Vec2[]; holes?: readonly (readonly Vec2[])[] }): boolean =>
+  pointInRing(p, s.ring) && !(s.holes ?? []).some((h) => pointInRing(p, h));
+
 const addTo = (m: Record<string, number>, k: string | undefined, v: number): void => {
   const key = k ?? '(none)';
   m[key] = (m[key] ?? 0) + v;
@@ -108,7 +116,7 @@ function overlapArea(plan: Plan, b: { minX: number; minY: number; maxX: number; 
       cells++;
       let n = 0;
       for (const s of rings) {
-        if (pointInRing([x, y], s.ring)) {
+        if (insideSurface([x, y], s)) {
           n++;
           if (n >= 2) {
             hit++;
@@ -174,7 +182,7 @@ function connectivity(plan: Plan): { components: number; deadEnds: number; longe
 
 export function measure(plan: Plan): PlanMetrics {
   const surfaceByRole: Record<string, number> = {};
-  for (const s of plan.surfaces) if (s.ring.length >= 3) addTo(surfaceByRole, s.role, ringArea(s.ring));
+  for (const s of plan.surfaces) if (s.ring.length >= 3) addTo(surfaceByRole, s.role, surfaceArea(s));
 
   const netByRole: Record<string, number> = {};
   for (const n of plan.nets) addTo(netByRole, n.role, netLength(n));

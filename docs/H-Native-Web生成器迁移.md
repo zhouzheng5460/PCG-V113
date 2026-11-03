@@ -349,6 +349,68 @@ stallsPerAisleMeter  位/m 车道
 | **P6** | 19 例 golden 比对 + 门禁 | ✅ 已接入，68 分 |
 
 ---
+## 5.2 **Plaza Native V1 — 通过（P3.1）**
+
+```
+Plaza Native V1 = Usable Region + Surface Allocation + Semantic Regions + Decoration
+```
+
+**没有 PathNetwork** —— 这是 P3.0 解剖出来的事实（9/9 例 `nets = 0`），不是省事。
+
+### 管线
+
+```
+site ─ union(obstacles) ─→ usable            （障碍先 union，再一次性 difference）
+usable ─ 内缩窄带 ─→ green（贴边）
+usable ─ 减 green ─→ paved（主面，可能带洞）
+paved 的内缩 ─→ core（focus 落点）
+edge = 比 green 宽一圈的带（仍属铺装，放沿边设施）
+accessPoint → 只要求落在/贴近铺装连通体（不产中心线）
+scatter → 树/灌木/灯/椅/focus，逐个过滤 "在铺装里 且 不在障碍物里"
+```
+
+### 契约变更：`PlanSurface.holes`（D-078）
+
+布尔差集减掉**内部**障碍物，数学结果就是**一个带洞的多边形**。序列化层如果只支持单环，
+就只能把洞切开重排（tessellation）—— 而那是**渲染的需要**，不是设计结构。
+所以 `PlanSurface` 增加可选 `holes`，metrics 的面积与覆盖都扣洞。
+这正好落在 docs/I §2.1 说的三层拓扑上：
+
+```
+Design topology      带洞的区域（1 个）
+Serialization        同一个区域 + holes（不切碎）
+Render               triangulation（由下游负责）
+```
+
+### 门禁（`npm run sgen:check`，plaza 段 10 项全绿）
+
+| 判据 | 阈值 | 实测 |
+| --- | --- | --- |
+| 不崩溃 / deterministic | 10/10 | ✅ |
+| usable 覆盖 | 98~102% | **最大偏差 0.00%** |
+| 铺装重叠 | < 0.5% | **0.00%** |
+| 障碍重叠 | = 0 | **0.000%** |
+| 铺装连通块 | ≤ 2 | **1** |
+| 最大铺装块 | ≥ 90% | **100%** |
+| 出入口可达 | 100% | **100%** |
+| 物件全在障碍物外 | 100% | **100%** |
+| primary 均分 | ≥ 75 | **100**（10 例） |
+
+### 原语复用（硬门禁）
+
+```
+── plaza ──
+  生成器 223 行 · 顶层定义 5 个
+  复用 polygon.ts 230 · boolean.ts 204 · scatter.ts 237（合计 671 行）
+  本地函数：num, asRegion, toSurfaceRegion, inObstacles, plaza
+PASS — 2 个生成器，0 处违规
+```
+
+**0 个新增几何原语**。`plaza.ts` 里全是策略组合（内缩多少、绿带多宽、谁放哪），
+没有一行 `clip / offset / difference / intersect` 的自研实现 —— 这是这一轮真正要验的东西。
+
+---
+
 ## 6.5 架构原则：原语扩展需要证据
 
 > **Primitive expansion requires evidence from ≥2 generators,

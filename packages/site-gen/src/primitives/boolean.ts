@@ -134,13 +134,18 @@ function normalizeOut(polys: readonly Ring[][]): PolygonRegion[] {
 function toInput(regions: readonly PolygonRegion[]): XY[][][] {
   const out: XY[][][] = [];
   for (const r of regions) {
-    const outer = cleanRing(r.outer);
-    if (outer.length < 3 || Math.abs(ringArea(outer)) < AREA_EPS) continue;
+    const raw = cleanRing(r.outer);
+    if (raw.length < 3 || Math.abs(ringArea(raw)) < AREA_EPS) continue;
+    // **入口也要归一绕序**：外环 CCW、洞 CW。
+    // 不归一的话，方向相反的输入（比如 C# 那边给出的障碍物四边形）会被内核按"洞"解释，
+    // 于是 `difference` 什么都不减 —— 实测 plaza 带障碍物那两例因此覆盖 174.9%、障碍重叠 74.85%。
+    const outer = orient(raw, true);
     const rings: XY[][] = [[...outer.map(([x, y]) => [x, y] as XY), [outer[0][0], outer[0][1]] as XY]];
     for (const h of r.holes ?? []) {
-      const c = cleanRing(h);
-      if (c.length < 3 || Math.abs(ringArea(c)) < AREA_EPS) continue;
-      rings.push([...c.map(([x, y]) => [x, y] as XY), [c[0][0], c[0][1]] as XY]);
+      const ch = cleanRing(h);
+      if (ch.length < 3 || Math.abs(ringArea(ch)) < AREA_EPS) continue;
+      const hh = orient(ch, false);
+      rings.push([...hh.map(([x, y]) => [x, y] as XY), [hh[0][0], hh[0][1]] as XY]);
     }
     out.push(rings);
   }

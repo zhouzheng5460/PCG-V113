@@ -5,8 +5,9 @@
 
 import type { SiteGenerator } from '../types.ts';
 import { parking } from './parking.ts';
+import { plaza } from './plaza.ts';
 
-export const NATIVE_GENERATORS: readonly SiteGenerator[] = [parking];
+export const NATIVE_GENERATORS: readonly SiteGenerator[] = [parking, plaza];
 
 export const NATIVE_BY_ID: ReadonlyMap<string, SiteGenerator> = new Map(
   NATIVE_GENERATORS.map((g) => [g.id, g]),

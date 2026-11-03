@@ -224,6 +224,16 @@ export interface PlanSurface {
   role: SurfaceRole;
   y?: number;
   ring: Vec2[];
+  /**
+   * 洞（可选）。
+   *
+   * 为什么要有它：布尔差集减掉**内部**障碍物，数学结果就是"一个带洞的多边形"。
+   * 序列化层如果只支持单环，就只能把这个洞切开重排（tessellation），
+   * 而那是**渲染/序列化的需要**，不是设计结构（docs/I §2.1：142 块面其实是一个连通体）。
+   * 所以契约直接支持洞：设计拓扑 → 序列化拓扑 这一步不再需要"切 138 刀"。
+   * golden 的面不带洞（它的 SiteSafety 会把面裁成多块），所以这是**可选**字段，向后兼容。
+   */
+  holes?: Vec2[][];
   category?: string;
 }
 
