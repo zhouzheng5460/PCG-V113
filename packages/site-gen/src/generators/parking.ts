@@ -20,7 +20,8 @@
 import { area as ringArea, pointInRing, type Vec2 } from '../../../plan-ir/src/geom.ts';
 import { emptyPlan } from '../backends.ts';
 import { offsetRing, longestEdge, clipVSlab, rectInFrame, clipHalfPlane } from '../primitives/polygon.ts';
-import { differenceRegion, intersectRegion, unionRegions, outerRings, type PolygonRegion } from '../primitives/boolean.ts';
+import { differenceRegion, intersectRegion, unionRegions, type PolygonRegion } from '../primitives/boolean.ts';
+import { checkParkingReady } from '../eligibility.ts';
 import { parkingRows, pathAround, connectAisles } from '../primitives/parking.ts';
 import { rngOf, scatterAlongEdge } from '../primitives/scatter.ts';
 import type { Plan, SiteGenerator, SiteInput } from '../types.ts';
@@ -66,15 +67,25 @@ export const parking: SiteGenerator = {
     const chargerShare = num(s.chargerShare, 0.02);
     const islandEvery = Math.max(0, Math.round(num(s.islandEveryStalls, 5)));
 
-    // ── ready：停车场至少要有一个接街的车行口，否则车开不进来
-    // （和 Placemaker 的 `CheckReady` 一个语义：没有出入口 → 不 ready，而不是"给个空的停车场"）
-    const entrances = input.markers.filter((m) => m.kind.startsWith('entrance') || m.kind.startsWith('access'));
-    if (!entrances.length) {
-      plan.ready = false;
-      plan.readyKey = 'noEntrance|needAccessPoint';
-      plan.issues.push({ severity: 'warning', key: 'access.none' });
+    // ── 生成资格：**第一道门**，独立于生成（见 `eligibility.ts`）
+    //
+    // 两个字段分开用：
+    //   · `ready`   —— 图层能不能跑，镜像 oracle 语义
+    //   · `feasible` —— 几何上有没有地方排停车模组，决定"落车位"还是"只铺地"
+    const elig = checkParkingReady(input);
+    plan.ready = elig.ready;
+    if (!elig.ready) {
+      plan.readyKey = elig.reasons[0] ?? 'notReady';
+      for (const r of elig.reasons) plan.issues.push({ severity: 'warning', key: `ready.${r}` });
       return plan;
     }
+    const entrances = input.markers.filter((m) => m.kind.startsWith('entrance') || m.kind.startsWith('access'));
+    // 不可行就**只铺地、不排车位**：一块 6~14 m 有效进深的碎地硬塞 10~18 个位，
+    // 正是"Placemaker 不干、我硬干"的来源（D-064）。原因要写进 issues，不许静默。
+    if (!elig.feasible) {
+      for (const r of elig.reasons) plan.issues.push({ severity: 'info', key: `infeasible.${r}` });
+    }
+    const feasible = elig.feasible;
 
     // ── 1. 可用的地：内缩退线 + 环路
     //
@@ -99,7 +110,7 @@ export const parking: SiteGenerator = {
     if (work.clamped) plan.issues.push({ severity: 'info', key: 'offset.clamped', args: [setback] });
 
     // ── 2. 行带 + 车位
-    const layout = parkingRows(work.ring, {
+    const layout = feasible ? parkingRows(work.ring, {
       stallWidth,
       stallLength,
       aisleWidth,
@@ -107,7 +118,7 @@ export const parking: SiteGenerator = {
       maxPerRow: crossEvery,
       doubleLoaded,
       islandEveryStalls: islandEvery,
-    });
+    }) : { frame: { origin: [0, 0] as Vec2, u: [1, 0] as Vec2, v: [0, 1] as Vec2 }, aisles: [], stalls: [], bands: [], vSpan: { v0: 0, v1: 0 }, usedArea: 0, notes: [] };
     for (const n of layout.notes) plan.issues.push({ severity: 'info', key: 'parking.note', args: [n] });
 
     // ── 3. 环路 + 车道 + 连网 + 接出入口
@@ -214,23 +225,40 @@ export const parking: SiteGenerator = {
     } else {
       const front = layout.vSpan.v0;
       const back = layout.vSpan.v1;
-      for (const g of [clipVSlab(ring, fr, null, front), clipVSlab(ring, fr, back, null)]) {
-        if (g) plan.surfaces.push({ role: 'grass', ring: g, category: 'lawn' });
-      }
       const slab = clipVSlab(ring, fr, front, back);
+      // 前后边角草地：**用差集按构造保证互补**，而不是两次独立的半平面裁剪。
+      // 独立裁剪在凹多边形上会多算（实测 part1：草地 124.6 + 沥青 1507.2 = 1631.8
+      // vs 地块 1604.2，多出 27.6 m² = 1.73% 重叠）。差集的结果恒等于 ring − slab。
+      if (slab) {
+        for (const g of differenceRegion({ outer: ring }, [{ outer: slab }])) {
+          plan.surfaces.push({ role: 'grass', ring: g.outer, category: 'lawn' });
+        }
+      }
       if (!slab) {
         plan.surfaces.push({ role: 'asphalt', ring, category: 'parking' });
       } else {
         // **P1：用布尔运算把铺装切开、绿带成面**。
         // 顺序很重要：走廊先**裁到铺装里**（`intersectRegion`），再拿去当 cutter。
         // 直接拿未裁的矩形当 cutter 会让草地超出铺装 —— 实测铺装总面积 +13%/+58%（D-063）。
-        const cut: PolygonRegion[] = [];
+        const raw: PolygonRegion[] = [];
         for (const c of corridors) {
-          for (const piece of intersectRegion({ outer: slab }, c)) cut.push(piece);
+          for (const piece of intersectRegion({ outer: slab }, c)) raw.push(piece);
         }
+        // 先把 cutter 合并成一个再减：逐块传进差集会在拼缝处出伪影。
+        const cut = raw.length ? unionRegions(raw) : [];
         const paved = cut.length ? differenceRegion({ outer: slab }, cut) : [{ outer: slab }];
         for (const r of paved) plan.surfaces.push({ role: 'asphalt', ring: r.outer, category: 'parking' });
-        for (const c of cut) plan.surfaces.push({ role: 'grass', ring: c.outer, category: 'planting' });
+
+        // 草地 = **铺装外环的补集**（按构造算，不做分类）。
+        //
+        // 为什么不能"把走廊逐条出成草地"：
+        //   · 走廊横穿铺装时会被差集"吃进"外环的缺口中（沥青分成两块、走廊既不在外环里也不是洞）；
+        //   · 走廊没通到边界时又会变成一个**洞**，而 `PlanSurface.ring` 是单环、没有洞的概念。
+        // 两种情况混在一起逐条判断必错（实测：只出 outer → 重叠 1.75%；只出 holes → 覆盖掉到 81%）。
+        // 直接算补集，两种情况一次覆盖，且"沥青 + 草地 = slab"由构造保证。
+        const asphaltOnly = paved.map((r) => ({ outer: r.outer }));
+        const gaps = differenceRegion({ outer: slab }, asphaltOnly);
+        for (const g of gaps) plan.surfaces.push({ role: 'grass', ring: g.outer, category: 'planting' });
       }
     }
 

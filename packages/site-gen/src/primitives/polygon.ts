@@ -174,3 +174,56 @@ export function rectInFrame(
   ];
   return [at(u0, v0), at(u1, v0), at(u1, v1), at(u0, v1)];
 }
+
+/**
+ * 最小面积外接矩形（旋转卡壳的朴素版：把每条边当一次轴）。
+ *
+ * 为什么需要它：判断"这块地能不能排下停车模组"，用**轴对齐包围盒**会被斜边骗
+ * （一条 45° 的细长地块，bbox 又大又方，实际没有一个方向放得下行带）。
+ * 最小面积外接矩形给出的两条边才是"这块地真正的长与宽"。
+ *
+ * 返回 `{ w, h, u, angle }`：`w >= h`，`u` 是长边方向的单位向量。
+ */
+export function minAreaBox(ring: readonly Vec2[]): { w: number; h: number; u: Vec2; cx: number; cy: number } {
+  let best: { area: number; w: number; h: number; u: Vec2; cx: number; cy: number } | null = null;
+  const n = ring.length;
+  for (let i = 0; i < n; i++) {
+    const a = ring[i];
+    const b = ring[(i + 1) % n];
+    const dx = b[0] - a[0];
+    const dy = b[1] - a[1];
+    const l = Math.hypot(dx, dy);
+    if (l < 1e-9) continue;
+    const ux = dx / l;
+    const uy = dy / l;
+    let minU = Infinity;
+    let maxU = -Infinity;
+    let minV = Infinity;
+    let maxV = -Infinity;
+    for (const p of ring) {
+      const pu = p[0] * ux + p[1] * uy;
+      const pv = -p[0] * uy + p[1] * ux;
+      if (pu < minU) minU = pu;
+      if (pu > maxU) maxU = pu;
+      if (pv < minV) minV = pv;
+      if (pv > maxV) maxV = pv;
+    }
+    const area = (maxU - minU) * (maxV - minV);
+    if (!best || area < best.area) {
+      const cu = (minU + maxU) / 2;
+      const cv = (minV + maxV) / 2;
+      best = {
+        area,
+        w: maxU - minU,
+        h: maxV - minV,
+        u: [ux, uy],
+        cx: cu * ux - cv * uy,
+        cy: cu * uy + cv * ux,
+      };
+    }
+  }
+  if (!best) return { w: 0, h: 0, u: [1, 0], cx: 0, cy: 0 };
+  // 统一成 w >= h
+  if (best.w >= best.h) return { w: best.w, h: best.h, u: best.u, cx: best.cx, cy: best.cy };
+  return { w: best.h, h: best.w, u: [-best.u[1], best.u[0]], cx: best.cx, cy: best.cy };
+}
