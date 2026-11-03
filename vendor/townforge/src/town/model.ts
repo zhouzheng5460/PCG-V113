@@ -297,6 +297,9 @@ export class Model {
    */
   cityAxis: Pt | null = null;
 
+  /** C0.1 规划片区（每次 generate 重算；诊断与 C0.2 的场都以它为输入） */
+  districts: import('./districts').UrbanDistrict[] = [];
+
   /**
    * 单条路的红线宽覆盖（键 = edgeKey，值 = 世界单位宽）。
    *
@@ -1156,6 +1159,8 @@ export class Model {
     }
 
     const plan = planLandUse(this);
+    // C0.1：片区是规划层的产物，挂到 model 上供诊断/UI/后续场使用
+    this.districts = plan.districts;
 
     for (const patch of this.patches) {
       // 手动覆盖优先于自动分档：把 override 挂回 Patch，下游（地块内容层、

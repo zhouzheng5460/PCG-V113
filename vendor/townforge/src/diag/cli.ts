@@ -48,7 +48,8 @@ line(`\n=== 城市诊断 · n=${n} seed=${seed} · ${m.patches} 街区 / ${m.bui
 
 line('── 1. 用途连贯性（landUseCoherence）──');
 line(`  相邻同用途比例（邻居里同用途的均值）   ${pc(m.neighborUseAgreement)}   ← 低于 50% 基本就是撒芝麻`);
-line(`  代理片区纯度（k-means k=6 内最大用途）  ${pc(m.districtPurity)}   ← 目标 ≥ 70%`);
+line(`  片区纯度（按地块加权）                ${pc(m.districtPurity)}   ← 目标 ≥ 70%（来源 ${m.puritySource === 'real' ? '真实片区' : 'k-means 代理'}）`);
+line(`  片区构成  ${m.districts.count} 个 · ${Object.entries(m.districts.byType).map(([k, v]) => `${k}×${v}`).join(' ') || '—'}`);
 line(`  用途占比  ${Object.entries(m.useShare).map(([k, v]) => `${USE_LABEL[k as LandUse] ?? k} ${pc(v as number)}`).join(' · ') || '—'}`);
 
 line('\n── 2. 相邻高差（neighborHeightJump）──');
@@ -196,8 +197,9 @@ const html = `<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"/>
 <section>
   <table>
     <tr><th>指标</th><th>值</th><th>判据</th></tr>
-    <tr><td>相邻同用途比例</td><td class="v ${m.neighborUseAgreement < 0.5 ? 'bad' : ''}">${pc(m.neighborUseAgreement)}</td><td>目标 ≥ 70%</td></tr>
-    <tr><td>代理片区纯度</td><td class="v ${m.districtPurity < 0.7 ? 'bad' : ''}">${pc(m.districtPurity)}</td><td>目标 ≥ 70%</td></tr>
+    <tr><td>相邻同用途比例</td><td class="v ${m.neighborUseAgreement < 0.5 ? 'warn' : ''}">${pc(m.neighborUseAgreement)}</td><td>参考 ≥ 50%（跨片边界必然异用途）</td></tr>
+    <tr><td>片区纯度（${m.puritySource === 'real' ? '真实片区' : 'k-means 代理'}）</td><td class="v ${m.districtPurity < 0.7 ? 'bad' : ''}">${pc(m.districtPurity)}</td><td>目标 ≥ 70%</td></tr>
+    <tr><td>片区构成</td><td class="v">${m.districts.count} 个</td><td>${Object.entries(m.districts.byType).map(([k, v]) => `${k}×${v}`).join(' ') || '—'}</td></tr>
     <tr><td>相邻高差 p90</td><td class="v ${m.heightJump.p90 > 40 ? 'bad' : ''}">${f(m.heightJump.p90)} m</td><td>目标 ≤ 40 m</td></tr>
     <tr><td>主干占比</td><td class="v ${m.roadByClass.arterial.share < 0.05 ? 'warn' : ''}">${pc(m.roadByClass.arterial.share)}</td><td>期望 10% 量级</td></tr>
     <tr><td>支路占比</td><td class="v">${pc(m.roadByClass.local.share)}</td><td>期望 30~50%</td></tr>

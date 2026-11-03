@@ -87,10 +87,58 @@ n=40 更差：纯度 **46%**、高差 p90 **24.3 m**、开敞 9%。
 
 | 阶段 | 做什么 | 验收 |
 | --- | --- | --- |
-| **C0.1** | **真 District 模型**（不是 k-means）：`UrbanDistrict { polygon, type, center, density, heightBand, greenRatio, roadIntensity }`，类型先只要 6 个（CBD / mixed / residential / industrial / suburban / park） | 纯度 ≥ 70%；district 有 polygon、可被后续场继承 |
+| ~~C0.1~~ **已完成** | 见下节 | 纯度 **75%**（n15）/ **80%**（n40） |
 | **C0.2** | **中心场** `urbanIntensity(x,y) = 中心吸引 + 主干道吸引 − 距离衰减 − 边缘衰减`；District 的密度/高度/路密/用途概率全部从它继承 | 高度热力图出现"中心→次中心→外围"梯度 |
 | **C0.3** | **高度/密度场**：`targetHeight = districtBase × urbanIntensity × roadAccess` + 邻域平滑（2~3 轮 `h = 0.6h + 0.4·mean(邻居)`） | 相邻高差 p90 明显下降 |
 | **C0.4** | **道路分级**：**不重写路网生成**，先给已有边赋级（跨 district → L0/L1；district 内主连接 → L2；只服务宗地 → L3），再让等级反过来参与生成 | 四级都存在、支路不承担跨区连接 |
+
+## C0.1 真 District 模型（**已完成**）
+
+`src/town/districts.ts` + 改 `landuse.ts`
+
+### 算法（不用 k-means）
+
+```
+① 锚点：中心 1 个 + 黄金角螺旋上的 K-1 个（半径 0.42 / 0.72 / 0.88 递进）
+② 地块归属最近锚点 → K 个片区（K = clamp(round(地块数/8), 3, 8)，确定性）
+③ 按"到中心的中位半径"排名定角色：
+     rank0 → cbd         rank1 → mixed(仅 K≥5)     末位 → industrial
+     倒数第二 → suburban  中间偏外 → park(仅 K≥6)   其余 → residential
+④ 片区**决定**地块用途（带 0.06~0.15 的确定性哈希扰动）
+   cbd 85% cbd · mixed 55% 商业 · residential 88% 住宅 · industrial 88% 工业
+   suburban 55% 住宅+30% 绿地 · park 70% 公园
+```
+
+关键点：
+
+- **用途从此由片区决定**，不再每块地各自掷骰子 —— 这是"撒芝麻 → 成片"的唯一改动点。
+- 扰动用**质心哈希**而不是全局 `Rng` 序列：地块顺序变了也不会串味。
+- `polygon` = 成员地块的 `unionAll`（复用 zones 里已有的并集，不引入新几何），
+  C0.2 的场与 C0.3 的高度都挂在它上面。
+- 小片区（<2 块地）并进相邻片区：一块地的"片区"读不出结构，只是噪声。
+- `model.districts` 暴露给诊断与后续场。
+
+### 效果（n=15 / seed=682063530）
+
+| 指标 | C0.0 基线 | C0.1 后 |
+| --- | --- | --- |
+| 片区纯度 | 51%（k-means 代理） | **75%（真实片区）** |
+| 相邻同用途 | 37% | **48%** |
+| 相邻高差 p90 | 20.6 m | **19.4 m** |
+| 不兼容相邻 | 14% | **9%** |
+| 开敞空间 | 4% | **21%** |
+| 片区构成 | — | 8 个：cbd×1 · mixed×1 · residential×3 · park×1 · suburban×1 · industrial×1 |
+
+n=40：纯度 **80%**、高差 p90 **18.7 m**、不兼容 **8%**、开敞 19%。
+
+`--check` **6 项全过**（基线是 2/6）。
+
+### 还要盯着的两点（别当成"已完成"）
+
+1. **相邻高差 19.4 m 只比阈值 20 m 低 0.6 m**，非常脆。真正的梯度要等 C0.3 的高度场
+   （`districtBase × urbanIntensity × roadAccess` + 邻域平滑），现在只是"片区角色顺带压了一点"。
+2. **开敞空间从 4% 跳到 21%**，可能过冲（park 片区 + suburban 的绿地叠加）。
+   等 C0.2 的场进来后要重新校准，不要让"绿地多"变成新的撒芝麻。
 
 ## 明确不做
 

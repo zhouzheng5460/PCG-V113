@@ -54,8 +54,16 @@ export interface UrbanMetrics {
   useShare: Partial<Record<LandUse, number>>;
   /** 每块地"邻居里同用途的比例"的均值 —— 0.5 以下基本就是撒芝麻 */
   neighborUseAgreement: number;
-  /** 代理片区（k-means k=6）内的最大用途占比均值 —— 没有真片区模型时的替代口径 */
+  /**
+   * 片区纯度：片区内最大用途占比的（按地块数加权）均值。
+   *
+   * C0.1 起用**真实规划片区**（`model.districts`）；
+   * 拿不到时退回 k-means 代理口径，并在 `puritySource` 里标出来 —— 别把代理当结论。
+   */
   districtPurity: number;
+  puritySource: 'real' | 'proxy';
+  /** 真实片区的构成 */
+  districts: { count: number; byType: Record<string, number> };
   /** 相邻但用途不同的地块对里，"不兼容"组合的占比 */
   districtTransition: { pairs: number; incompatible: number; share: number };
 
@@ -267,17 +275,41 @@ export function urbanMetrics(model: Model, opts: { clusterK?: number } = {}): Ur
   const useShare: Partial<Record<LandUse, number>> = {};
   for (const u of USE_ALL) if (tally.has(u)) useShare[u] = (tally.get(u) as number) / totalUse;
 
-  // 代理片区纯度
-  const clusters = proxyClusters(model, opts.clusterK ?? 6);
-  const purities = clusters.map((g) => {
-    const t = new Map<LandUse, number>();
-    for (const p of g) {
-      const u = useOf(p);
-      if (u) t.set(u, (t.get(u) ?? 0) + 1);
+  // 片区纯度：优先用真实片区（C0.1），拿不到才退回 k-means 代理
+  const real = model.districts ?? [];
+  let purities: number[] = [];
+  let weights: number[] = [];
+  let puritySource: 'real' | 'proxy' = 'real';
+  const byType: Record<string, number> = {};
+  if (real.length) {
+    for (const d of real) {
+      const t = new Map<LandUse, number>();
+      for (const p of d.patches) {
+        const u = useOf(p);
+        if (u) t.set(u, (t.get(u) ?? 0) + 1);
+      }
+      const tot = [...t.values()].reduce((a, b) => a + b, 0);
+      if (!tot) continue;
+      purities.push(Math.max(...t.values()) / tot);
+      weights.push(tot); // 按地块数加权：大片区更能代表城市
+      byType[d.type] = (byType[d.type] ?? 0) + 1;
     }
-    const tot = [...t.values()].reduce((a, b) => a + b, 0);
-    return tot ? Math.max(...t.values()) / tot : 0;
-  });
+  } else {
+    puritySource = 'proxy';
+    const clusters = proxyClusters(model, opts.clusterK ?? 6);
+    purities = clusters.map((g) => {
+      const t = new Map<LandUse, number>();
+      for (const p of g) {
+        const u = useOf(p);
+        if (u) t.set(u, (t.get(u) ?? 0) + 1);
+      }
+      const tot = [...t.values()].reduce((a, b) => a + b, 0);
+      return tot ? Math.max(...t.values()) / tot : 0;
+    });
+    weights = purities.map(() => 1);
+  }
+  const wsum = weights.reduce((a, b) => a + b, 0) || 1;
+  const districtPurity = purities.reduce((a, p, i) => a + p * weights[i], 0) / wsum;
 
   // 道路
   const edges = uniqueEdges(model);
@@ -340,7 +372,9 @@ export function urbanMetrics(model: Model, opts: { clusterK?: number } = {}): Ur
     heightJump: { mean: mean(jumps), p50: pct(jumps, 0.5), p90: pct(jumps, 0.9), max: jumps.length ? Math.max(...jumps) : 0, pairs: jumps.length },
     useShare,
     neighborUseAgreement: agreementN ? agreementSum / agreementN : 0,
-    districtPurity: mean(purities),
+    districtPurity,
+    puritySource,
+    districts: { count: real.length, byType },
     districtTransition: { pairs: usePairs, incompatible, share: usePairs ? incompatible / usePairs : 0 },
     roadLength,
     roadByClass,

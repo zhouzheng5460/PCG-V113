@@ -15,6 +15,7 @@ import type { Model } from './model';
 import type { Patch } from './patch';
 import type { LandUse } from '../scene/types';
 import { USE_COLOR } from '../scene/palette';
+import { planDistricts, districtMap, useForDistrict, type UrbanDistrict } from './districts';
 
 /** 地块是否有一条边被主干道覆盖 —— 决定沿街商业的落位 */
 export function frontsArterial(model: Model, patch: Patch): boolean {
@@ -30,6 +31,8 @@ export interface UsePlan {
   use: Map<Patch, LandUse>;
   /** 归一化半径（0 = 城市中心，1 = 城市边缘），UI 与内容生成都要用 */
   radius: Map<Patch, number>;
+  /** C0.1：真实规划片区（用途由它决定，而不是每块地各自抽签） */
+  districts: UrbanDistrict[];
 }
 
 export function planLandUse(model: Model): UsePlan {
@@ -41,7 +44,12 @@ export function planLandUse(model: Model): UsePlan {
   // 内容是"封闭地块 + 地坪、无建筑"，见 modern.ts 的 planReserved。
   const reserved = model.patches.filter((p) => p.blocked);
   const all = model.patches.filter((p) => !p.blocked);
-  if (all.length === 0 && reserved.length === 0) return { use, radius };
+  if (all.length === 0 && reserved.length === 0) return { use, radius, districts: [] };
+
+  // C0.1：先划片区，再让**片区**决定用途。
+  // 以前是每块地按半径分位 + 掷骰子，结果就是"撒芝麻"（相邻同用途只有 37%）。
+  const districts = planDistricts(model);
+  const dm = districtMap(districts);
 
   const R = Math.max(model.cityRadius, 1);
 
@@ -76,6 +84,14 @@ export function planLandUse(model: Model): UsePlan {
     const q = rank.get(patch)!;
     const front = frontsArterial(model, patch);
     let u: LandUse;
+
+    const dist = dm.get(patch);
+    if (dist) {
+      // 片区决定用途（广场例外：它是城市焦点，固定 civic）
+      u = patch === model.plaza ? 'civic' : useForDistrict(dist, patch);
+      use.set(patch, u);
+      continue;
+    }
 
     if (patch === model.plaza) {
       u = 'civic';
@@ -126,7 +142,7 @@ export function planLandUse(model: Model): UsePlan {
     if (outer.length > 0 && radius.get(outer[0])! > 0.55) use.set(outer[0], 'industrial');
   }
 
-  return { use, radius };
+  return { use, radius, districts };
 }
 
 /** 用途 → 中文名（UI 与导出分组都用） */
