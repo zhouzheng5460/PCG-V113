@@ -66,6 +66,25 @@ function check(name, cond, detail = '') {
 const COHORTS = JSON.parse(readFileSync(join(GOLDEN, 'cohorts.json'), 'utf8'));
 const cohortOf = (name) => COHORTS.cases[name]?.cohort ?? 'primary';
 
+/**
+ * 指标分三层（用户 2026-11-03 拍板 B）：
+ *
+ * | 层 | 指标 | 作用 |
+ * | --- | --- | --- |
+ * | **Fidelity Gate** | productiveAisle · stalls · surface coverage · overlap · connectedComponents | 负责 PASS/FAIL |
+ * | **Quality Diagnostic** | deadAisleRatio · stallsPerAisleMeter · danglingEnds · fragmentation | 只打印，不判 |
+ * | **Oracle Observation** | netTotal | 只显示 Δ，不判 |
+ *
+ * 为什么把 `netTotal` 降级：它同时奖励**有效车道**和**无效空转车道**，表达不了我们想保真的设计能力。
+ * p0 是干净证据 —— golden 1124 m 里 18% 是空转，native 968 m 里只有 10%；
+ * 为了把 968 补到 1124 而制造 150 m 空转，模型反而变差。
+ * **降级不等于藏起来**：Δ 照样显示，只是明确声明"这种差异不是我们希望消除的差异"。
+ *
+ * `danglingEnds` 同理：p0 的 6 个悬空端 = 2 个出入口/服务端 + 4 个外圈行端，
+ * 这是**合法的梯形停车网络**，不是断网。为了复制 golden 的闭环要付出 +35% 车道 + 占地 + 降低效率，
+ * 是明显的负优化。真正该 gate 的是"能不能通"：连通块数 + 出入口可达 + 行带可达。
+ */
+
 /** 阈值（用户定的阶梯） */
 const T = {
   overlap: 0.005,
@@ -104,6 +123,9 @@ const index = JSON.parse(readFileSync(join(GOLDEN, 'index.json'), 'utf8'));
 
   const boolOut = execFileSync('node', [join(HERE, 'test', 'boolean.test.ts')], { encoding: 'utf8', cwd: ROOT });
   check('布尔原语 26 项', /^PASS/m.test(boolOut), (boolOut.trim().split('\n').pop() ?? '').slice(0, 40));
+
+  const splitOut = execFileSync('node', [join(HERE, 'test', 'split-region.test.ts')], { encoding: 'utf8', cwd: ROOT });
+  check('区域分解原语 18 项', /^PASS/m.test(splitOut), (splitOut.trim().split('\n').pop() ?? '').slice(0, 40));
 }
 
 // ── 层 1 + 层 2
@@ -124,12 +146,16 @@ for (const gen of NATIVE_GENERATORS) {
   let stallBad = 0;
   let aisleBad = 0;
   let forcedBad = 0;
+  let reachBad = 0;
+  let unreachableBad = 0;
   const scores = [];
   const primaryScores = [];
   const primaryNames = [];
   const stressScores = [];
-  const w = { overlap: 0, comp: 0, stall: 0, aisle: 0, coverLo: 9, coverHi: 0 };
+  const w = { overlap: 0, comp: 0, stall: 0, aisle: 0, productive: 0, coverLo: 9, coverHi: 0 };
   const notes = [];
+  const diag = [];
+  const aisleObs = [];
 
   for (const c of cases) {
     const input = loadSiteInput(c.name);
@@ -185,6 +211,10 @@ for (const gen of NATIVE_GENERATORS) {
 
     if (nm.netComponents > T.components) compBad++;
     w.comp = Math.max(w.comp, nm.netComponents);
+    // 真正的连通性判据：**能不能通**，不是端点长得像不像 Placemaker
+    if (nm.netComponents > 0 && nm.netLongestComponent / Math.max(1, nm.netTotal) < 0.5) reachBad++;
+    // 行位可达：至少 90% 的车位要被某条车道服务到
+    if (nm.parkingBays > 0 && nm.stallsServed / nm.parkingBays < 0.9) unreachableBad++;
 
     // 密度保真只在 primary 上判（理由见 PRIMARY_MIN_AREA 的注释）
     if (isPrimary) {
@@ -196,13 +226,24 @@ for (const gen of NATIVE_GENERATORS) {
       }
       w.stall = Math.max(w.stall, rs);
 
+      // 总车道长降级为 **Oracle Observation**（不判 PASS/FAIL，只记 Δ）
       const da = Math.abs(nm.netTotal - gm.netTotal);
       const ra = gm.netTotal > 0 ? da / gm.netTotal : 0;
-      if (ra > T.aisleRel && da > T.aisleAbs) {
-        aisleBad++;
-        notes.push(`${c.name}: 车道 ${gm.netTotal.toFixed(0)}→${nm.netTotal.toFixed(0)}（Δ${da.toFixed(0)}m）`);
-      }
       w.aisle = Math.max(w.aisle, ra);
+      aisleObs.push(`${c.name.replace('city24-s8-', '')} ${gm.netTotal.toFixed(0)}→${nm.netTotal.toFixed(0)} (${ra >= 0 ? '+' : ''}${((da / Math.max(1, gm.netTotal)) * 100).toFixed(0)}%)`);
+
+      // **Fidelity Gate 改判 productiveAisle**（服务到车位的车道长度）
+      const dp = Math.abs(nm.productiveAisle - gm.productiveAisle);
+      const rp = gm.productiveAisle > 0 ? dp / gm.productiveAisle : 0;
+      if (rp > T.aisleRel && dp > T.aisleAbs) {
+        aisleBad++;
+        notes.push(`${c.name}: 有效车道 ${gm.productiveAisle.toFixed(0)}→${nm.productiveAisle.toFixed(0)}（Δ${dp.toFixed(0)}m）`);
+      }
+      w.productive = Math.max(w.productive, rp);
+      // 诊断：悬空端与空转占比（不判）
+      diag.push(
+        `${c.name.replace('city24-s8-', '')} 悬空端 ${gm.netDeadEnds}→${nm.netDeadEnds} · 空转 ${(gm.deadAisleRatio * 100).toFixed(0)}%→${(nm.deadAisleRatio * 100).toFixed(0)}% · 位/m ${gm.stallsPerAisleMeter.toFixed(2)}→${nm.stallsPerAisleMeter.toFixed(2)}`,
+      );
       primaryScores.push(scoreOf(gm, nm));
       primaryNames.push(c.name.replace('city24-s8-', ''));
     }
@@ -232,8 +273,19 @@ for (const gen of NATIVE_GENERATORS) {
     `区间 ${(w.coverLo * 100).toFixed(1)}%~${(w.coverHi * 100).toFixed(1)}%`,
   );
   check(`${gen.id} 连通块 ≤ ${T.components}`, compBad === 0, `最差 ${w.comp} 块`);
+  check(`${gen.id} 主连通网占比 ≥ 50%（能通）`, reachBad === 0, `${reachBad} 例不成网`);
+  check(`${gen.id} 车位可达性 ≥ 90%`, unreachableBad === 0, `${unreachableBad} 例可达性不足`);
   check(`${gen.id} 车位误差 ≤ max(25%, 4)`, stallBad === 0, `最差 ${(w.stall * 100).toFixed(0)}%`);
-  check(`${gen.id} 车道误差 ≤ max(25%, 20m)`, aisleBad === 0, `最差 ${(w.aisle * 100).toFixed(0)}%`);
+  check(`${gen.id} 有效车道误差 ≤ max(25%, 20m)`, aisleBad === 0, `最差 ${(w.productive * 100).toFixed(0)}%`);
+  // ── Quality Diagnostic（不判）
+  if (diag.length) {
+    console.log('  [诊断·不判]');
+    for (const dd of diag.slice(0, 4)) console.log('    · ' + dd);
+  }
+  // ── Oracle Observation（不判）
+  if (aisleObs.length) {
+    console.log('  [观测·不判] 总车道 golden→native：' + aisleObs.join(' · '));
+  }
   check(`${gen.id} primary 均分 ≥ ${T.avgScore}`, avgPrimary >= T.avgScore, `实际 ${avgPrimary}（${primaryScores.length} 例）`);
   // 全部 19 例的均分**只作观测**，不进 release gate（用户 2026-11-03：
   // "保留 all-19 overall score，但只作为观测指标，不作为 release gate"）。
@@ -252,7 +304,12 @@ for (const gen of NATIVE_GENERATORS) {
   }
 }
 
-/** 分数：14 个计入指标，按档给分再平均（与 `src/compare.ts` 同口径） */
+/**
+ * 分数 = **Fidelity Gate 指标**的均值（按档给分）。
+ *
+ * 刻意**不含**已降级的量：`netTotal`（观测）、`netDeadEnds` / `netLongest`（诊断）。
+ * 否则"分数"会继续偷偷用旧判据，等于降级没发生。与 `src/compare.ts` 同口径。
+ */
 function scoreOf(g, n) {
   const grade = (a, b, floor) => {
     if (Math.abs(a - b) <= floor) return 1;
@@ -266,10 +323,8 @@ function scoreOf(g, n) {
     [g.overlapArea, n.overlapArea, 20],
     [g.zoningCoverage, n.zoningCoverage, 0],
     [g.paintArea, n.paintArea, 20],
-    [g.netTotal, n.netTotal, 5],
+    [g.productiveAisle, n.productiveAisle, 20],
     [g.netComponents, n.netComponents, 0],
-    [g.netDeadEnds, n.netDeadEnds, 0],
-    [g.netLongestComponent, n.netLongestComponent, 5],
     [g.parkingBays, n.parkingBays, 2],
     [g.accessPoints, n.accessPoints, 0],
     [g.objectTotal, n.objectTotal, 2],

@@ -239,6 +239,50 @@ scatterAlongEdge(沿边, 12 m 间距)      → 行道树
 | 2 | primary 均分 ≥ 75 | **86**（4 例）✅ |
 | 2 | primary 逐例 ≥ 80 | 79 / 86 / 96 / 84 → **p0 差 1 分** ❌ |
 
+---
+
+## 5.1 **Parking Native V1 — 冻结（PASS）**
+
+```
+Parking Native V1 — FROZEN (2026-11-03)
+```
+
+| 项 | 值 | 层 |
+| --- | --- | --- |
+| primary 均分 | **91**（p0 87 / p1 90 / p42 98 / p90 90） | Fidelity |
+| 覆盖 | 100.0%（98~102%） | Fidelity |
+| 重叠 | **0.02%**（< 0.5%） | Fidelity |
+| 车位误差 | 23%（≤ 25%） | Fidelity |
+| **有效车道误差** | **18%**（≤ 25%） | Fidelity |
+| 连通块 | ≤ 2（≤ 3） | Fidelity |
+| 主连通网占比 / 车位可达性 | 全过 | Fidelity |
+| feasibility 一致 | **19/19** | Eligibility |
+| ready 一致 | **19/19** | Eligibility |
+| deterministic | **19/19** | Eligibility |
+| 总车道 Δ / 空转 / 悬空端 | 观测与诊断，**不判** | Observation |
+
+### 明确不追求的东西（写在这里，挡住以后"顺手修一下"）
+
+1. **不追求 golden 的 dead aisle 比例**。golden p0 总车道 1124 m 里 **18% 是空转**，
+   native 968 m 里只有 **10%**；位/m 我 0.37 vs 它 0.26。为了把 968 补到 1124 而造 150 m 空转是负优化。
+2. **不追求 golden 的 perimeter loop**。p0 的 6 个悬空端 = 2 个出入口/服务端 + 4 个外圈行端，
+   这是**合法的梯形停车网络**。复制闭环要 +35% 车道 + 占地 + 降低效率。
+3. **不追求碎块的逐项一致**。`p90.partN` 那 15 份是退化样本（1219 m² 上 golden 给 0 位），
+   只验稳健性（cohort = stress）。
+4. **不追求多方向布局**。那是 P2/P3 的事，靠 `splitRegion` 解决，不在 parking 里写特例。
+
+### 指标三层（`npm run sgen:check` 用的口径）
+
+| 层 | 指标 | 作用 |
+| --- | --- | --- |
+| **Fidelity Gate** | productiveAisle · stalls · coverage · overlap · connectedComponents · 主连通网占比 · 车位可达性 | PASS/FAIL |
+| **Quality Diagnostic** | deadAisleRatio · stallsPerAisleMeter · danglingEnds · fragmentation | 只打印 |
+| **Oracle Observation** | netTotal | 只显示 Δ |
+
+分数只对 Fidelity 层取均值。**降级不等于藏起来**：Δ 照常打印，只是明确声明"这不是我们希望消除的差异"。
+
+---
+
 ### P1.7：先量 dead aisle，再改策略（不写特例）
 
 用户要求："不要直接开始调 `crossEvery=8 → 12`…… 先增加一个诊断量。"
