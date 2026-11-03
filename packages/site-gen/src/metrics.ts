@@ -62,6 +62,22 @@ export interface PlanMetrics {
   issues: { info: number; warning: number; error: number };
   /** 是否 ready（Placemaker 自报） */
   ready: boolean;
+
+  // ── 车道效率（用户 2026-11-03 要求先量的一组）
+  //
+  // 动机：`p1`（532×82 狭长地）golden 916 m 车道 / 403 位 = 0.44 位/m，我 1358 m / 335 位 = 0.25 位/m。
+  // 说明问题不是"车位多少"，而是**我造了太多不服务任何车位的车道**。
+  // 所以要能把"服务车位的车道"和"空转的车道"分开量。
+  /** 服务到至少一个车位的车道长度（m） */
+  productiveAisle: number;
+  /** 不服务任何车位的车道长度（m） */
+  deadAisle: number;
+  /** deadAisle / (productive + dead) */
+  deadAisleRatio: number;
+  /** 每米车道服务几个车位 */
+  stallsPerAisleMeter: number;
+  /** 处于"被服务"状态的车位数（离某条车道 ≤ serviceDist） */
+  stallsServed: number;
 }
 
 const addTo = (m: Record<string, number>, k: string | undefined, v: number): void => {
@@ -182,6 +198,8 @@ export function measure(plan: Plan): PlanMetrics {
       )
     : { minX: 0, minY: 0, maxX: 0, maxY: 0 };
 
+  // 车道效率：把每条车道切成 2 m 的样本点，看它附近有没有车位
+  const svc = stallService(plan);
   const conn = connectivity(plan);
   const issues = { info: 0, warning: 0, error: 0 };
   for (const i of plan.issues) issues[i.severity]++;
@@ -215,7 +233,102 @@ export function measure(plan: Plan): PlanMetrics {
     netLongestComponent: conn.longest,
     issues,
     ready: plan.ready,
+    productiveAisle: svc.productive,
+    deadAisle: svc.dead,
+    deadAisleRatio: svc.productive + svc.dead > 0 ? svc.dead / (svc.productive + svc.dead) : 0,
+    stallsPerAisleMeter: svc.aisleLen > 0 ? (objectByRole['parkingBay'] ?? 0) / svc.aisleLen : 0,
+    stallsServed: svc.served,
   };
+}
+
+/** 车行道类角色：只有这些"承载车流"的中心线参与车道效率统计 */
+const DRIVE_ROLES = new Set(['driveAisle', 'driveConnector', 'street', 'avenue', 'alley', 'driveConnector']);
+
+/**
+ * 车道服务分析。
+ *
+ * 定义（用户 2026-11-03 给的）：
+ *   · **productive aisle** = 两侧至少有一侧在 service distance 内存在 stall 的车道段
+ *   · **dead aisle**       = 不服务任何 stall 的车道段
+ *
+ * `serviceDist` 从 `plan.settings` 推：`stallLength + aisleWidth/2`（车位长 + 半个车道宽）。
+ * golden 实测"车位中心到车道中心线恒 6.45 m"= 3.5 + 2.95，正好就是这个量，所以它是**有物理依据的**，
+ * 不是我拍的阈值。settings 缺失时退回 8 m。
+ *
+ * 切段而不是整条判断：一条 140 m 的车道可能只有中段服务车位，两头都是空转。
+ * 用 2 m 样本点，一段只要有一个样本点服务到车位就算 productive（保守，不虚报 dead）。
+ */
+function stallService(plan: Plan): {
+  productive: number;
+  dead: number;
+  aisleLen: number;
+  served: number;
+} {
+  const stalls = plan.objects.filter((o) => o.role === 'parkingBay').map((o) => [o.x, o.z] as Vec2);
+  const nets = plan.nets.filter((n) => DRIVE_ROLES.has(n.role));
+  if (!nets.length) return { productive: 0, dead: 0, aisleLen: 0, served: 0 };
+
+  const s = plan.settings ?? {};
+  const numOr = (v: unknown, d: number): number => (typeof v === 'number' && Number.isFinite(v) ? v : d);
+  const serviceDist = numOr(s.stallLength, 5.9) + numOr(s.aisleWidth, 7) / 2;
+
+  // 车位是否被服务：只要离任意车道 ≤ serviceDist
+  let served = 0;
+  for (const p of stalls) {
+    let hit = false;
+    for (const n of nets) {
+      const d = pointSegDist(p, n.a, n.d);
+      if (d <= serviceDist) {
+        hit = true;
+        break;
+      }
+    }
+    if (hit) served++;
+  }
+
+  // 车道切段：2 m 样本点，看这一点附近 serviceDist 内有没有车位
+  let productive = 0;
+  let dead = 0;
+  let aisleLen = 0;
+  for (const n of nets) {
+    const len = Math.hypot(n.d[0] - n.a[0], n.d[1] - n.a[1]);
+    if (len < 1e-6) continue;
+    aisleLen += len;
+    const step = 2;
+    const cnt = Math.max(1, Math.ceil(len / step));
+    const segLen = len / cnt;
+    for (let i = 0; i < cnt; i++) {
+      const t = (i + 0.5) / cnt;
+      const q: Vec2 = [n.a[0] + (n.d[0] - n.a[0]) * t, n.a[1] + (n.d[1] - n.a[1]) * t];
+      let has = false;
+      for (const p of stalls) {
+        if (pointSegDist(p, n.a, n.d) > serviceDist) continue;
+        // 只算这个样本点附近的车位（沿车道方向距离 ≤ 半个车位宽 + 1 m）
+        const t2 = projectT(p, n.a, n.d);
+        if (Math.abs(t2 - t) * len <= 2.5) {
+          has = true;
+          break;
+        }
+      }
+      if (has) productive += segLen;
+      else dead += segLen;
+    }
+  }
+  return { productive, dead, aisleLen, served };
+}
+
+function projectT(p: Vec2, a: Vec2, b: Vec2): number {
+  const dx = b[0] - a[0];
+  const dy = b[1] - a[1];
+  const l2 = dx * dx + dy * dy;
+  if (l2 < 1e-12) return 0;
+  const t = ((p[0] - a[0]) * dx + (p[1] - a[1]) * dy) / l2;
+  return t < 0 ? 0 : t > 1 ? 1 : t;
+}
+
+function pointSegDist(p: Vec2, a: Vec2, b: Vec2): number {
+  const t = projectT(p, a, b);
+  return Math.hypot(p[0] - (a[0] + (b[0] - a[0]) * t), p[1] - (a[1] + (b[1] - a[1]) * t));
 }
 
 /**
@@ -246,6 +359,8 @@ export function rows(m: PlanMetrics): MetricRow[] {
     { key: 'accessPoints', label: '出入口点', group: '物件', value: m.accessPoints },
     { key: 'objectTotal', label: '物件总数', group: '物件', value: m.objectTotal },
     { key: 'objectDensity', label: '物件密度 /千m²', group: '物件', value: m.objectDensity },
+    { key: 'deadAisleRatio', label: '空转车道占比', group: '车道效率', value: m.deadAisleRatio },
+    { key: 'stallsPerAisle', label: '位/m 车道', group: '车道效率', value: m.stallsPerAisleMeter },
     { key: 'terraformOps', label: '地形改动条数', group: '其它', value: m.terraformOps },
     { key: 'issues', label: '问题条数', group: '其它', value: m.issues.info + m.issues.warning + m.issues.error },
   ];

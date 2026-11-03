@@ -165,41 +165,65 @@ export function parkingRows(usable: readonly Vec2[], opts: ParkingRowOptions): P
         const nStalls = ch.k1 - ch.k0;
         if (nStalls < 1) continue;
         const u0 = run.u0 + (len - totalStalls * stallW) / 2 + ch.k0 * stallW;
-        const u1 = u0 + nStalls * stallW;
-        aisles.push({
-          a: toWorld(u0, vv),
-          b: toWorld(u1, vv),
-          dir: u,
-          normal: vn,
-          length: u1 - u0,
-          sides: double ? 2 : 1,
-        });
-        bands.push({ u0, u1, v0: double ? vv - stallLen : vv, v1: vv + stallLen });
 
+        // **先判定哪些车位位真的能放，再决定车道铺到哪**。
+        //
+        // 原来的顺序是先铺一条 nStalls×stallW 的车道、再逐个丢弃放不下的车位 ——
+        // 结果就是"车道还在、车位没了"的死车道。实测：native 空转车道 21%（p1），
+        // golden 只有 6%；而 p0/p90 我也比 golden 多 3~5 个点（D-069）。
+        // 现在按"有车位的连续段"生成车道，死段从源头不产生。
         const signs = double ? [-1, 1] : [1];
+        const validSide: boolean[][] = [];
         for (let i = 0; i < nStalls; i++) {
           const cu = u0 + (i + 0.5) * stallW;
+          const row: boolean[] = [];
           for (const sg of signs) {
             const cv = vv + sg * (stallLen / 2);
-            const center = toWorld(cu, cv);
-            if (!pointInRing(center, ring)) continue;
-            const hw = stallW / 2 - 0.02;
-            const hl = stallLen / 2 - 0.02;
-            const quad: [Vec2, Vec2, Vec2, Vec2] = [
-              toWorld(cu - hw, cv - hl),
-              toWorld(cu + hw, cv - hl),
-              toWorld(cu + hw, cv + hl),
-              toWorld(cu - hw, cv + hl),
-            ];
-            stalls.push({
-              center,
-              // 车头指向车道（即 sg 的反方向）
-              heading: [-u[0] * sg, -u[1] * sg],
-              width: stallW,
-              length: stallLen,
-              quad,
-            });
+            row.push(pointInRing(toWorld(cu, cv), ring));
           }
+          validSide.push(row);
+        }
+        const served = validSide.map((row) => row.some(Boolean));
+
+        // 连续 served 段 → 每条段一条车道
+        let i = 0;
+        while (i < nStalls) {
+          if (!served[i]) {
+            i++;
+            continue;
+          }
+          let j = i;
+          while (j + 1 < nStalls && served[j + 1]) j++;
+          const a0 = u0 + i * stallW;
+          const a1 = u0 + (j + 1) * stallW;
+          aisles.push({ a: toWorld(a0, vv), b: toWorld(a1, vv), dir: u, normal: vn, length: a1 - a0, sides: double ? 2 : 1 });
+          bands.push({ u0: a0, u1: a1, v0: double ? vv - stallLen : vv, v1: vv + stallLen });
+
+          for (let k = i; k <= j; k++) {
+            const cu = u0 + (k + 0.5) * stallW;
+            for (let sgi = 0; sgi < signs.length; sgi++) {
+              if (!validSide[k][sgi]) continue;
+              const sg = signs[sgi];
+              const cv = vv + sg * (stallLen / 2);
+              const center = toWorld(cu, cv);
+              const hw = stallW / 2 - 0.02;
+              const hl = stallLen / 2 - 0.02;
+              const quad: [Vec2, Vec2, Vec2, Vec2] = [
+                toWorld(cu - hw, cv - hl),
+                toWorld(cu + hw, cv - hl),
+                toWorld(cu + hw, cv + hl),
+                toWorld(cu - hw, cv + hl),
+              ];
+              stalls.push({
+                center,
+                heading: [-u[0] * sg, -u[1] * sg],
+                width: stallW,
+                length: stallLen,
+                quad,
+              });
+            }
+          }
+          i = j + 1;
         }
       }
     }
@@ -334,19 +358,46 @@ export function connectAisles(
     // 只接**整行的两端**（最左段的最左端 / 最右段的最右端）。
     // 每段都接两端会变成"全连接梯子"，总长被推到 +76%（实测 1972 m vs golden 1124 m）——
     // 而总长本身是计入分数的指标，所以这里只保留够用的连接。
+    // 只连**u 区间有重叠**的两行，且连接长度不超过 1.5 个行距。
+    //
+    // 为什么加这两个条件：无条件"连到最近端点"会在狭长地块上产生大量**斜向跨行连接**——
+    // 实测 p1（532×82）产出的 33 条 crossAisle 共 **631 m，占总车道 46%**，
+    // 而它们几乎不服务任何车位（空转 21% vs golden 6%）。这正是用户指出的
+    // "制造了太多没有有效服务车位的 aisle"。行间本来只该有一条**短的垂直通道**。
+    // 行距取**相邻行间距的中位数**，不能取前两个。
+    //
+    // 为什么：行的 v 坐标不规则（某一行没排出车位就会被跳过，间距变成 2 倍 pitch；
+    // 也可能有两行挨得很近）。取 `rowKeys[1] - rowKeys[0]` 会在"前两行很近"时
+    // 把 maxLink 压成几米，于是绝大多数跨行连接被误拒 —— 实测 p0 的车道因此从 1108 掉到 968（-14%）。
+    const gaps: number[] = [];
+    for (let i = 1; i < rowKeys.length; i++) gaps.push(Math.abs(rowKeys[i] - rowKeys[i - 1]));
+    gaps.sort((a, b) => a - b);
+    const rowPitch = gaps.length ? gaps[Math.floor(gaps.length / 2)] : 20;
+    const maxLink = rowPitch * 1.5;
+    const loPrev = Math.min(...prevSegs.map((q) => q.u0));
+    const hiPrev = Math.max(...prevSegs.map((q) => q.u1));
+    const loCur = Math.min(...curSegs.map((q) => q.u0));
+    const hiCur = Math.max(...curSegs.map((q) => q.u1));
+    const ovLo = Math.max(loPrev, loCur);
+    const ovHi = Math.min(hiPrev, hiCur);
+    if (ovHi - ovLo < 3) continue; // 没有重叠 → 这是两块独立的停车区，不该硬连
+
     const sorted = curSegs.slice().sort((p, q) => p.u0 - q.u0);
     const ends = [sorted[0].u0, sorted[sorted.length - 1].u1];
     for (const uEnd of ends) {
+      // 端点保持"是本行某一段的端点"（不然是 T 型接头，按端点连图不算连通）。
+      // 不因为"落在重叠区外"就整条不连 —— 那样最外层行的端会变成悬空（实测 p0: 2→8）。
+      // 越过重叠区的连接由下面的 `maxLink` 兜住（p1 的 631 m 死车道是上百米的斜穿，会被挡）。
       const from = toWorld(uEnd, cur);
       let best: { d: number; p: Vec2 } | null = null;
       for (const h of prevSegs) {
-        for (const uu of [h.u0, h.u1]) {
-          const p = toWorld(uu, prev);
+        for (const hu of [h.u0, h.u1]) {
+          const p = toWorld(hu, prev);
           const d = Math.hypot(p[0] - from[0], p[1] - from[1]);
           if (!best || d < best.d) best = { d, p };
         }
       }
-      if (best) links.push({ a: from, b: best.p, cross: true });
+      if (best && best.d <= maxLink) links.push({ a: from, b: best.p, cross: true });
     }
   }
 

@@ -111,7 +111,7 @@ export function compare(gen: string, golden: Plan, native: Plan): ComparisonRepo
   // 总评：取最差一项；但 `issues` 通道缺失不算（它本来就是诊断信息，不是产物）
   let worst: Verdict = 'exact';
   for (const m of metrics) {
-    if (m.key === 'issues') continue;
+    if (m.key === 'issues' || m.group === '车道效率') continue;
     if (RANK[m.verdict] > RANK[worst]) worst = m.verdict;
   }
   for (const p of presence) {
@@ -120,8 +120,13 @@ export function compare(gen: string, golden: Plan, native: Plan): ComparisonRepo
   }
 
   // 分数：0~100，每项按档给分再平均。只看"离对齐还有多远"，不是质量分。
+  //
+  // **诊断量不计分**（用户 2026-11-03："先增加一个诊断量 … 然后直接看 p1 的 deadAisleRatio"）。
+  // `车道效率` 组的两个量是**用来找病灶的仪器**，不是保真目标：
+  // golden 自己也造 dead aisle（18%），拿它当分数会把"效率诊断"变成"复制 golden 的空转"。
+  // 它们照常打印、照常参与 roleDiff，只是不进分母。
   const scoreOf = (v: Verdict): number => ({ exact: 1, close: 0.7, off: 0.3, bad: 0, missing: 0 })[v];
-  const graded = metrics.filter((m) => m.key !== 'issues');
+  const graded = metrics.filter((m) => m.key !== 'issues' && m.group !== '车道效率');
   const score = Math.round((graded.reduce((s, m) => s + scoreOf(m.verdict), 0) / Math.max(1, graded.length)) * 100);
 
   return { generator: gen, siteArea: golden.area, golden: gm, native: nm, metrics, roleDiffs, presence, verdict: worst, score };

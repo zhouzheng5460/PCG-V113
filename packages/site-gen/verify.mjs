@@ -41,7 +41,14 @@ function check(name, cond, detail = '') {
 }
 
 /**
- * 用例分两类，**这是基于实测的测试集设计决定**，不是为了让门禁变绿：
+ * **cohort 是显式标注的**（`tools/golden/cohorts.json`），不是面积阈值算出来的。
+ *
+ * 用户 2026-11-03 的拍板："不要让 `PRIMARY_MIN_AREA` 成为长期语义…… 面积阈值可以暂时用来
+ * 复现实验，但最终最好把 19 个 case 显式标注 cohort。因为以后很可能出现
+ * `1200 m² 规则矩形 → 完全值得做停车`、`3000 m² 极窄碎片 → 仍然只是 stress`。"
+ *
+ * 所以：`PRIMARY_MIN_AREA` 已删除，改为读 cohort。要改判某个用例，改 JSON，不改代码。
+ * 两类本来是什么：
  *
  *   · `primary` —— 真实地块（≥12000 m²）。golden 在这 4 例上**自洽**：
  *     车位密度 41~50 m²/位（14527→288、16614→403、12491→276、13123→268）。
@@ -56,7 +63,8 @@ function check(name, cond, detail = '') {
  * 判据依据见 docs/H §5 的两张密度表。**如果不同意这个分法，把 PRIMARY_MIN_AREA 设为 0
  * 就退回"全部 19 例都判密度"**，那样均分是 68、且 6 例密度不达标。
  */
-const PRIMARY_MIN_AREA = 12000;
+const COHORTS = JSON.parse(readFileSync(join(GOLDEN, 'cohorts.json'), 'utf8'));
+const cohortOf = (name) => COHORTS.cases[name]?.cohort ?? 'primary';
 
 /** 阈值（用户定的阶梯） */
 const T = {
@@ -118,6 +126,7 @@ for (const gen of NATIVE_GENERATORS) {
   let forcedBad = 0;
   const scores = [];
   const primaryScores = [];
+  const primaryNames = [];
   const stressScores = [];
   const w = { overlap: 0, comp: 0, stall: 0, aisle: 0, coverLo: 9, coverHi: 0 };
   const notes = [];
@@ -151,7 +160,7 @@ for (const gen of NATIVE_GENERATORS) {
       eligibilityMismatch++;
       notes.push(`${c.name}: 可行 ${elig.feasible} vs oracle 有车位 ${oracleHasStalls}`);
     }
-    const isPrimary = gm.siteArea >= PRIMARY_MIN_AREA;
+    const isPrimary = cohortOf(c.name) === 'primary';
 
     // 层 2 · 生成保真
     const nm = measure(a);
@@ -195,6 +204,7 @@ for (const gen of NATIVE_GENERATORS) {
       }
       w.aisle = Math.max(w.aisle, ra);
       primaryScores.push(scoreOf(gm, nm));
+      primaryNames.push(c.name.replace('city24-s8-', ''));
     }
     stressScores.push(scoreOf(gm, nm));
 
@@ -224,8 +234,16 @@ for (const gen of NATIVE_GENERATORS) {
   check(`${gen.id} 连通块 ≤ ${T.components}`, compBad === 0, `最差 ${w.comp} 块`);
   check(`${gen.id} 车位误差 ≤ max(25%, 4)`, stallBad === 0, `最差 ${(w.stall * 100).toFixed(0)}%`);
   check(`${gen.id} 车道误差 ≤ max(25%, 20m)`, aisleBad === 0, `最差 ${(w.aisle * 100).toFixed(0)}%`);
-  check(`${gen.id} 真地块均分 ≥ ${T.avgScore}`, avgPrimary >= T.avgScore, `实际 ${avgPrimary}（${primaryScores.length} 例）`);
-  check(`${gen.id} 全部用例均分 ≥ 60（含碎块）`, avg >= 60, `实际 ${avg}`);
+  check(`${gen.id} primary 均分 ≥ ${T.avgScore}`, avgPrimary >= T.avgScore, `实际 ${avgPrimary}（${primaryScores.length} 例）`);
+  // 全部 19 例的均分**只作观测**，不进 release gate（用户 2026-11-03：
+  // "保留 all-19 overall score，但只作为观测指标，不作为 release gate"）。
+  // 留着的意义是算法退化时仍然看得见，而不是把 stress 排除掉之后眼不见为净。
+  console.log(`  [观测] ${gen.id} all-${scores.length} 均分 ${avg}（不判）`);
+
+  // primary 逐例分数：用户要求 "primary 4/4 全部 >80"
+  const perCase = primaryScores.map((v, i) => `${primaryNames[i]}=${v}`).join(' ');
+  const below80 = primaryScores.filter((v) => v < 80).length;
+  check(`${gen.id} primary 逐例 ≥ 80`, below80 === 0, `${perCase}（${below80} 例低于 80）`);
 
   if (notes.length) {
     console.log('  明细：');

@@ -1,0 +1,280 @@
+{
+ "protocol": "site-gen-cohorts/1",
+ "note": "显式标注每个 golden 用例的用途。**不要用面积阈值代替这个标注** —— 面积阈值会让\"area>=N\"偷偷变成业务规则。primary=完整设计样本（判保真）；stress=碎块/退化/稳健性样本（只验不崩/确定性/不越界/不重叠/拓扑）。",
+ "classes": {
+  "primary": "完整设计样本：golden 自己在这类样本上自洽（同族密度一致），可以做保真判据",
+  "stress": "碎块 / 退化输入 / 稳健性样本：golden 在此退化，不拿它当保真目标"
+ },
+ "cases": {
+  "city24-s8-p0-parking": {
+   "generator": "parking",
+   "cohort": "primary",
+   "area": 14527
+  },
+  "city24-s8-p0-pitch": {
+   "generator": "pitch",
+   "cohort": "primary",
+   "area": 15448
+  },
+  "city24-s8-p1-parking": {
+   "generator": "parking",
+   "cohort": "primary",
+   "area": 16614
+  },
+  "city24-s8-p42-abandonedLot-demolished": {
+   "generator": "abandonedLot",
+   "cohort": "primary",
+   "area": 12491
+  },
+  "city24-s8-p42-abandonedLot": {
+   "generator": "abandonedLot",
+   "cohort": "primary",
+   "area": 12491
+  },
+  "city24-s8-p42-botanicalGarden": {
+   "generator": "botanicalGarden",
+   "cohort": "primary",
+   "area": 12491
+  },
+  "city24-s8-p42-campground": {
+   "generator": "campground",
+   "cohort": "primary",
+   "area": 12491
+  },
+  "city24-s8-p42-carYard": {
+   "generator": "carYard",
+   "cohort": "primary",
+   "area": 12491
+  },
+  "city24-s8-p42-communityGarden": {
+   "generator": "communityGarden",
+   "cohort": "primary",
+   "area": 12491
+  },
+  "city24-s8-p42-dogPark": {
+   "generator": "dogPark",
+   "cohort": "primary",
+   "area": 12491
+  },
+  "city24-s8-p42-formalGarden": {
+   "generator": "formalGarden",
+   "cohort": "primary",
+   "area": 12491
+  },
+  "city24-s8-p42-greenwayPark": {
+   "generator": "greenwayPark",
+   "cohort": "primary",
+   "area": 12491
+  },
+  "city24-s8-p42-junkYard": {
+   "generator": "junkYard",
+   "cohort": "primary",
+   "area": 12491
+  },
+  "city24-s8-p42-mallPark": {
+   "generator": "mallPark",
+   "cohort": "primary",
+   "area": 12491
+  },
+  "city24-s8-p42-marketSquare": {
+   "generator": "marketSquare",
+   "cohort": "primary",
+   "area": 12491
+  },
+  "city24-s8-p42-natureReserve": {
+   "generator": "natureReserve",
+   "cohort": "primary",
+   "area": 12491
+  },
+  "city24-s8-p42-outdoorMall": {
+   "generator": "outdoorMall",
+   "cohort": "primary",
+   "area": 12491
+  },
+  "city24-s8-p42-park": {
+   "generator": "park",
+   "cohort": "primary",
+   "area": 12491
+  },
+  "city24-s8-p42-parking": {
+   "generator": "parking",
+   "cohort": "primary",
+   "area": 12491
+  },
+  "city24-s8-p42-picnicGrounds": {
+   "generator": "picnicGrounds",
+   "cohort": "primary",
+   "area": 12491
+  },
+  "city24-s8-p42-pitch": {
+   "generator": "pitch",
+   "cohort": "primary",
+   "area": 12491
+  },
+  "city24-s8-p42-polishCoastal": {
+   "generator": "polishCoastal",
+   "cohort": "primary",
+   "area": 12491
+  },
+  "city24-s8-p42-polishGarden": {
+   "generator": "polishGarden",
+   "cohort": "primary",
+   "area": 12491
+  },
+  "city24-s8-p42-polishManicured": {
+   "generator": "polishManicured",
+   "cohort": "primary",
+   "area": 12491
+  },
+  "city24-s8-p42-polishMeadow": {
+   "generator": "polishMeadow",
+   "cohort": "primary",
+   "area": 12491
+  },
+  "city24-s8-p42-polishNatural": {
+   "generator": "polishNatural",
+   "cohort": "primary",
+   "area": 12491
+  },
+  "city24-s8-p42-polishRustic": {
+   "generator": "polishRustic",
+   "cohort": "primary",
+   "area": 12491
+  },
+  "city24-s8-p42-polishTidy": {
+   "generator": "polishTidy",
+   "cohort": "primary",
+   "area": 12491
+  },
+  "city24-s8-p42-polishYard": {
+   "generator": "polishYard",
+   "cohort": "primary",
+   "area": 12491
+  },
+  "city24-s8-p42-pond": {
+   "generator": "pond",
+   "cohort": "primary",
+   "area": 12491
+  },
+  "city24-s8-p42-runningTrack": {
+   "generator": "runningTrack",
+   "cohort": "primary",
+   "area": 12491
+  },
+  "city24-s8-p42-scrapyard": {
+   "generator": "scrapyard",
+   "cohort": "primary",
+   "area": 12491
+  },
+  "city24-s8-p42-shopsPark": {
+   "generator": "shopsPark",
+   "cohort": "primary",
+   "area": 12491
+  },
+  "city24-s8-p42-sportsPark": {
+   "generator": "sportsPark",
+   "cohort": "primary",
+   "area": 12491
+  },
+  "city24-s8-p42-stripMall": {
+   "generator": "stripMall",
+   "cohort": "primary",
+   "area": 12491
+  },
+  "city24-s8-p90-carYard": {
+   "generator": "carYard",
+   "cohort": "primary",
+   "area": 13123
+  },
+  "city24-s8-p90-park": {
+   "generator": "park",
+   "cohort": "primary",
+   "area": 13123
+  },
+  "city24-s8-p90-parking": {
+   "generator": "parking",
+   "cohort": "primary",
+   "area": 13123
+  },
+  "city24-s8-p90-parking.part0": {
+   "generator": "parking",
+   "cohort": "stress",
+   "area": 1677
+  },
+  "city24-s8-p90-parking.part1": {
+   "generator": "parking",
+   "cohort": "stress",
+   "area": 1604
+  },
+  "city24-s8-p90-parking.part10": {
+   "generator": "parking",
+   "cohort": "stress",
+   "area": 325
+  },
+  "city24-s8-p90-parking.part11": {
+   "generator": "parking",
+   "cohort": "stress",
+   "area": 309
+  },
+  "city24-s8-p90-parking.part12": {
+   "generator": "parking",
+   "cohort": "stress",
+   "area": 297
+  },
+  "city24-s8-p90-parking.part13": {
+   "generator": "parking",
+   "cohort": "stress",
+   "area": 293
+  },
+  "city24-s8-p90-parking.part14": {
+   "generator": "parking",
+   "cohort": "stress",
+   "area": 284
+  },
+  "city24-s8-p90-parking.part2": {
+   "generator": "parking",
+   "cohort": "stress",
+   "area": 1335
+  },
+  "city24-s8-p90-parking.part3": {
+   "generator": "parking",
+   "cohort": "stress",
+   "area": 1219
+  },
+  "city24-s8-p90-parking.part4": {
+   "generator": "parking",
+   "cohort": "stress",
+   "area": 906
+  },
+  "city24-s8-p90-parking.part5": {
+   "generator": "parking",
+   "cohort": "stress",
+   "area": 603
+  },
+  "city24-s8-p90-parking.part6": {
+   "generator": "parking",
+   "cohort": "stress",
+   "area": 160
+  },
+  "city24-s8-p90-parking.part7": {
+   "generator": "parking",
+   "cohort": "stress",
+   "area": 425
+  },
+  "city24-s8-p90-parking.part8": {
+   "generator": "parking",
+   "cohort": "stress",
+   "area": 401
+  },
+  "city24-s8-p90-parking.part9": {
+   "generator": "parking",
+   "cohort": "stress",
+   "area": 359
+  },
+  "city24-s8-p90-plaza": {
+   "generator": "plaza",
+   "cohort": "primary",
+   "area": 13123
+  }
+ }
+}
