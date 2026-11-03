@@ -23,7 +23,7 @@ import { NATIVE_GENERATORS } from './src/generators/index.ts';
 import { loadGoldenPlan, loadIndex, loadSiteInput } from './src/golden.ts';
 import { measure } from './src/metrics.ts';
 import { checkParkingReady } from './src/eligibility.ts';
-import { plazaGate } from './src/plaza-gates.ts';
+import { plazaGate, fidelityVs } from './src/plaza-gates.ts';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, '..', '..');
@@ -134,6 +134,13 @@ const index = JSON.parse(readFileSync(join(GOLDEN, 'index.json'), 'utf8'));
   // 原语复用硬门禁：生成器不许自建第二套几何、不许绕开 boolean.ts
   const primOut = execFileSync('node', [join(HERE, 'src', 'cli', 'primitives.ts')], { encoding: 'utf8', cwd: ROOT });
   check('原语复用（无第二套几何）', /^PASS/m.test(primOut), (primOut.trim().split('\n').find((l) => l.startsWith('PASS') || l.startsWith('FAIL')) ?? '').slice(0, 44));
+
+  const polyOut = execFileSync('node', [join(HERE, 'test', 'polygon.test.ts')], { encoding: 'utf8', cwd: ROOT });
+  check('多边形原语符号约定 12 项', /^PASS/m.test(polyOut), (polyOut.trim().split('\n').pop() ?? '').slice(0, 40));
+
+  // PlanSurface.holes 合同：跨包（plan-ir / scene-ir / view3d 源码契约）
+  const holesOut = execFileSync('node', [join(ROOT, 'packages', 'plan-ir', 'test', 'holes-contract.test.ts')], { encoding: 'utf8', cwd: ROOT });
+  check('PlanSurface.holes 合同 18 项', /^PASS/m.test(holesOut), (holesOut.trim().split('\n').pop() ?? '').slice(0, 40));
 }
 
 // ── 层 1 + 层 2
@@ -343,13 +350,16 @@ for (const gen of NATIVE_GENERATORS.filter((g) => g.id === 'parking')) {
       }
       if (JSON.stringify(a) !== JSON.stringify(b)) nondet++;
       const g = plazaGate(input, a);
-      scores.push(g.score);
+      scores.push(g.structuralScore);
       if (g.usableCoverage < 0.98 || g.usableCoverage > 1.02) coverBad++;
       if (g.surfaceOverlap > 0.005) overlapBad++;
       if (g.obstacleOverlap > 1e-6) obsBad++;
       if (g.pavingComponents < 0 || g.pavingComponents > 2) compBad++;
       if (g.largestPavedRatio < 0.9) largestBad++;
-      if (g.accessReachable < 0.999) accessBad++;
+      // 入口可达的判据不是绝对 100%，而是**不比 oracle 差**：
+      // 锐角楔形（s1-acute）上 oracle 自己也只有 2/3 —— 那种尖头本来就没法铺。
+      const gGold = plazaGate(input, loadGoldenPlan(c.name));
+      if (g.accessReachable + 1e-9 < Math.min(1, gGold.accessReachable)) accessBad++;
       if (g.objectsOutsideObstacles < 0.999) objBad++;
       w.cov = Math.max(w.cov, Math.abs(g.usableCoverage - 1));
       w.ov = Math.max(w.ov, g.surfaceOverlap);
@@ -360,7 +370,7 @@ for (const gen of NATIVE_GENERATORS.filter((g) => g.id === 'parking')) {
       w.obj = Math.min(w.obj, g.objectsOutsideObstacles);
     }
     const avg = Math.round(scores.reduce((a2, v) => a2 + v, 0) / Math.max(1, scores.length));
-    console.log(`\n  [plaza] ${cases.length} 份 · 均分 ${avg}`);
+    console.log(`\n  [plaza] ${cases.length} 份 · 结构性分数 ${avg}（不是 fidelity）`);
     check('plaza 不崩溃', crash === 0, `${cases.length - crash}/${cases.length}`);
     check('plaza deterministic', nondet === 0, `${cases.length - nondet}/${cases.length}`);
     check('plaza usable 覆盖 98~102%', coverBad === 0, `最大偏差 ${(w.cov * 100).toFixed(2)}%`);
@@ -368,9 +378,25 @@ for (const gen of NATIVE_GENERATORS.filter((g) => g.id === 'parking')) {
     check('plaza 障碍重叠 = 0', obsBad === 0, `最差 ${(w.obs * 100).toFixed(3)}%`);
     check('plaza 铺装连通块 ≤ 2', compBad === 0, `最差 ${w.comp} 块`);
     check('plaza 最大铺装块 ≥ 90%', largestBad === 0, `最差 ${(w.largest * 100).toFixed(0)}%`);
-    check('plaza 出入口可达 100%', accessBad === 0, `最差 ${(w.acc * 100).toFixed(0)}%`);
+    check('plaza 出入口可达 ≥ oracle', accessBad === 0, `最差 ${(w.acc * 100).toFixed(0)}%`);
     check('plaza 物件全在障碍物外', objBad === 0, `最差 ${(w.obj * 100).toFixed(0)}%`);
-    check('plaza primary 均分 ≥ 75', avg >= 75, `实际 ${avg}`);
+    check('plaza 结构性分数 ≥ 75', avg >= 75, `实际 ${avg}`);
+
+    // ── 设计相似度（**只观测，不进 gate**）：别让 100 分被误读成 1:1 复刻 oracle
+    const fidRows = [];
+    for (const c of cases.slice(0, 3)) {
+      const input = loadSiteInput(c.name);
+      const gold = loadGoldenPlan(c.name);
+      const nat = gen.generate(input);
+      const f = fidelityVs(gold, nat, plazaGate(input, gold), plazaGate(input, nat));
+      fidRows.push(
+        `${c.name.replace(/^city\d+-s\d+-/, '')}: 铺装 ${(f.pavedRatio[0] * 100).toFixed(0)}%→${(f.pavedRatio[1] * 100).toFixed(0)}% · ` +
+          `绿化 ${(f.greenRatio[0] * 100).toFixed(1)}%→${(f.greenRatio[1] * 100).toFixed(1)}% · ` +
+          `面片 ${f.patchCount[0]}→${f.patchCount[1]} · objects/千m² ${f.objectDensity[0].toFixed(1)}→${f.objectDensity[1].toFixed(1)}`,
+      );
+    }
+    console.log('  [观测·fidelity 不进分]');
+    for (const r of fidRows) console.log('    · ' + r);
   }
 }
 

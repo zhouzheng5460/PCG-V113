@@ -7,41 +7,74 @@
 //
 // 统一约定：入参 ring 一律先规整成**逆时针**（从 +Y 往下看），否则顶/底面法线会反。
 import { ccw, sampleBezier } from "../../plan-ir/src/geom.js";
-/** 一条闭合多边形环 → 上下两个平面 + 侧墙，硬边法线。 */
-export function prism(ring, y0, y1) {
+/**
+ * 洞环预处理：外环逆时针、洞顺时针（three 的 `triangulateShape` 靠这个判内外）。
+ * 顶点顺序必须和三角化时的输入顺序一致，否则索引会错位。
+ */
+function holeRings(holes) {
+    if (!holes?.length)
+        return [];
+    return holes.filter((h) => h.length >= 3).map((h) => ccw(h).slice().reverse());
+}
+/** 一条闭合多边形环 → 上下两个平面 + 侧墙，硬边法线。`holes` 可选（带洞的柱体）。 */
+export function prism(ring, y0, y1, holes) {
     const r = ccw(ring);
-    const n = r.length;
+    const hs = holeRings(holes);
+    // 三角化的顶点序列 = 外环 + 各洞（three 返回的索引就是按这个顺序）
+    const seq = [...r, ...hs.flat()];
+    const N = seq.length;
     const pos = [];
     const idx = [];
-    for (const p of r)
+    for (const p of seq)
         pos.push(p[0], y0, p[1]);
-    for (const p of r)
+    for (const p of seq)
         pos.push(p[0], y1, p[1]);
     const contour = r.map((p) => new THREE.Vector2(p[0], p[1]));
-    const tris = THREE.ShapeUtils.triangulateShape(contour, []);
+    const holePath = hs.map((h) => h.map((p) => new THREE.Vector2(p[0], p[1])));
+    const tris = THREE.ShapeUtils.triangulateShape(contour, holePath);
     // 绕序：在 (x,z) 里逆时针的多边形，按右手法则法线指向 **-Y**（因为 y 轴朝上、
     // z 轴朝"屏幕外"时，x-z 平面的正方向与常见的 x-y 平面相反）。
     // 第一版直接把三角化结果当顶面用，结果顶面法线朝下 —— 楼顶一片死黑，而侧面正常。
     // 所以：顶面反向一次（法线 +Y），底面用原序（法线 -Y）。
     for (const t of tris)
-        idx.push(n + t[0], n + t[2], n + t[1]);
+        idx.push(N + t[0], N + t[2], N + t[1]);
     for (const t of tris)
         idx.push(t[0], t[1], t[2]);
-    // 侧墙：每条边一个四边形
-    for (let i = 0; i < n; i++) {
-        const j = (i + 1) % n;
-        idx.push(i, j, n + j, i, n + j, n + i);
+    // 外侧墙：每条边一个四边形
+    for (let i = 0; i < r.length; i++) {
+        const j = (i + 1) % r.length;
+        idx.push(i, j, N + j, i, N + j, N + i);
+    }
+    // 洞的内侧墙：反向绕序，法线朝洞内（否则从洞里看是空心的）
+    let off = r.length;
+    for (const h of hs) {
+        for (let i = 0; i < h.length; i++) {
+            const j = (i + 1) % h.length;
+            const a = off + i;
+            const b = off + j;
+            idx.push(a, N + a, N + b, a, N + b, b);
+        }
+        off += h.length;
     }
     return finishIndexed(pos, idx);
 }
-/** 单个平面多边形（铺装、草地、水面）。法线朝 +Y —— 地面要能接住光。 */
-export function flatRing(ring, y) {
+/**
+ * 单个平面多边形（铺装、草地、水面）。法线朝 +Y —— 地面要能接住光。
+ *
+ * **`holes` 必须传进来**：`PlanSurface.holes` 是契约的一部分（布尔差集减掉内部障碍物的结果）。
+ * 这里第二参数原来硬编码成 `[]`，于是 3D 里"洞"会被填平 —— 数据层说障碍重叠 0%，
+ * 画面里建筑底下却重新铺满。见 `test/holes-contract.test.ts`（P3.2 加的合同测试）。
+ */
+export function flatRing(ring, y, holes) {
     const r = ccw(ring);
+    const hs = holeRings(holes);
+    const seq = [...r, ...hs.flat()];
     const pos = [];
-    for (const p of r)
+    for (const p of seq)
         pos.push(p[0], y, p[1]);
     const contour = r.map((p) => new THREE.Vector2(p[0], p[1]));
-    const tris = THREE.ShapeUtils.triangulateShape(contour, []);
+    const holePath = hs.map((h) => h.map((p) => new THREE.Vector2(p[0], p[1])));
+    const tris = THREE.ShapeUtils.triangulateShape(contour, holePath);
     const idx = [];
     // 同 prism 的顶面：反向才朝 +Y
     for (const t of tris)

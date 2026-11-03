@@ -51,7 +51,8 @@ export function geomKey(n) {
         case 'extrude':
             return `x|${r(n.y0)}|${r(n.y1)}|${ringKey(n.ring)}`;
         case 'surface':
-            return `s|${r(n.y)}|${ringKey(n.ring)}`;
+            // holes 必须进几何键：否则"只把洞改了"不会触发重建，画面还是旧的
+            return `s|${r(n.y)}|${ringKey(n.ring)}|h${(n.holes ?? []).length}:${(n.holes ?? []).map(ringKey).join(',')}`;
         case 'ribbon':
             return `b|${r(n.width)}|${r(n.y)}|${ringKey(n.path)}`;
         case 'line':

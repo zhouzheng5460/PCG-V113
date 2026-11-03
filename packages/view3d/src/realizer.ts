@@ -201,8 +201,8 @@ export class Realizer {
 
     // 剩下的三种都是"面/体"，几何各造一份
     let geo: any;
-    if (node.type === 'extrude') geo = prism(node.ring, node.y0, node.y1);
-    else if (node.type === 'surface') geo = flatRing(node.ring, node.y);
+    if (node.type === 'extrude') geo = prism(node.ring, node.y0, node.y1, node.holes);
+    else if (node.type === 'surface') geo = flatRing(node.ring, node.y, node.holes);
     else geo = ribbon(node.path, node.width, node.y);
 
     const opacity = node.type === 'surface' ? (node.opacity ?? 1) : 1;

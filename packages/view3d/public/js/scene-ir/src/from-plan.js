@@ -154,6 +154,8 @@ export function buildSceneIR(ch, ring, opts) {
                 layer: 'surfaces',
                 type: 'surface',
                 ring: s.ring,
+                // 洞一路带下去（否则 3D/GLB 里洞会被填平）
+                ...(s.holes?.length ? { holes: s.holes } : {}),
                 y: ELEV.surface + (s.y ?? 0) * 0.001,
                 color: SURFACE_COLOR[s.role] ?? 0x555a60,
                 opacity: s.role === 'water' ? 1 : 0.98,

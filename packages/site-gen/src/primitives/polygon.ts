@@ -11,7 +11,7 @@
 // 先铺整块草地，再把沥青画在上面。这和 golden 的做法一致（golden 也是整块 grass + asphalt 覆盖），
 // 所以不会引入口径差。
 
-import { area as ringArea, bounds, isCCW, type Vec2 } from '../../../plan-ir/src/geom.ts';
+import { area as ringArea, bounds, isCCW, pointInRing, type Vec2 } from '../../../plan-ir/src/geom.ts';
 
 /** 把环变成逆时针（内部一律按 CCW 处理，法向才有一致的"朝内"） */
 export function ccwRing(ring: readonly Vec2[]): Vec2[] {
@@ -89,9 +89,14 @@ export function offsetRing(
     out.push(hit ?? ([cur.p[0], cur.p[1]] as Vec2));
   }
 
+  // **内缩过头会产生"镜像翻转"的假环**：20×20 内缩 12 会得到一个 4×4 方块（面积 16）——
+  // 面积确实变小、顶点也都在环内，原来的 grown/overCut 判据全放过它。
+  // 本质条件是"内缩量不能超过最小半宽"：超过就必然翻转，一律夹取回退。
+  const halfMin = minAreaBox(src).h / 2;
+  const outside = out.some((p) => !pointInRing(p, src)) || dist > halfMin + 1e-6;
   const a0 = ringArea(src);
   const a1 = ringArea(out);
-  const grown = a1 <= 1e-6 || a1 > a0 + 1e-6;
+  const grown = outside || a1 <= 1e-6 || a1 > a0 + 1e-6;
   // 内缩后自交的判据：面积掉得比"整条周长 × dist"还多，说明环翻了
   const perimeter = src.reduce((s, p, i) => {
     const q = src[(i + 1) % src.length];

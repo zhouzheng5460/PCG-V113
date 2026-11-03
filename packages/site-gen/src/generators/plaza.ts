@@ -66,12 +66,12 @@ export const plaza: SiteGenerator = {
     }
 
     const s = input.settings;
-    const greenM = Math.max(0, num(s.plazaGreenBandM, 2.5));
+    const greenM = Math.max(0, num(s.plazaGreenBandM, 1.0));
     const edgeM = Math.max(0, num(s.plazaEdgeBandM, 8));
     const coreInsetM = Math.max(1, num(s.plazaCoreInsetM, 12));
-    const treeSpacing = Math.max(4, num(s.plazaTreeSpacingM, 12));
-    const lampSpacing = Math.max(8, num(s.plazaLampSpacingM, 24));
-    const benchDensity = Math.max(0, num(s.plazaBenchPer1000M2, 1.2));
+    const treeSpacing = Math.max(4, num(s.plazaTreeSpacingM, 18));
+    const lampSpacing = Math.max(8, num(s.plazaLampSpacingM, 34));
+    const benchDensity = Math.max(0, num(s.plazaBenchPer1000M2, 0.5));
 
     // ── 1. 障碍物先 **union**，再一次性 difference（禁止逐栋边减边生成面）
     const obs: PolygonRegion[] = input.obstacles.map((o) => ({
@@ -96,7 +96,17 @@ export const plaza: SiteGenerator = {
 
     // ── 3. 语义分区：每块可用区域各切成 paved / green（绿地是**贴边窄带**）
     for (const piece of usable) {
-      const inner = greenM > 0 ? offsetRing(piece.outer, -greenM) : null;
+      // `offsetRing(ring, dist)` 的约定是「**正数向内**」（parking 也一直用正值）。
+      // 写成负数会往外扩，被内部的 grown 判据夹取 —— 第一版就是这样：绿带全是 0。
+      // 凹环上仍可能被夹取，所以退一档再试：greenM → 0.6·greenM → 0.8 m，全失败才放弃绿带。
+      let inner: ReturnType<typeof offsetRing> | null = null;
+      for (const d of [greenM, greenM * 0.6, 0.8].filter((v) => v > 0.05)) {
+        const t = offsetRing(piece.outer, d);
+        if (!t.clamped && t.ring.length >= 3) {
+          inner = t;
+          break;
+        }
+      }
       if (inner && !inner.clamped && inner.ring.length >= 3) {
         // **全用差集，不用交集**。为什么：
         //   `usable` 是"地块减去障碍物"的结果，**带 `holes`**（实测 p90-plaza：外环 13123、8 个洞、净 7505）。
@@ -117,14 +127,14 @@ export const plaza: SiteGenerator = {
 
       // edge 语义带（更宽的一圈，仍属铺装；只用于放沿边设施与 region 标注）
       if (edgeM > greenM) {
-        const innerE = offsetRing(piece.outer, -edgeM);
+        const innerE = offsetRing(piece.outer, edgeM);
         if (innerE && !innerE.clamped) {
           for (const e of differenceRegion(piece, [asRegion(innerE.ring)])) edgePieces.push(e);
         }
       }
 
       // core：内缩到中心的小面（"centroid + inset"，不做最大内接圆）
-      const core = offsetRing(piece.outer, -coreInsetM);
+      const core = offsetRing(piece.outer, coreInsetM);
       if (core && !core.clamped && core.ring.length >= 3 && Math.abs(ringArea(core.ring)) > 1) {
         corePieces.push(asRegion(core.ring));
       }

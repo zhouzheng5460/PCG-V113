@@ -30,6 +30,11 @@ interface NodeBase {
 /** 挤出体：楼块、地块底板。 */
 export interface ExtrudeNode extends NodeBase {
   type: 'extrude';
+  /**
+   * 洞（可选）。楼体一般没有，但带天井/中庭的体量需要 —— 这条通路和 `SurfaceNode.holes`
+   * 是同一条合同（见 `packages/plan-ir/test/holes-contract.test.ts`）。
+   */
+  holes?: Vec2[][];
   ring: Vec2[];
   y0: number;
   y1: number;
@@ -42,6 +47,14 @@ export interface ExtrudeNode extends NodeBase {
 export interface SurfaceNode extends NodeBase {
   type: 'surface';
   ring: Vec2[];
+  /**
+   * 洞（可选）。来自 `PlanSurface.holes`：布尔差集减掉内部障碍物的结果。
+   *
+   * **必须一路带到渲染层**：`flatRing(ring, y, holes)` 的第二个参数原来硬编码 `[]`，
+   * 于是数据层说"障碍重叠 0%"、画面里建筑底下却重新铺满。合同测试见
+   * `packages/plan-ir/test/holes-contract.test.ts`。
+   */
+  holes?: Vec2[][];
   y: number;
   color: number;
   opacity?: number;
@@ -150,7 +163,8 @@ export function geomKey(n: SceneNode): string {
     case 'extrude':
       return `x|${r(n.y0)}|${r(n.y1)}|${ringKey(n.ring)}`;
     case 'surface':
-      return `s|${r(n.y)}|${ringKey(n.ring)}`;
+      // holes 必须进几何键：否则"只把洞改了"不会触发重建，画面还是旧的
+      return `s|${r(n.y)}|${ringKey(n.ring)}|h${(n.holes ?? []).length}:${(n.holes ?? []).map(ringKey).join(',')}`;
     case 'ribbon':
       return `b|${r(n.width)}|${r(n.y)}|${ringKey(n.path)}`;
     case 'line':

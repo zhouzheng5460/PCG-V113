@@ -44,8 +44,13 @@ export interface PlazaGateReport {
   surfacePatchCount: number;
   /** 观测：region 数（不进分） */
   regionCount: number;
-  /** 门禁派生分（0~100）：只看上面那些 fidelity 项，不看"像不像 oracle" */
-  score: number;
+  /**
+   * **结构性分数**（0~100）：只看上面那些"合法性"判据。
+   *
+   * 刻意**不叫 fidelity**：它证明的是"这是一个合法的广场"，不是"这是 Placemaker 会设计的那个广场"。
+   * 与 oracle 的设计相似度另算（`fidelityVs`），并且只作观测、不进 release gate。
+   */
+  structuralScore: number;
 }
 
 /** 1 m 栅格连通块（只看给定面片集合） */
@@ -193,7 +198,7 @@ export function plazaGate(input: SiteInput, plan: Plan): PlazaGateReport {
     accessReachable >= 0.999 ? 1 : 0,
     objectsOutside >= 0.999 ? 1 : 0,
   ];
-  const score = Math.round((usum(items) / items.length) * 100);
+  const structuralScore = Math.round((usum(items) / items.length) * 100);
 
   return {
     siteArea,
@@ -210,7 +215,7 @@ export function plazaGate(input: SiteInput, plan: Plan): PlazaGateReport {
     objectsOutsideObstacles: objectsOutside,
     surfacePatchCount: plan.surfaces.length,
     regionCount: (plan.regions ?? []).length,
-    score,
+    structuralScore,
   };
 }
 
@@ -253,3 +258,39 @@ function distToRingLocal(p: Vec2, ring: readonly Vec2[]): number {
 }
 
 void dist;
+
+/**
+ * **设计相似度**（观测，不进 gate）。
+ *
+ * 结构性分数只回答"合不合法"；这一组回答"像不像 Placemaker 的设计"。
+ * 按用户 2026-11-03：不用现在追 95 分，但**别让 100 分被误读成 1:1 复刻**。
+ */
+export interface PlazaFidelity {
+  /** 铺装 / usable：oracle vs native */
+  pavedRatio: [number, number];
+  /** 绿化 / usable */
+  greenRatio: [number, number];
+  /** 面片数（纯观测，明确不进分） */
+  patchCount: [number, number];
+  /** region 数 */
+  regionCount: [number, number];
+  /** 物件密度 / 千 m² */
+  objectDensity: [number, number];
+  /** 障碍响应：障碍面积占地块比（两边应当一致，因为它来自输入） */
+  obstacleRatio: [number, number];
+}
+
+export function fidelityVs(gold: Plan, native: Plan, goldGate: PlazaGateReport, nativeGate: PlazaGateReport): PlazaFidelity {
+  const r = (a: number, b: number): number => (b > 0 ? a / b : 0);
+  return {
+    pavedRatio: [r(goldGate.pavedArea, goldGate.usableArea), r(nativeGate.pavedArea, nativeGate.usableArea)],
+    greenRatio: [r(goldGate.greenArea, goldGate.usableArea), r(nativeGate.greenArea, nativeGate.usableArea)],
+    patchCount: [gold.surfaces.length, native.surfaces.length],
+    regionCount: [(gold.regions ?? []).length, (native.regions ?? []).length],
+    objectDensity: [
+      (gold.objects.length / Math.max(1, gold.area)) * 1000,
+      (native.objects.length / Math.max(1, native.area)) * 1000,
+    ],
+    obstacleRatio: [r(goldGate.obstacleArea, goldGate.siteArea), r(nativeGate.obstacleArea, nativeGate.siteArea)],
+  };
+}

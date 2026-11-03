@@ -396,6 +396,46 @@ Render               triangulation（由下游负责）
 | 物件全在障碍物外 | 100% | **100%** |
 | primary 均分 | ≥ 75 | **100**（10 例） |
 
+### P3.2 Contract Hardening：`holes` 贯通下游 + 分数改名
+
+**① `PlanSurface.holes` 已贯通所有消费者**（`packages/plan-ir/test/holes-contract.test.ts`，18 项）：
+
+| 消费者 | 状态 |
+| --- | --- |
+| `metrics`（site-gen） | ✅ 面积/覆盖/重叠全部扣洞 |
+| `plan-ir/normalize` | ✅ 洞量化 + 顺时针 + 进排序键；被洞吃光的面丢弃 |
+| `scene-ir` 适配 | ✅ `SurfaceNode.holes` / `ExtrudeNode.holes`；`geomKey` 含洞（否则只改洞不重建） |
+| `view3d` 渲染 | ✅ `flatRing`/`prism` 收 holes；`triangulateShape` 不再硬编码 `[]` |
+| 命中测试 | ✅ 由网格承担（三角化带洞后 raycast 自然不命中洞） |
+| GLB 导出 | ✅ 走同一套 `flatRing` |
+
+合同 fixture：**100×100 铺装 − 中心 20×20 障碍物** → 设计面积 9600 / 采样渲染面积 9600（±1%）/
+洞内命中 false / 洞外 true / 源码层禁止回退成 `triangulateShape(contour, [])`。
+
+**② 分数改名（D-083）**：Plaza 那个 100 分是 **结构性分数**（"这是一个合法广场"），
+不是 fidelity（"这是 Placemaker 会设计的广场"）。两者已分开：
+
+```
+结构性分数（gate）     覆盖 / 重叠 / 障碍 / 连通 / 最大块 / 出入口 / 物件
+设计相似度（观测）     铺装比例 · 绿化比例 · 面片数 · region 数 · 物件密度 · 障碍响应
+```
+
+实测观测值（与 oracle 对比）：
+
+| 用例 | 铺装 | 绿化 | 面片 | objects/千m² |
+| --- | --- | --- | --- | --- |
+| p90-plaza | 93% → 93% | 0.9% → 6.5% | 146 → 2 | 7.4 → 22.5 |
+| r0-rect | 97% → 96% | 2.6% → 3.6% | 123 → 2 | 10.3 → 21.8 |
+| r1-elongated | 99% → 95% | 0.7% → 5.3% | 135 → 2 | 10.7 → 32.0 |
+
+**没在追平**：绿化偏多 2~7 倍、物件密度偏密 2~3 倍。这些是观测项，不进 gate（D-083）。
+
+**③ 一处归因纠正（D-080）**：上一轮我把 plaza 那次失败记成"`intersectRegion` 对带洞不可靠"——
+**这是错的**。复核 5 组组合（带洞×盖住洞 / 带洞×横穿 / 反序）都正确：
+`intersect(带洞, 盖住洞)` = 500 m² + 1 洞，`intersect(带洞, 横穿)` = 1000 m² + 0 洞。
+真实原因是 **`offsetRing` 被传了负值**（约定是正数向内，写负会往外扩 → 被夹取 → 内缩环 == 原环）。
+所以 API 状态是 `difference 稳定 / union 稳定 / intersect 稳定`，**受限的是 `offsetRing`**（凹环会夹取）。
+
 ### 原语复用（硬门禁）
 
 ```

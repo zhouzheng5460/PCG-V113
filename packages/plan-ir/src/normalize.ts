@@ -18,8 +18,17 @@ export const TOL = 1e-3;
 
 export function normalizePlan(plan: Plan): Plan {
   const surfaces = plan.surfaces
-    .map((s) => ({ ...s, ring: quantizeRing(ccw(s.ring)), y: s.y === undefined ? 0 : q(s.y) }))
-    .filter((s) => s.ring.length >= 3 && area(s.ring) > 0.01)
+    .map((s) => {
+      // 洞也要归一：量化 + **顺时针**（与外环相反）。不归一的话，
+      // 同一份几何换个输入顺序就会算出不同的 key，快照不再稳定。
+      const holes = (s.holes ?? [])
+        .map((h) => quantizeRing(ccw(h)).slice().reverse())
+        .filter((h) => h.length >= 3 && area(h) > 1e-4);
+      const ring = quantizeRing(ccw(s.ring));
+      return { ...s, ring, ...(holes.length ? { holes } : { holes: undefined }), y: s.y === undefined ? 0 : q(s.y) };
+    })
+    // 有效面积 = 外环 − 洞；被洞吃光的表面要丢掉（否则会留下一个"看不见但占数"的面）
+    .filter((s) => s.ring.length >= 3 && area(s.ring) - (s.holes ?? []).reduce((a, h) => a + area(h), 0) > 0.01)
     .sort((a, b) => keyOf(a) .localeCompare(keyOf(b)));
 
   const nets = plan.nets.map((n) => normalizeNet(n)).sort((a, b) => keyOf(a).localeCompare(keyOf(b)));
@@ -45,16 +54,21 @@ function normalizeNet(n: PlanNet): PlanNet {
   };
 }
 
-/** 排序键：角色 + 质心（量化到 0.1 m，避免噪声导致顺序抖动）。 */
+/** 排序键：角色 + 质心（量化到 0.1 m）+ 洞签名。 */
 function keyOf(e: PlanSurface | PlanNet | PlanObject | { quad: readonly (readonly [number, number])[] }): string {
   const role = 'role' in e ? (e.role as string) : 'zoning';
-  const cat = 'category' in e && e.category ? (e.category as string) : '';
+  const cat = 'category' in e && e.category ? e.category : '';
   let c: readonly [number, number];
   if ('ring' in e) c = centroid(e.ring);
   else if ('quad' in e) c = centroid(e.quad as readonly (readonly [number, number])[]);
   else if ('x' in e) c = [e.x, e.z];
   else c = centroid([e.a, e.b, e.c, e.d]);
-  return `${role}\u0000${cat}\u0000${(Math.round(c[0] * 10) / 10).toFixed(1)}\u0000${(Math.round(c[1] * 10) / 10).toFixed(1)}`;
+  // **洞要进排序键**：只改了洞的两块面不能被当成同一个（否则 normalize 之后顺序不稳）
+  const holes = (e as { holes?: readonly (readonly [number, number])[][] }).holes;
+  const hk = Array.isArray(holes)
+    ? holes.map((h) => centroid(h).map((v) => (Math.round(v * 10) / 10).toFixed(1)).join(',')).join(';')
+    : '';
+  return `${role}\u0000${cat}\u0000${(Math.round(c[0] * 10) / 10).toFixed(1)}\u0000${(Math.round(c[1] * 10) / 10).toFixed(1)}\u0000${hk}`;
 }
 
 /** L1 结构不变量。这些数必须与 C# 一致，否则行为不等价。 */
