@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "rewriteRelativeImportExtensions": true,
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "types": [],
+    "strict": true,
+    "rootDir": "packages",
+    "outDir": "packages/view3d/public/js",
+    "noEmit": false,
+    "declaration": false,
+    "sourceMap": false
+  },
+  "include": [
+    "packages/plan-ir/src/**/*.ts",
+    "packages/street-rules/src/**/*.ts",
+    "packages/slots/src/**/*.ts",
+    "packages/scene-ir/src/**/*.ts",
+    "packages/view3d/src/**/*.ts"
+  ]
+}

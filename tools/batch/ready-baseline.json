@@ -1,0 +1,330 @@
+{
+ "note": "由 packages/editor-web/build.mjs 生成。每份地块在 C# 引擎里的 ready 判定（含 markers.given/auto）。",
+ "generatedAt": "2026-11-02 05:00:54",
+ "entries": {
+  "city24-s8-p0-parking": {
+   "ready": true,
+   "reason": "",
+   "given": 0,
+   "auto": 2
+  },
+  "city24-s8-p0-pitch": {
+   "ready": true,
+   "reason": "",
+   "given": 0,
+   "auto": 0
+  },
+  "city24-s8-p1-parking": {
+   "ready": true,
+   "reason": "",
+   "given": 0,
+   "auto": 2
+  },
+  "city24-s8-p42-abandonedLot-demolished": {
+   "ready": true,
+   "reason": "",
+   "given": 0,
+   "auto": 2
+  },
+  "city24-s8-p42-abandonedLot": {
+   "ready": true,
+   "reason": "",
+   "given": 0,
+   "auto": 2
+  },
+  "city24-s8-p42-botanicalGarden": {
+   "ready": true,
+   "reason": "",
+   "given": 0,
+   "auto": 2
+  },
+  "city24-s8-p42-campground": {
+   "ready": true,
+   "reason": "",
+   "given": 0,
+   "auto": 1
+  },
+  "city24-s8-p42-carYard": {
+   "ready": true,
+   "reason": "",
+   "given": 0,
+   "auto": 1
+  },
+  "city24-s8-p42-communityGarden": {
+   "ready": true,
+   "reason": "",
+   "given": 0,
+   "auto": 2
+  },
+  "city24-s8-p42-dogPark": {
+   "ready": true,
+   "reason": "",
+   "given": 0,
+   "auto": 2
+  },
+  "city24-s8-p42-formalGarden": {
+   "ready": true,
+   "reason": "",
+   "given": 0,
+   "auto": 2
+  },
+  "city24-s8-p42-greenwayPark": {
+   "ready": true,
+   "reason": "",
+   "given": 0,
+   "auto": 2
+  },
+  "city24-s8-p42-junkYard": {
+   "ready": true,
+   "reason": "",
+   "given": 0,
+   "auto": 1
+  },
+  "city24-s8-p42-mallPark": {
+   "ready": true,
+   "reason": "",
+   "given": 1,
+   "auto": 0
+  },
+  "city24-s8-p42-marketSquare": {
+   "ready": true,
+   "reason": "",
+   "given": 1,
+   "auto": 0
+  },
+  "city24-s8-p42-natureReserve": {
+   "ready": true,
+   "reason": "",
+   "given": 0,
+   "auto": 2
+  },
+  "city24-s8-p42-outdoorMall": {
+   "ready": true,
+   "reason": "",
+   "given": 0,
+   "auto": 2
+  },
+  "city24-s8-p42-park": {
+   "ready": true,
+   "reason": "",
+   "given": 0,
+   "auto": 2
+  },
+  "city24-s8-p42-parking": {
+   "ready": true,
+   "reason": "",
+   "given": 0,
+   "auto": 2
+  },
+  "city24-s8-p42-picnicGrounds": {
+   "ready": true,
+   "reason": "",
+   "given": 0,
+   "auto": 2
+  },
+  "city24-s8-p42-pitch": {
+   "ready": true,
+   "reason": "",
+   "given": 0,
+   "auto": 0
+  },
+  "city24-s8-p42-polishCoastal": {
+   "ready": true,
+   "reason": "",
+   "given": 0,
+   "auto": 0
+  },
+  "city24-s8-p42-polishGarden": {
+   "ready": true,
+   "reason": "",
+   "given": 0,
+   "auto": 0
+  },
+  "city24-s8-p42-polishManicured": {
+   "ready": true,
+   "reason": "",
+   "given": 0,
+   "auto": 0
+  },
+  "city24-s8-p42-polishMeadow": {
+   "ready": true,
+   "reason": "",
+   "given": 0,
+   "auto": 0
+  },
+  "city24-s8-p42-polishNatural": {
+   "ready": true,
+   "reason": "",
+   "given": 0,
+   "auto": 0
+  },
+  "city24-s8-p42-polishRustic": {
+   "ready": true,
+   "reason": "",
+   "given": 0,
+   "auto": 0
+  },
+  "city24-s8-p42-polishTidy": {
+   "ready": true,
+   "reason": "",
+   "given": 0,
+   "auto": 0
+  },
+  "city24-s8-p42-polishYard": {
+   "ready": true,
+   "reason": "",
+   "given": 0,
+   "auto": 0
+  },
+  "city24-s8-p42-pond": {
+   "ready": true,
+   "reason": "",
+   "given": 0,
+   "auto": 0
+  },
+  "city24-s8-p42-runningTrack": {
+   "ready": true,
+   "reason": "",
+   "given": 0,
+   "auto": 0
+  },
+  "city24-s8-p42-scrapyard": {
+   "ready": true,
+   "reason": "",
+   "given": 0,
+   "auto": 1
+  },
+  "city24-s8-p42-shopsPark": {
+   "ready": true,
+   "reason": "",
+   "given": 0,
+   "auto": 2
+  },
+  "city24-s8-p42-sportsPark": {
+   "ready": true,
+   "reason": "",
+   "given": 0,
+   "auto": 2
+  },
+  "city24-s8-p42-stripMall": {
+   "ready": true,
+   "reason": "",
+   "given": 1,
+   "auto": 0
+  },
+  "city24-s8-p90-carYard": {
+   "ready": true,
+   "reason": "",
+   "given": 0,
+   "auto": 1
+  },
+  "city24-s8-p90-park": {
+   "ready": true,
+   "reason": "",
+   "given": 0,
+   "auto": 2
+  },
+  "city24-s8-p90-parking": {
+   "ready": true,
+   "reason": "",
+   "given": 0,
+   "auto": 2
+  },
+  "city24-s8-p90-parking.part0": {
+   "ready": true,
+   "reason": "",
+   "given": 0,
+   "auto": 1
+  },
+  "city24-s8-p90-parking.part1": {
+   "ready": true,
+   "reason": "",
+   "given": 0,
+   "auto": 1
+  },
+  "city24-s8-p90-parking.part10": {
+   "ready": true,
+   "reason": "",
+   "given": 0,
+   "auto": 1
+  },
+  "city24-s8-p90-parking.part11": {
+   "ready": true,
+   "reason": "",
+   "given": 0,
+   "auto": 1
+  },
+  "city24-s8-p90-parking.part12": {
+   "ready": true,
+   "reason": "",
+   "given": 0,
+   "auto": 1
+  },
+  "city24-s8-p90-parking.part13": {
+   "ready": true,
+   "reason": "",
+   "given": 0,
+   "auto": 1
+  },
+  "city24-s8-p90-parking.part14": {
+   "ready": true,
+   "reason": "",
+   "given": 0,
+   "auto": 1
+  },
+  "city24-s8-p90-parking.part2": {
+   "ready": true,
+   "reason": "",
+   "given": 0,
+   "auto": 1
+  },
+  "city24-s8-p90-parking.part3": {
+   "ready": true,
+   "reason": "",
+   "given": 0,
+   "auto": 1
+  },
+  "city24-s8-p90-parking.part4": {
+   "ready": true,
+   "reason": "",
+   "given": 0,
+   "auto": 1
+  },
+  "city24-s8-p90-parking.part5": {
+   "ready": true,
+   "reason": "",
+   "given": 0,
+   "auto": 1
+  },
+  "city24-s8-p90-parking.part6": {
+   "ready": false,
+   "reason": "Reason.NeedsEntrance",
+   "given": 0,
+   "auto": 0
+  },
+  "city24-s8-p90-parking.part7": {
+   "ready": true,
+   "reason": "",
+   "given": 0,
+   "auto": 1
+  },
+  "city24-s8-p90-parking.part8": {
+   "ready": true,
+   "reason": "",
+   "given": 0,
+   "auto": 1
+  },
+  "city24-s8-p90-parking.part9": {
+   "ready": true,
+   "reason": "",
+   "given": 0,
+   "auto": 1
+  },
+  "city24-s8-p90-plaza": {
+   "ready": true,
+   "reason": "",
+   "given": 0,
+   "auto": 6
+  }
+ }
+}

@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    驱动器（路线 B 的第二步）：证明抽出来的 PlacemakerCore 不只"能编译"，而且**能出图**。
+    用 ParkingLayer 在一个人造地块上跑一次真实的 Plan，把结果画成 SVG。
+    纯控制台，无第三方依赖。
+  -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <AssemblyName>PlacemakerDriver</AssemblyName>
+    <RootNamespace>Placemaker.Driver</RootNamespace>
+    <InvariantGlobalization>true</InvariantGlobalization>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PlacemakerCore.csproj" />
+  </ItemGroup>
+
+</Project>

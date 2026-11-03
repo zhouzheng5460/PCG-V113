@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>三维场景 · Placemaker 输出通道</title>
+<link rel="icon" href="data:,"/>
+<link rel="stylesheet" href="./style.css"/>
+</head>
+<body>
+
+<header>
+  <h1>三维场景</h1>
+  <span class="sub">Placemaker 的四个几何通道直接立起来 · 左键转 / 滚轮缩 / 右键平移</span>
+  <span id="meta" class="meta"></span>
+</header>
+
+<main>
+  <aside id="left">
+    <input id="search" type="search" placeholder="筛选方案或生成器…" autocomplete="off"/>
+    <div class="legend">
+      <span><i class="dot ok"></i>ready</span>
+      <span><i class="dot bad"></i>not ready</span>
+      <span><i class="tag">楼</i>有宗地</span>
+    </div>
+    <div id="list"></div>
+  </aside>
+
+  <section id="center">
+    <div id="stage"></div>
+    <div id="views" class="views"></div>
+    <div class="hint">
+      <b>看什么</b>：灰面是铺装、绿面是草地、深色带是街道（两侧浅色是 1.6 m 人行道）、紫框是宗地、米色块是楼。
+      左键拖转、滚轮缩放、右键平移、<b>点楼块看它几层多高</b>，右栏还能拖滑块改层数 —— 只有那一栋会重建。
+    </div>
+  </section>
+
+  <aside id="right">
+    <div class="sect">图层</div>
+    <div id="toggles"></div>
+    <div class="sect">当前方案</div>
+    <div id="info"><div class="empty">选一份方案</div></div>
+    <div class="sect">选中楼块</div>
+    <div id="picked"><div class="empty">点画布里的楼块</div></div>
+  </aside>
+</main>
+
+<script src="./js/vendor/three.inline.js"></script>
+<script src="./data/scenes.js"></script>
+<script src="./js/view3d/src/app.js"></script>
+</body>
+</html>

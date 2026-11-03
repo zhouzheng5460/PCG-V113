@@ -1,0 +1,1458 @@
+{
+ "protocol": "site-gen-golden/1",
+ "note": "由 tools/golden/emit.mjs 生成。plans/ 是 C# 的权威输出，用来做原生 TS 实现的对照基准。",
+ "generatedAt": "2026-11-03 02:21:22",
+ "channels": [
+  "surfaces",
+  "nets",
+  "objects",
+  "areas",
+  "regions",
+  "zoning",
+  "paint",
+  "terraform",
+  "stats",
+  "issues"
+ ],
+ "count": 54,
+ "byGenerator": {
+  "parking": 19,
+  "pitch": 2,
+  "abandonedLot": 2,
+  "botanicalGarden": 1,
+  "campground": 1,
+  "carYard": 2,
+  "communityGarden": 1,
+  "dogPark": 1,
+  "formalGarden": 1,
+  "greenwayPark": 1,
+  "junkYard": 1,
+  "mallPark": 1,
+  "marketSquare": 1,
+  "natureReserve": 1,
+  "outdoorMall": 1,
+  "park": 2,
+  "picnicGrounds": 1,
+  "polishCoastal": 1,
+  "polishGarden": 1,
+  "polishManicured": 1,
+  "polishMeadow": 1,
+  "polishNatural": 1,
+  "polishRustic": 1,
+  "polishTidy": 1,
+  "polishYard": 1,
+  "pond": 1,
+  "runningTrack": 1,
+  "scrapyard": 1,
+  "shopsPark": 1,
+  "sportsPark": 1,
+  "stripMall": 1,
+  "plaza": 1
+ },
+ "cases": [
+  {
+   "name": "city24-s8-p0-parking",
+   "generator": "parking",
+   "ok": true,
+   "why": "",
+   "ready": true,
+   "channels": {
+    "surfaces": 44,
+    "nets": 62,
+    "objects": 649,
+    "areas": 1,
+    "regions": 44,
+    "zoning": 0,
+    "paint": 0,
+    "terraform": 0,
+    "stats": 6,
+    "issues": 0
+   },
+   "input": {
+    "ring": 27,
+    "nets": 21,
+    "settings": 33,
+    "markers": 2
+   },
+   "bytes": 133786
+  },
+  {
+   "name": "city24-s8-p0-pitch",
+   "generator": "pitch",
+   "ok": true,
+   "why": "",
+   "ready": true,
+   "channels": {
+    "surfaces": 1,
+    "nets": 2,
+    "objects": 360,
+    "areas": 0,
+    "regions": 0,
+    "zoning": 0,
+    "paint": 0,
+    "terraform": 0,
+    "stats": 5,
+    "issues": 0
+   },
+   "input": {
+    "ring": 32,
+    "nets": 25,
+    "settings": 20,
+    "markers": 0
+   },
+   "bytes": 42755
+  },
+  {
+   "name": "city24-s8-p1-parking",
+   "generator": "parking",
+   "ok": true,
+   "why": "",
+   "ready": true,
+   "channels": {
+    "surfaces": 12,
+    "nets": 34,
+    "objects": 896,
+    "areas": 1,
+    "regions": 12,
+    "zoning": 0,
+    "paint": 0,
+    "terraform": 0,
+    "stats": 6,
+    "issues": 0
+   },
+   "input": {
+    "ring": 61,
+    "nets": 46,
+    "settings": 33,
+    "markers": 2
+   },
+   "bytes": 134429
+  },
+  {
+   "name": "city24-s8-p42-abandonedLot-demolished",
+   "generator": "abandonedLot",
+   "ok": true,
+   "why": "",
+   "ready": true,
+   "channels": {
+    "surfaces": 1,
+    "nets": 39,
+    "objects": 258,
+    "areas": 0,
+    "regions": 2,
+    "zoning": 0,
+    "paint": 2,
+    "terraform": 0,
+    "stats": 8,
+    "issues": 1
+   },
+   "input": {
+    "ring": 24,
+    "nets": 22,
+    "settings": 36,
+    "markers": 2
+   },
+   "bytes": 41931
+  },
+  {
+   "name": "city24-s8-p42-abandonedLot",
+   "generator": "abandonedLot",
+   "ok": true,
+   "why": "",
+   "ready": true,
+   "channels": {
+    "surfaces": 1,
+    "nets": 39,
+    "objects": 258,
+    "areas": 0,
+    "regions": 2,
+    "zoning": 0,
+    "paint": 1,
+    "terraform": 0,
+    "stats": 8,
+    "issues": 1
+   },
+   "input": {
+    "ring": 24,
+    "nets": 22,
+    "settings": 36,
+    "markers": 2
+   },
+   "bytes": 41084
+  },
+  {
+   "name": "city24-s8-p42-botanicalGarden",
+   "generator": "botanicalGarden",
+   "ok": true,
+   "why": "",
+   "ready": true,
+   "channels": {
+    "surfaces": 2,
+    "nets": 50,
+    "objects": 197,
+    "areas": 0,
+    "regions": 7,
+    "zoning": 0,
+    "paint": 0,
+    "terraform": 0,
+    "stats": 6,
+    "issues": 1
+   },
+   "input": {
+    "ring": 24,
+    "nets": 22,
+    "settings": 28,
+    "markers": 2
+   },
+   "bytes": 37116
+  },
+  {
+   "name": "city24-s8-p42-campground",
+   "generator": "campground",
+   "ok": true,
+   "why": "",
+   "ready": true,
+   "channels": {
+    "surfaces": 16,
+    "nets": 11,
+    "objects": 122,
+    "areas": 0,
+    "regions": 4,
+    "zoning": 0,
+    "paint": 0,
+    "terraform": 0,
+    "stats": 5,
+    "issues": 0
+   },
+   "input": {
+    "ring": 24,
+    "nets": 22,
+    "settings": 26,
+    "markers": 1
+   },
+   "bytes": 23647
+  },
+  {
+   "name": "city24-s8-p42-carYard",
+   "generator": "carYard",
+   "ok": true,
+   "why": "",
+   "ready": true,
+   "channels": {
+    "surfaces": 16,
+    "nets": 18,
+    "objects": 809,
+    "areas": 0,
+    "regions": 2,
+    "zoning": 0,
+    "paint": 201,
+    "terraform": 65,
+    "stats": 7,
+    "issues": 2
+   },
+   "input": {
+    "ring": 24,
+    "nets": 22,
+    "settings": 18,
+    "markers": 1
+   },
+   "bytes": 190967
+  },
+  {
+   "name": "city24-s8-p42-communityGarden",
+   "generator": "communityGarden",
+   "ok": true,
+   "why": "",
+   "ready": true,
+   "channels": {
+    "surfaces": 48,
+    "nets": 25,
+    "objects": 203,
+    "areas": 0,
+    "regions": 8,
+    "zoning": 0,
+    "paint": 0,
+    "terraform": 0,
+    "stats": 6,
+    "issues": 0
+   },
+   "input": {
+    "ring": 24,
+    "nets": 22,
+    "settings": 21,
+    "markers": 2
+   },
+   "bytes": 44447
+  },
+  {
+   "name": "city24-s8-p42-dogPark",
+   "generator": "dogPark",
+   "ok": true,
+   "why": "",
+   "ready": true,
+   "channels": {
+    "surfaces": 3,
+    "nets": 22,
+    "objects": 124,
+    "areas": 1,
+    "regions": 1,
+    "zoning": 0,
+    "paint": 0,
+    "terraform": 0,
+    "stats": 5,
+    "issues": 0
+   },
+   "input": {
+    "ring": 24,
+    "nets": 22,
+    "settings": 22,
+    "markers": 2
+   },
+   "bytes": 19419
+  },
+  {
+   "name": "city24-s8-p42-formalGarden",
+   "generator": "formalGarden",
+   "ok": true,
+   "why": "",
+   "ready": true,
+   "channels": {
+    "surfaces": 50,
+    "nets": 35,
+    "objects": 304,
+    "areas": 0,
+    "regions": 4,
+    "zoning": 0,
+    "paint": 0,
+    "terraform": 0,
+    "stats": 5,
+    "issues": 0
+   },
+   "input": {
+    "ring": 24,
+    "nets": 22,
+    "settings": 26,
+    "markers": 2
+   },
+   "bytes": 54728
+  },
+  {
+   "name": "city24-s8-p42-greenwayPark",
+   "generator": "greenwayPark",
+   "ok": true,
+   "why": "",
+   "ready": true,
+   "channels": {
+    "surfaces": 0,
+    "nets": 12,
+    "objects": 209,
+    "areas": 0,
+    "regions": 4,
+    "zoning": 0,
+    "paint": 0,
+    "terraform": 0,
+    "stats": 4,
+    "issues": 0
+   },
+   "input": {
+    "ring": 24,
+    "nets": 22,
+    "settings": 16,
+    "markers": 2
+   },
+   "bytes": 22048
+  },
+  {
+   "name": "city24-s8-p42-junkYard",
+   "generator": "junkYard",
+   "ok": true,
+   "why": "",
+   "ready": true,
+   "channels": {
+    "surfaces": 17,
+    "nets": 18,
+    "objects": 717,
+    "areas": 0,
+    "regions": 5,
+    "zoning": 0,
+    "paint": 213,
+    "terraform": 83,
+    "stats": 7,
+    "issues": 2
+   },
+   "input": {
+    "ring": 24,
+    "nets": 22,
+    "settings": 18,
+    "markers": 1
+   },
+   "bytes": 191740
+  },
+  {
+   "name": "city24-s8-p42-mallPark",
+   "generator": "mallPark",
+   "ok": true,
+   "why": "",
+   "ready": true,
+   "channels": {
+    "surfaces": 22,
+    "nets": 37,
+    "objects": 300,
+    "areas": 2,
+    "regions": 8,
+    "zoning": 5,
+    "paint": 7,
+    "terraform": 0,
+    "stats": 25,
+    "issues": 2
+   },
+   "input": {
+    "ring": 24,
+    "nets": 22,
+    "settings": 23,
+    "markers": 1
+   },
+   "bytes": 62069
+  },
+  {
+   "name": "city24-s8-p42-marketSquare",
+   "generator": "marketSquare",
+   "ok": true,
+   "why": "",
+   "ready": true,
+   "channels": {
+    "surfaces": 133,
+    "nets": 3,
+    "objects": 356,
+    "areas": 2,
+    "regions": 2,
+    "zoning": 0,
+    "paint": 0,
+    "terraform": 0,
+    "stats": 11,
+    "issues": 0
+   },
+   "input": {
+    "ring": 24,
+    "nets": 22,
+    "settings": 32,
+    "markers": 1
+   },
+   "bytes": 82266
+  },
+  {
+   "name": "city24-s8-p42-natureReserve",
+   "generator": "natureReserve",
+   "ok": true,
+   "why": "",
+   "ready": true,
+   "channels": {
+    "surfaces": 0,
+    "nets": 24,
+    "objects": 366,
+    "areas": 0,
+    "regions": 2,
+    "zoning": 0,
+    "paint": 1,
+    "terraform": 0,
+    "stats": 5,
+    "issues": 1
+   },
+   "input": {
+    "ring": 24,
+    "nets": 22,
+    "settings": 20,
+    "markers": 2
+   },
+   "bytes": 37220
+  },
+  {
+   "name": "city24-s8-p42-outdoorMall",
+   "generator": "outdoorMall",
+   "ok": true,
+   "why": "",
+   "ready": true,
+   "channels": {
+    "surfaces": 47,
+    "nets": 7,
+    "objects": 162,
+    "areas": 3,
+    "regions": 10,
+    "zoning": 8,
+    "paint": 0,
+    "terraform": 0,
+    "stats": 23,
+    "issues": 2
+   },
+   "input": {
+    "ring": 24,
+    "nets": 22,
+    "settings": 21,
+    "markers": 2
+   },
+   "bytes": 51525
+  },
+  {
+   "name": "city24-s8-p42-park",
+   "generator": "park",
+   "ok": true,
+   "why": "",
+   "ready": true,
+   "channels": {
+    "surfaces": 0,
+    "nets": 15,
+    "objects": 129,
+    "areas": 0,
+    "regions": 6,
+    "zoning": 0,
+    "paint": 0,
+    "terraform": 0,
+    "stats": 7,
+    "issues": 0
+   },
+   "input": {
+    "ring": 24,
+    "nets": 22,
+    "settings": 98,
+    "markers": 2
+   },
+   "bytes": 22377
+  },
+  {
+   "name": "city24-s8-p42-parking",
+   "generator": "parking",
+   "ok": true,
+   "why": "",
+   "ready": true,
+   "channels": {
+    "surfaces": 36,
+    "nets": 45,
+    "objects": 593,
+    "areas": 1,
+    "regions": 36,
+    "zoning": 0,
+    "paint": 0,
+    "terraform": 0,
+    "stats": 6,
+    "issues": 0
+   },
+   "input": {
+    "ring": 24,
+    "nets": 22,
+    "settings": 33,
+    "markers": 2
+   },
+   "bytes": 109074
+  },
+  {
+   "name": "city24-s8-p42-picnicGrounds",
+   "generator": "picnicGrounds",
+   "ok": true,
+   "why": "",
+   "ready": true,
+   "channels": {
+    "surfaces": 0,
+    "nets": 21,
+    "objects": 64,
+    "areas": 0,
+    "regions": 3,
+    "zoning": 0,
+    "paint": 0,
+    "terraform": 0,
+    "stats": 6,
+    "issues": 0
+   },
+   "input": {
+    "ring": 24,
+    "nets": 22,
+    "settings": 22,
+    "markers": 2
+   },
+   "bytes": 14949
+  },
+  {
+   "name": "city24-s8-p42-pitch",
+   "generator": "pitch",
+   "ok": true,
+   "why": "",
+   "ready": true,
+   "channels": {
+    "surfaces": 1,
+    "nets": 2,
+    "objects": 360,
+    "areas": 0,
+    "regions": 0,
+    "zoning": 0,
+    "paint": 0,
+    "terraform": 0,
+    "stats": 5,
+    "issues": 0
+   },
+   "input": {
+    "ring": 24,
+    "nets": 22,
+    "settings": 20,
+    "markers": 0
+   },
+   "bytes": 42264
+  },
+  {
+   "name": "city24-s8-p42-polishCoastal",
+   "generator": "polishCoastal",
+   "ok": true,
+   "why": "",
+   "ready": true,
+   "channels": {
+    "surfaces": 0,
+    "nets": 0,
+    "objects": 0,
+    "areas": 0,
+    "regions": 0,
+    "zoning": 0,
+    "paint": 0,
+    "terraform": 0,
+    "stats": 2,
+    "issues": 0
+   },
+   "input": {
+    "ring": 24,
+    "nets": 22,
+    "settings": 95,
+    "markers": 0
+   },
+   "bytes": 2821
+  },
+  {
+   "name": "city24-s8-p42-polishGarden",
+   "generator": "polishGarden",
+   "ok": true,
+   "why": "",
+   "ready": true,
+   "channels": {
+    "surfaces": 0,
+    "nets": 0,
+    "objects": 0,
+    "areas": 0,
+    "regions": 0,
+    "zoning": 0,
+    "paint": 0,
+    "terraform": 0,
+    "stats": 2,
+    "issues": 0
+   },
+   "input": {
+    "ring": 24,
+    "nets": 22,
+    "settings": 95,
+    "markers": 0
+   },
+   "bytes": 2820
+  },
+  {
+   "name": "city24-s8-p42-polishManicured",
+   "generator": "polishManicured",
+   "ok": true,
+   "why": "",
+   "ready": true,
+   "channels": {
+    "surfaces": 0,
+    "nets": 0,
+    "objects": 0,
+    "areas": 0,
+    "regions": 0,
+    "zoning": 0,
+    "paint": 0,
+    "terraform": 0,
+    "stats": 2,
+    "issues": 0
+   },
+   "input": {
+    "ring": 24,
+    "nets": 22,
+    "settings": 95,
+    "markers": 0
+   },
+   "bytes": 2820
+  },
+  {
+   "name": "city24-s8-p42-polishMeadow",
+   "generator": "polishMeadow",
+   "ok": true,
+   "why": "",
+   "ready": true,
+   "channels": {
+    "surfaces": 0,
+    "nets": 0,
+    "objects": 0,
+    "areas": 0,
+    "regions": 0,
+    "zoning": 0,
+    "paint": 0,
+    "terraform": 0,
+    "stats": 2,
+    "issues": 0
+   },
+   "input": {
+    "ring": 24,
+    "nets": 22,
+    "settings": 95,
+    "markers": 0
+   },
+   "bytes": 2819
+  },
+  {
+   "name": "city24-s8-p42-polishNatural",
+   "generator": "polishNatural",
+   "ok": true,
+   "why": "",
+   "ready": true,
+   "channels": {
+    "surfaces": 0,
+    "nets": 0,
+    "objects": 0,
+    "areas": 0,
+    "regions": 0,
+    "zoning": 0,
+    "paint": 0,
+    "terraform": 0,
+    "stats": 2,
+    "issues": 0
+   },
+   "input": {
+    "ring": 24,
+    "nets": 22,
+    "settings": 95,
+    "markers": 0
+   },
+   "bytes": 2820
+  },
+  {
+   "name": "city24-s8-p42-polishRustic",
+   "generator": "polishRustic",
+   "ok": true,
+   "why": "",
+   "ready": true,
+   "channels": {
+    "surfaces": 0,
+    "nets": 0,
+    "objects": 0,
+    "areas": 0,
+    "regions": 0,
+    "zoning": 0,
+    "paint": 0,
+    "terraform": 0,
+    "stats": 2,
+    "issues": 0
+   },
+   "input": {
+    "ring": 24,
+    "nets": 22,
+    "settings": 95,
+    "markers": 0
+   },
+   "bytes": 2820
+  },
+  {
+   "name": "city24-s8-p42-polishTidy",
+   "generator": "polishTidy",
+   "ok": true,
+   "why": "",
+   "ready": true,
+   "channels": {
+    "surfaces": 0,
+    "nets": 0,
+    "objects": 0,
+    "areas": 0,
+    "regions": 0,
+    "zoning": 0,
+    "paint": 0,
+    "terraform": 0,
+    "stats": 2,
+    "issues": 0
+   },
+   "input": {
+    "ring": 24,
+    "nets": 22,
+    "settings": 95,
+    "markers": 0
+   },
+   "bytes": 2817
+  },
+  {
+   "name": "city24-s8-p42-polishYard",
+   "generator": "polishYard",
+   "ok": true,
+   "why": "",
+   "ready": true,
+   "channels": {
+    "surfaces": 0,
+    "nets": 0,
+    "objects": 0,
+    "areas": 0,
+    "regions": 0,
+    "zoning": 0,
+    "paint": 0,
+    "terraform": 0,
+    "stats": 2,
+    "issues": 0
+   },
+   "input": {
+    "ring": 24,
+    "nets": 22,
+    "settings": 95,
+    "markers": 0
+   },
+   "bytes": 2812
+  },
+  {
+   "name": "city24-s8-p42-pond",
+   "generator": "pond",
+   "ok": true,
+   "why": "",
+   "ready": true,
+   "channels": {
+    "surfaces": 2,
+    "nets": 16,
+    "objects": 7,
+    "areas": 0,
+    "regions": 0,
+    "zoning": 0,
+    "paint": 0,
+    "terraform": 2,
+    "stats": 3,
+    "issues": 1
+   },
+   "input": {
+    "ring": 24,
+    "nets": 22,
+    "settings": 18,
+    "markers": 0
+   },
+   "bytes": 8834
+  },
+  {
+   "name": "city24-s8-p42-runningTrack",
+   "generator": "runningTrack",
+   "ok": true,
+   "why": "",
+   "ready": true,
+   "channels": {
+    "surfaces": 3,
+    "nets": 0,
+    "objects": 651,
+    "areas": 0,
+    "regions": 0,
+    "zoning": 0,
+    "paint": 0,
+    "terraform": 0,
+    "stats": 5,
+    "issues": 0
+   },
+   "input": {
+    "ring": 24,
+    "nets": 22,
+    "settings": 20,
+    "markers": 0
+   },
+   "bytes": 79401
+  },
+  {
+   "name": "city24-s8-p42-scrapyard",
+   "generator": "scrapyard",
+   "ok": true,
+   "why": "",
+   "ready": true,
+   "channels": {
+    "surfaces": 3,
+    "nets": 18,
+    "objects": 509,
+    "areas": 0,
+    "regions": 1,
+    "zoning": 0,
+    "paint": 34,
+    "terraform": 52,
+    "stats": 11,
+    "issues": 2
+   },
+   "input": {
+    "ring": 24,
+    "nets": 22,
+    "settings": 37,
+    "markers": 1
+   },
+   "bytes": 101122
+  },
+  {
+   "name": "city24-s8-p42-shopsPark",
+   "generator": "shopsPark",
+   "ok": true,
+   "why": "",
+   "ready": true,
+   "channels": {
+    "surfaces": 17,
+    "nets": 10,
+    "objects": 113,
+    "areas": 1,
+    "regions": 18,
+    "zoning": 12,
+    "paint": 0,
+    "terraform": 0,
+    "stats": 26,
+    "issues": 2
+   },
+   "input": {
+    "ring": 24,
+    "nets": 22,
+    "settings": 16,
+    "markers": 2
+   },
+   "bytes": 32932
+  },
+  {
+   "name": "city24-s8-p42-sportsPark",
+   "generator": "sportsPark",
+   "ok": true,
+   "why": "",
+   "ready": true,
+   "channels": {
+    "surfaces": 3,
+    "nets": 16,
+    "objects": 66,
+    "areas": 0,
+    "regions": 2,
+    "zoning": 0,
+    "paint": 0,
+    "terraform": 0,
+    "stats": 5,
+    "issues": 0
+   },
+   "input": {
+    "ring": 24,
+    "nets": 22,
+    "settings": 44,
+    "markers": 2
+   },
+   "bytes": 13465
+  },
+  {
+   "name": "city24-s8-p42-stripMall",
+   "generator": "stripMall",
+   "ok": true,
+   "why": "",
+   "ready": true,
+   "channels": {
+    "surfaces": 41,
+    "nets": 14,
+    "objects": 265,
+    "areas": 1,
+    "regions": 4,
+    "zoning": 6,
+    "paint": 30,
+    "terraform": 0,
+    "stats": 12,
+    "issues": 1
+   },
+   "input": {
+    "ring": 24,
+    "nets": 22,
+    "settings": 29,
+    "markers": 1
+   },
+   "bytes": 54663
+  },
+  {
+   "name": "city24-s8-p90-carYard",
+   "generator": "carYard",
+   "ok": true,
+   "why": "",
+   "ready": true,
+   "channels": {
+    "surfaces": 16,
+    "nets": 22,
+    "objects": 853,
+    "areas": 0,
+    "regions": 3,
+    "zoning": 0,
+    "paint": 232,
+    "terraform": 54,
+    "stats": 7,
+    "issues": 3
+   },
+   "input": {
+    "ring": 27,
+    "nets": 22,
+    "settings": 18,
+    "markers": 1
+   },
+   "bytes": 215425
+  },
+  {
+   "name": "city24-s8-p90-park",
+   "generator": "park",
+   "ok": true,
+   "why": "",
+   "ready": true,
+   "channels": {
+    "surfaces": 0,
+    "nets": 14,
+    "objects": 132,
+    "areas": 0,
+    "regions": 7,
+    "zoning": 0,
+    "paint": 0,
+    "terraform": 0,
+    "stats": 7,
+    "issues": 0
+   },
+   "input": {
+    "ring": 27,
+    "nets": 22,
+    "settings": 98,
+    "markers": 2
+   },
+   "bytes": 25280
+  },
+  {
+   "name": "city24-s8-p90-parking",
+   "generator": "parking",
+   "ok": true,
+   "why": "",
+   "ready": true,
+   "channels": {
+    "surfaces": 34,
+    "nets": 53,
+    "objects": 603,
+    "areas": 1,
+    "regions": 34,
+    "zoning": 0,
+    "paint": 0,
+    "terraform": 0,
+    "stats": 6,
+    "issues": 0
+   },
+   "input": {
+    "ring": 27,
+    "nets": 22,
+    "settings": 33,
+    "markers": 2
+   },
+   "bytes": 117895
+  },
+  {
+   "name": "city24-s8-p90-parking.part0",
+   "generator": "parking",
+   "ok": true,
+   "why": "",
+   "ready": true,
+   "channels": {
+    "surfaces": 3,
+    "nets": 1,
+    "objects": 51,
+    "areas": 1,
+    "regions": 3,
+    "zoning": 0,
+    "paint": 0,
+    "terraform": 0,
+    "stats": 6,
+    "issues": 1
+   },
+   "input": {
+    "ring": 15,
+    "nets": 22,
+    "settings": 33,
+    "markers": 1
+   },
+   "bytes": 13747
+  },
+  {
+   "name": "city24-s8-p90-parking.part1",
+   "generator": "parking",
+   "ok": true,
+   "why": "",
+   "ready": true,
+   "channels": {
+    "surfaces": 3,
+    "nets": 2,
+    "objects": 43,
+    "areas": 1,
+    "regions": 3,
+    "zoning": 0,
+    "paint": 0,
+    "terraform": 0,
+    "stats": 6,
+    "issues": 2
+   },
+   "input": {
+    "ring": 16,
+    "nets": 22,
+    "settings": 33,
+    "markers": 1
+   },
+   "bytes": 12153
+  },
+  {
+   "name": "city24-s8-p90-parking.part10",
+   "generator": "parking",
+   "ok": true,
+   "why": "",
+   "ready": true,
+   "channels": {
+    "surfaces": 0,
+    "nets": 0,
+    "objects": 0,
+    "areas": 0,
+    "regions": 0,
+    "zoning": 0,
+    "paint": 0,
+    "terraform": 0,
+    "stats": 0,
+    "issues": 1
+   },
+   "input": {
+    "ring": 9,
+    "nets": 22,
+    "settings": 33,
+    "markers": 1
+   },
+   "bytes": 1251
+  },
+  {
+   "name": "city24-s8-p90-parking.part11",
+   "generator": "parking",
+   "ok": true,
+   "why": "",
+   "ready": true,
+   "channels": {
+    "surfaces": 0,
+    "nets": 0,
+    "objects": 0,
+    "areas": 0,
+    "regions": 0,
+    "zoning": 0,
+    "paint": 0,
+    "terraform": 0,
+    "stats": 0,
+    "issues": 1
+   },
+   "input": {
+    "ring": 7,
+    "nets": 22,
+    "settings": 33,
+    "markers": 1
+   },
+   "bytes": 1250
+  },
+  {
+   "name": "city24-s8-p90-parking.part12",
+   "generator": "parking",
+   "ok": true,
+   "why": "",
+   "ready": true,
+   "channels": {
+    "surfaces": 0,
+    "nets": 0,
+    "objects": 0,
+    "areas": 0,
+    "regions": 0,
+    "zoning": 0,
+    "paint": 0,
+    "terraform": 0,
+    "stats": 0,
+    "issues": 1
+   },
+   "input": {
+    "ring": 6,
+    "nets": 22,
+    "settings": 33,
+    "markers": 1
+   },
+   "bytes": 1251
+  },
+  {
+   "name": "city24-s8-p90-parking.part13",
+   "generator": "parking",
+   "ok": true,
+   "why": "",
+   "ready": true,
+   "channels": {
+    "surfaces": 0,
+    "nets": 0,
+    "objects": 0,
+    "areas": 0,
+    "regions": 0,
+    "zoning": 0,
+    "paint": 0,
+    "terraform": 0,
+    "stats": 0,
+    "issues": 1
+   },
+   "input": {
+    "ring": 7,
+    "nets": 22,
+    "settings": 33,
+    "markers": 1
+   },
+   "bytes": 1251
+  },
+  {
+   "name": "city24-s8-p90-parking.part14",
+   "generator": "parking",
+   "ok": true,
+   "why": "",
+   "ready": true,
+   "channels": {
+    "surfaces": 0,
+    "nets": 0,
+    "objects": 0,
+    "areas": 0,
+    "regions": 0,
+    "zoning": 0,
+    "paint": 0,
+    "terraform": 0,
+    "stats": 0,
+    "issues": 1
+   },
+   "input": {
+    "ring": 9,
+    "nets": 22,
+    "settings": 33,
+    "markers": 1
+   },
+   "bytes": 1251
+  },
+  {
+   "name": "city24-s8-p90-parking.part2",
+   "generator": "parking",
+   "ok": true,
+   "why": "",
+   "ready": true,
+   "channels": {
+    "surfaces": 4,
+    "nets": 2,
+    "objects": 40,
+    "areas": 1,
+    "regions": 2,
+    "zoning": 0,
+    "paint": 0,
+    "terraform": 0,
+    "stats": 6,
+    "issues": 3
+   },
+   "input": {
+    "ring": 12,
+    "nets": 22,
+    "settings": 33,
+    "markers": 1
+   },
+   "bytes": 10547
+  },
+  {
+   "name": "city24-s8-p90-parking.part3",
+   "generator": "parking",
+   "ok": true,
+   "why": "",
+   "ready": true,
+   "channels": {
+    "surfaces": 1,
+    "nets": 0,
+    "objects": 25,
+    "areas": 1,
+    "regions": 1,
+    "zoning": 0,
+    "paint": 0,
+    "terraform": 0,
+    "stats": 6,
+    "issues": 3
+   },
+   "input": {
+    "ring": 18,
+    "nets": 22,
+    "settings": 33,
+    "markers": 1
+   },
+   "bytes": 6216
+  },
+  {
+   "name": "city24-s8-p90-parking.part4",
+   "generator": "parking",
+   "ok": true,
+   "why": "",
+   "ready": true,
+   "channels": {
+    "surfaces": 4,
+    "nets": 0,
+    "objects": 26,
+    "areas": 2,
+    "regions": 3,
+    "zoning": 0,
+    "paint": 0,
+    "terraform": 0,
+    "stats": 6,
+    "issues": 4
+   },
+   "input": {
+    "ring": 12,
+    "nets": 22,
+    "settings": 33,
+    "markers": 1
+   },
+   "bytes": 8946
+  },
+  {
+   "name": "city24-s8-p90-parking.part5",
+   "generator": "parking",
+   "ok": true,
+   "why": "",
+   "ready": true,
+   "channels": {
+    "surfaces": 3,
+    "nets": 0,
+    "objects": 21,
+    "areas": 1,
+    "regions": 3,
+    "zoning": 0,
+    "paint": 0,
+    "terraform": 0,
+    "stats": 6,
+    "issues": 4
+   },
+   "input": {
+    "ring": 13,
+    "nets": 22,
+    "settings": 33,
+    "markers": 1
+   },
+   "bytes": 8544
+  },
+  {
+   "name": "city24-s8-p90-parking.part6",
+   "generator": "parking",
+   "ok": true,
+   "why": "",
+   "ready": false,
+   "channels": {
+    "surfaces": 0,
+    "nets": 0,
+    "objects": 0,
+    "areas": 0,
+    "regions": 0,
+    "zoning": 0,
+    "paint": 0,
+    "terraform": 0,
+    "stats": 0,
+    "issues": 0
+   },
+   "input": {
+    "ring": 3,
+    "nets": 22,
+    "settings": 33,
+    "markers": 0
+   },
+   "bytes": 1278
+  },
+  {
+   "name": "city24-s8-p90-parking.part7",
+   "generator": "parking",
+   "ok": true,
+   "why": "",
+   "ready": true,
+   "channels": {
+    "surfaces": 3,
+    "nets": 0,
+    "objects": 11,
+    "areas": 1,
+    "regions": 3,
+    "zoning": 0,
+    "paint": 0,
+    "terraform": 0,
+    "stats": 6,
+    "issues": 2
+   },
+   "input": {
+    "ring": 10,
+    "nets": 22,
+    "settings": 33,
+    "markers": 1
+   },
+   "bytes": 6448
+  },
+  {
+   "name": "city24-s8-p90-parking.part8",
+   "generator": "parking",
+   "ok": true,
+   "why": "",
+   "ready": true,
+   "channels": {
+    "surfaces": 3,
+    "nets": 0,
+    "objects": 16,
+    "areas": 1,
+    "regions": 3,
+    "zoning": 0,
+    "paint": 0,
+    "terraform": 0,
+    "stats": 6,
+    "issues": 3
+   },
+   "input": {
+    "ring": 8,
+    "nets": 22,
+    "settings": 33,
+    "markers": 1
+   },
+   "bytes": 6612
+  },
+  {
+   "name": "city24-s8-p90-parking.part9",
+   "generator": "parking",
+   "ok": true,
+   "why": "",
+   "ready": true,
+   "channels": {
+    "surfaces": 0,
+    "nets": 0,
+    "objects": 0,
+    "areas": 0,
+    "regions": 0,
+    "zoning": 0,
+    "paint": 0,
+    "terraform": 0,
+    "stats": 0,
+    "issues": 1
+   },
+   "input": {
+    "ring": 5,
+    "nets": 22,
+    "settings": 33,
+    "markers": 1
+   },
+   "bytes": 1251
+  },
+  {
+   "name": "city24-s8-p90-plaza",
+   "generator": "plaza",
+   "ok": true,
+   "why": "",
+   "ready": true,
+   "channels": {
+    "surfaces": 146,
+    "nets": 0,
+    "objects": 97,
+    "areas": 3,
+    "regions": 3,
+    "zoning": 0,
+    "paint": 0,
+    "terraform": 0,
+    "stats": 5,
+    "issues": 0
+   },
+   "input": {
+    "ring": 27,
+    "nets": 22,
+    "settings": 82,
+    "markers": 6
+   },
+   "bytes": 81763
+  }
+ ]
+}

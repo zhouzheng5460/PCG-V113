@@ -1,0 +1,5 @@
+# 统一换行，避免 Windows 下 CRLF 把整份 diff 洗成"全改"
+* text=auto eol=lf
+*.png binary
+*.glb binary
+*.dll binary

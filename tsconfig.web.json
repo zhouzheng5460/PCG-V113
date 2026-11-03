@@ -1,0 +1,36 @@
+{
+  // 浏览器构建：把 packages/ 里的纯 TS 包编译成浏览器能直接加载的 ES module。
+  //
+  // 与根 tsconfig.json 的区别只有三点：
+  //   1. noEmit: false + outDir —— 要真出文件
+  //   2. rewriteRelativeImportExtensions —— 源码里 `import './x.ts'` 会被改写成 `./x.js`，
+  //      否则浏览器按原样请求 .ts 会 404（浏览器不认识 TypeScript）
+  //   3. include 只收纯浏览器安全的包 —— packages/demo 里有 node:child_process 等，不能进来
+  //
+  // 产物结构镜像源码：packages/street-rules/src/rules.ts → public/js/street-rules/src/rules.js
+  // 于是 public/js/editor-web/src/app.js 里的相对导入能原地解析，不需要打包器。
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "rewriteRelativeImportExtensions": true,
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "types": [],
+    "strict": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "rootDir": "packages",
+    "outDir": "packages/editor-web/public/js",
+    "noEmit": false,
+    "declaration": false,
+    "sourceMap": false
+  },
+  "include": [
+    "packages/plan-ir/src/**/*.ts",
+    "packages/street-rules/src/**/*.ts",
+    "packages/slots/src/**/*.ts",
+    "packages/editor-web/src/**/*.ts",
+    "packages/demo/src/render.ts"
+  ]
+}

@@ -1,0 +1,795 @@
+{
+ "protocol": "placemaker-input/1",
+ "generator": "pitch",
+ "seed": 1234,
+ "shape": {
+  "ring": [
+   [
+    87.047,
+    5.378
+   ],
+   [
+    122.963,
+    4.426
+   ],
+   [
+    123.431,
+    4.393
+   ],
+   [
+    156.661,
+    0.527
+   ],
+   [
+    189.967,
+    0
+   ],
+   [
+    217.723,
+    1.099
+   ],
+   [
+    217.155,
+    11.985
+   ],
+   [
+    214.185,
+    45.357
+   ],
+   [
+    210.939,
+    78.886
+   ],
+   [
+    210.933,
+    78.956
+   ],
+   [
+    210.789,
+    80.561
+   ],
+   [
+    202.597,
+    79.863
+   ],
+   [
+    201.763,
+    79.827
+   ],
+   [
+    168.064,
+    79.779
+   ],
+   [
+    166.714,
+    79.869
+   ],
+   [
+    133.306,
+    84.372
+   ],
+   [
+    132.254,
+    84.571
+   ],
+   [
+    99.518,
+    92.621
+   ],
+   [
+    98.589,
+    92.897
+   ],
+   [
+    66.788,
+    104.078
+   ],
+   [
+    65.73,
+    104.52
+   ],
+   [
+    35.428,
+    119.265
+   ],
+   [
+    34.253,
+    119.939
+   ],
+   [
+    6.229,
+    138.638
+   ],
+   [
+    5.091,
+    139.521
+   ],
+   [
+    0,
+    144.101
+   ],
+   [
+    4.827,
+    129.866
+   ],
+   [
+    14.927,
+    104.382
+   ],
+   [
+    26.777,
+    79.664
+   ],
+   [
+    40.584,
+    56.338
+   ],
+   [
+    56.423,
+    34.961
+   ],
+   [
+    74.249,
+    15.977
+   ]
+  ]
+ },
+ "layoutScale": 1,
+ "edgeMargin": 2,
+ "nearbyNets": [
+  {
+   "externalId": 1000,
+   "a": [
+    85.095,
+    0.177
+   ],
+   "b": [
+    97.671,
+    -0.156
+   ],
+   "c": [
+    110.248,
+    -0.489
+   ],
+   "d": [
+    122.824,
+    -0.822
+   ],
+   "width": 10.5,
+   "category": "road",
+   "hasSidewalk": true,
+   "isOneWay": false,
+   "isHighway": false,
+   "speedLimit": 50
+  },
+  {
+   "externalId": 1001,
+   "a": [
+    122.824,
+    -0.822
+   ],
+   "b": [
+    133.988,
+    -2.121
+   ],
+   "c": [
+    145.151,
+    -3.42
+   ],
+   "d": [
+    156.315,
+    -4.719
+   ],
+   "width": 10.5,
+   "category": "road",
+   "hasSidewalk": true,
+   "isOneWay": false,
+   "isHighway": false,
+   "speedLimit": 50
+  },
+  {
+   "externalId": 1002,
+   "a": [
+    156.315,
+    -4.719
+   ],
+   "b": [
+    167.553,
+    -4.897
+   ],
+   "c": [
+    178.791,
+    -5.074
+   ],
+   "d": [
+    190.029,
+    -5.252
+   ],
+   "width": 10.5,
+   "category": "road",
+   "hasSidewalk": true,
+   "isOneWay": false,
+   "isHighway": false,
+   "speedLimit": 50
+  },
+  {
+   "externalId": 1003,
+   "a": [
+    190.029,
+    -5.252
+   ],
+   "b": [
+    201.259,
+    -4.807
+   ],
+   "c": [
+    212.489,
+    -4.362
+   ],
+   "d": [
+    223.719,
+    -3.917
+   ],
+   "width": 10.5,
+   "category": "road",
+   "hasSidewalk": true,
+   "isOneWay": false,
+   "isHighway": false,
+   "speedLimit": 50
+  },
+  {
+   "externalId": 1004,
+   "a": [
+    223.719,
+    -3.917
+   ],
+   "b": [
+    225.138,
+    -3.769
+   ],
+   "c": [
+    226.556,
+    -3.621
+   ],
+   "d": [
+    227.975,
+    -3.473
+   ],
+   "width": 10.5,
+   "category": "road",
+   "hasSidewalk": true,
+   "isOneWay": false,
+   "isHighway": false,
+   "speedLimit": 50
+  },
+  {
+   "externalId": 1005,
+   "a": [
+    227.975,
+    -3.473
+   ],
+   "b": [
+    227.694,
+    1.914
+   ],
+   "c": [
+    227.413,
+    7.302
+   ],
+   "d": [
+    227.132,
+    12.689
+   ],
+   "width": 20,
+   "category": "road",
+   "hasSidewalk": true,
+   "isOneWay": false,
+   "isHighway": false,
+   "speedLimit": 50
+  },
+  {
+   "externalId": 1006,
+   "a": [
+    227.132,
+    12.689
+   ],
+   "b": [
+    226.135,
+    23.887
+   ],
+   "c": [
+    225.139,
+    35.084
+   ],
+   "d": [
+    224.142,
+    46.282
+   ],
+   "width": 20,
+   "category": "road",
+   "hasSidewalk": true,
+   "isOneWay": false,
+   "isHighway": false,
+   "speedLimit": 50
+  },
+  {
+   "externalId": 1007,
+   "a": [
+    224.142,
+    46.282
+   ],
+   "b": [
+    223.059,
+    57.471
+   ],
+   "c": [
+    221.976,
+    68.661
+   ],
+   "d": [
+    220.893,
+    79.85
+   ],
+   "width": 20,
+   "category": "road",
+   "hasSidewalk": true,
+   "isOneWay": false,
+   "isHighway": false,
+   "speedLimit": 50
+  },
+  {
+   "externalId": 1008,
+   "a": [
+    220.893,
+    79.85
+   ],
+   "b": [
+    220.548,
+    83.69
+   ],
+   "c": [
+    220.204,
+    87.53
+   ],
+   "d": [
+    219.859,
+    91.37
+   ],
+   "width": 20,
+   "category": "road",
+   "hasSidewalk": true,
+   "isOneWay": false,
+   "isHighway": false,
+   "speedLimit": 50
+  },
+  {
+   "externalId": 1009,
+   "a": [
+    219.859,
+    91.37
+   ],
+   "b": [
+    213.822,
+    90.856
+   ],
+   "c": [
+    207.785,
+    90.341
+   ],
+   "d": [
+    201.748,
+    89.827
+   ],
+   "width": 20,
+   "category": "road",
+   "hasSidewalk": true,
+   "isOneWay": false,
+   "isHighway": false,
+   "speedLimit": 50
+  },
+  {
+   "externalId": 1010,
+   "a": [
+    201.748,
+    89.827
+   ],
+   "b": [
+    190.515,
+    89.811
+   ],
+   "c": [
+    179.282,
+    89.795
+   ],
+   "d": [
+    168.049,
+    89.779
+   ],
+   "width": 20,
+   "category": "road",
+   "hasSidewalk": true,
+   "isOneWay": false,
+   "isHighway": false,
+   "speedLimit": 50
+  },
+  {
+   "externalId": 1011,
+   "a": [
+    168.049,
+    89.779
+   ],
+   "b": [
+    156.913,
+    91.28
+   ],
+   "c": [
+    145.777,
+    92.781
+   ],
+   "d": [
+    134.641,
+    94.282
+   ],
+   "width": 20,
+   "category": "road",
+   "hasSidewalk": true,
+   "isOneWay": false,
+   "isHighway": false,
+   "speedLimit": 50
+  },
+  {
+   "externalId": 1012,
+   "a": [
+    134.641,
+    94.282
+   ],
+   "b": [
+    123.729,
+    96.965
+   ],
+   "c": [
+    112.818,
+    99.648
+   ],
+   "d": [
+    101.906,
+    102.331
+   ],
+   "width": 20,
+   "category": "road",
+   "hasSidewalk": true,
+   "isOneWay": false,
+   "isHighway": false,
+   "speedLimit": 50
+  },
+  {
+   "externalId": 1013,
+   "a": [
+    101.906,
+    102.331
+   ],
+   "b": [
+    91.306,
+    106.058
+   ],
+   "c": [
+    80.705,
+    109.785
+   ],
+   "d": [
+    70.105,
+    113.512
+   ],
+   "width": 20,
+   "category": "road",
+   "hasSidewalk": true,
+   "isOneWay": false,
+   "isHighway": false,
+   "speedLimit": 50
+  },
+  {
+   "externalId": 1014,
+   "a": [
+    70.105,
+    113.512
+   ],
+   "b": [
+    60.004,
+    118.427
+   ],
+   "c": [
+    49.904,
+    123.342
+   ],
+   "d": [
+    39.803,
+    128.257
+   ],
+   "width": 20,
+   "category": "road",
+   "hasSidewalk": true,
+   "isOneWay": false,
+   "isHighway": false,
+   "speedLimit": 50
+  },
+  {
+   "externalId": 1015,
+   "a": [
+    39.803,
+    128.257
+   ],
+   "b": [
+    30.462,
+    134.49
+   ],
+   "c": [
+    21.12,
+    140.723
+   ],
+   "d": [
+    11.779,
+    146.956
+   ],
+   "width": 20,
+   "category": "road",
+   "hasSidewalk": true,
+   "isOneWay": false,
+   "isHighway": false,
+   "speedLimit": 50
+  },
+  {
+   "externalId": 1016,
+   "a": [
+    11.779,
+    146.956
+   ],
+   "b": [
+    3.254,
+    154.625
+   ],
+   "c": [
+    -5.27,
+    162.293
+   ],
+   "d": [
+    -13.795,
+    169.962
+   ],
+   "width": 20,
+   "category": "road",
+   "hasSidewalk": true,
+   "isOneWay": false,
+   "isHighway": false,
+   "speedLimit": 50
+  },
+  {
+   "externalId": 1017,
+   "a": [
+    -13.795,
+    169.962
+   ],
+   "b": [
+    -12.148,
+    164.595
+   ],
+   "c": [
+    -10.5,
+    159.227
+   ],
+   "d": [
+    -8.853,
+    153.86
+   ],
+   "width": 10.5,
+   "category": "road",
+   "hasSidewalk": true,
+   "isOneWay": false,
+   "isHighway": false,
+   "speedLimit": 50
+  },
+  {
+   "externalId": 1018,
+   "a": [
+    -8.853,
+    153.86
+   ],
+   "b": [
+    -5.936,
+    145.258
+   ],
+   "c": [
+    -3.019,
+    136.657
+   ],
+   "d": [
+    -0.102,
+    128.055
+   ],
+   "width": 10.5,
+   "category": "road",
+   "hasSidewalk": true,
+   "isOneWay": false,
+   "isHighway": false,
+   "speedLimit": 50
+  },
+  {
+   "externalId": 1019,
+   "a": [
+    -0.102,
+    128.055
+   ],
+   "b": [
+    3.303,
+    119.462
+   ],
+   "c": [
+    6.709,
+    110.87
+   ],
+   "d": [
+    10.114,
+    102.277
+   ],
+   "width": 10.5,
+   "category": "road",
+   "hasSidewalk": true,
+   "isOneWay": false,
+   "isHighway": false,
+   "speedLimit": 50
+  },
+  {
+   "externalId": 1020,
+   "a": [
+    10.114,
+    102.277
+   ],
+   "b": [
+    14.123,
+    93.914
+   ],
+   "c": [
+    18.133,
+    85.55
+   ],
+   "d": [
+    22.142,
+    77.187
+   ],
+   "width": 10.5,
+   "category": "road",
+   "hasSidewalk": true,
+   "isOneWay": false,
+   "isHighway": false,
+   "speedLimit": 50
+  },
+  {
+   "externalId": 1021,
+   "a": [
+    22.142,
+    77.187
+   ],
+   "b": [
+    26.829,
+    69.268
+   ],
+   "c": [
+    31.517,
+    61.35
+   ],
+   "d": [
+    36.204,
+    53.431
+   ],
+   "width": 10.5,
+   "category": "road",
+   "hasSidewalk": true,
+   "isOneWay": false,
+   "isHighway": false,
+   "speedLimit": 50
+  },
+  {
+   "externalId": 1022,
+   "a": [
+    36.204,
+    53.431
+   ],
+   "b": [
+    41.598,
+    46.151
+   ],
+   "c": [
+    46.993,
+    38.87
+   ],
+   "d": [
+    52.387,
+    31.59
+   ],
+   "width": 10.5,
+   "category": "road",
+   "hasSidewalk": true,
+   "isOneWay": false,
+   "isHighway": false,
+   "speedLimit": 50
+  },
+  {
+   "externalId": 1023,
+   "a": [
+    52.387,
+    31.59
+   ],
+   "b": [
+    58.473,
+    25.108
+   ],
+   "c": [
+    64.56,
+    18.625
+   ],
+   "d": [
+    70.646,
+    12.143
+   ],
+   "width": 10.5,
+   "category": "road",
+   "hasSidewalk": true,
+   "isOneWay": false,
+   "isHighway": false,
+   "speedLimit": 50
+  },
+  {
+   "externalId": 1024,
+   "a": [
+    70.646,
+    12.143
+   ],
+   "b": [
+    75.462,
+    8.154
+   ],
+   "c": [
+    80.279,
+    4.166
+   ],
+   "d": [
+    85.095,
+    0.177
+   ],
+   "width": 10.5,
+   "category": "road",
+   "hasSidewalk": true,
+   "isOneWay": false,
+   "isHighway": false,
+   "speedLimit": 50
+  }
+ ],
+ "zoneGrids": [],
+ "obstacles": [],
+ "settings": {
+  "code": "soccer",
+  "format": "auto",
+  "turf": true,
+  "turfAsset": "",
+  "goalAsset": "",
+  "lines": true,
+  "lineSpacing": 1.5,
+  "stands": "one",
+  "standAsset": "",
+  "teamBenches": true,
+  "benchAsset": "",
+  "floodlights": "four",
+  "lightAsset": "",
+  "ballStops": true,
+  "rail": false,
+  "fenceAsset": "",
+  "level": true,
+  "at": "edge",
+  "orientation": "auto",
+  "pathTo": true
+ },
+ "markers": [],
+ "regionTags": [
+  "root"
+ ],
+ "water": null
+}

@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>规则验证器 · 街道契约 / ready 判定 / 楼位切分</title>
+<link rel="icon" href="data:,"/>
+<link rel="stylesheet" href="./style.css"/>
+</head>
+<body>
+
+<header>
+  <h1>规则验证器</h1>
+  <span class="sub">拖街道、拖宗地角点，看 R1–R11 与 <code>ready</code> 判定当场变</span>
+  <span id="meta" class="meta"></span>
+</header>
+
+<main>
+  <aside id="left">
+    <input id="search" type="search" placeholder="筛选地块或生成器…" autocomplete="off"/>
+    <div class="legend">
+      <span><i class="dot ok"></i>ready</span>
+      <span><i class="dot bad"></i>not ready</span>
+      <span><i class="dot tagi"></i>带宗地</span>
+    </div>
+    <div id="list"></div>
+  </aside>
+
+  <section id="center">
+    <div id="canvas"></div>
+    <div class="hint">
+      <b>怎么用</b>：黄点是街道端点、黄方块整条街平移、白点是地块角点。
+      把街道拖离地块，<code>R7 车行可达</code> 和 <code>ready</code> 会立刻变红；
+      勾选「放一个给定出入口」，商场/市集族的 <code>ready</code> 会翻回来 —— 这就是它们的真实行为。
+    </div>
+    <div id="iso-wrap">
+      <div class="ihead">等轴体块 <span class="mut">（楼位与高度；只有带宗地的方案能出）</span></div>
+      <div id="iso"></div>
+    </div>
+  </section>
+
+  <aside id="right"><div id="panel"></div></aside>
+</main>
+
+<script type="module" src="./js/editor-web/src/app.js"></script>
+</body>
+</html>

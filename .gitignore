@@ -1,0 +1,18 @@
+# 依赖（vendor/townforge/node_modules 是指向工作区外部目录的符号链接，绝不能进仓库）
+node_modules
+**/node_modules
+
+# 构建产物（可用 npm run oracle:build / build.mjs 重建）
+dist/
+bin/
+obj/
+
+# 生成物
+vendor/townforge/out/
+reports/
+tmp/
+
+# 系统 / 编辑器
+.DS_Store
+Thumbs.db
+*.log

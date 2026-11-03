@@ -1,0 +1,26 @@
+{
+  // 编辑器（2D 授权）的浏览器构建。
+  // 只收纯浏览器安全的包：plan-ir / slots 是生成算法内核，editor-app 是编辑器本身。
+  // 输出结构镜像源码（packages/editor-app/public/js/<包名>/src/*.js），
+  // 这样 tools/packager.mjs 能按相对路径原地解析，不需要额外的打包器。
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "rewriteRelativeImportExtensions": true,
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "types": [],
+    "strict": true,
+    "rootDir": "packages",
+    "outDir": "packages/editor-app/public/js",
+    "noEmit": false,
+    "declaration": false,
+    "sourceMap": false
+  },
+  "include": [
+    "packages/plan-ir/src/**/*.ts",
+    "packages/slots/src/**/*.ts",
+    "packages/editor-app/src/**/*.ts"
+  ]
+}

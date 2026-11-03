@@ -1,0 +1,522 @@
+{
+ "protocol": "placemaker-plan/1",
+ "generator": "parking",
+ "units": "meters",
+ "seed": 1234,
+ "area": 1219.4621,
+ "ready": true,
+ "markers": {
+  "given": 0,
+  "auto": 1
+ },
+ "settings": {
+  "stallAngle": "90",
+  "rowAngleMode": "edge",
+  "rowAngle": 0,
+  "perimeterRoad": true,
+  "crossEvery": 9,
+  "aisleWidth": 7,
+  "setback": 1,
+  "grading": true,
+  "stallWidth": 3,
+  "stallLength": 5.9,
+  "accessibleShare": 2,
+  "evShare": 4,
+  "chargerAsset": "",
+  "greenery": "medians",
+  "medianDepth": 2.5,
+  "rowEndPlanting": true,
+  "plantingDensity": 50,
+  "trees": [],
+  "bushes": [],
+  "lanterns": true,
+  "lanternAsset": "",
+  "lanternSpacing": 30,
+  "asphaltSurface": "",
+  "greenSurface": "",
+  "edgeZoning": "none",
+  "zoneType": "",
+  "zoningDepth": 3,
+  "fee": 10,
+  "dressStyle": "livedIn",
+  "dressPaintWear": 100,
+  "dressDesirePaths": true,
+  "dressMulch": true,
+  "dressPaintClear": false
+ },
+ "surfaces": [
+  {
+   "role": "grass",
+   "y": 0,
+   "ring": [
+    [
+     90.097,
+     58.767
+    ],
+    [
+     98.088,
+     58.767
+    ],
+    [
+     96.313,
+     65.13
+    ],
+    [
+     96.061,
+     66.192
+    ],
+    [
+     89.56,
+     99.276
+    ],
+    [
+     89.394,
+     100.328
+    ],
+    [
+     87.356,
+     117.534
+    ],
+    [
+     80.157,
+     117.534
+    ],
+    [
+     80.494,
+     113.748
+    ],
+    [
+     64.614,
+     110.386
+    ],
+    [
+     64.31,
+     108.807
+    ],
+    [
+     63.8,
+     110.213
+    ],
+    [
+     62.25,
+     117.534
+    ],
+    [
+     54.531,
+     117.534
+    ],
+    [
+     54.531,
+     58.767
+    ],
+    [
+     62.414,
+     58.767
+    ],
+    [
+     55.749,
+     90.228
+    ],
+    [
+     55.4,
+     90.761
+    ],
+    [
+     55.328,
+     92.219
+    ],
+    [
+     56.45,
+     90.984
+    ],
+    [
+     81.164,
+     96.22
+    ]
+   ]
+  }
+ ],
+ "nets": [],
+ "objects": [
+  {
+   "role": "tree",
+   "x": 87.331,
+   "z": 91.949,
+   "yaw": 2.354
+  },
+  {
+   "role": "tree",
+   "x": 95.447,
+   "z": 62.172,
+   "yaw": 3.9224
+  },
+  {
+   "role": "tree",
+   "x": 89.455,
+   "z": 76.56,
+   "yaw": 4.4798
+  },
+  {
+   "role": "bush",
+   "x": 56.627,
+   "z": 60.287,
+   "yaw": 1.4774
+  },
+  {
+   "role": "bush",
+   "x": 59.693,
+   "z": 101.731,
+   "yaw": 0.0311
+  },
+  {
+   "role": "bush",
+   "x": 91.303,
+   "z": 86.4,
+   "yaw": 3.901
+  },
+  {
+   "role": "bush",
+   "x": 58.126,
+   "z": 104.849,
+   "yaw": 2.0319
+  },
+  {
+   "role": "bush",
+   "x": 78.915,
+   "z": 104.021,
+   "yaw": 1.7776
+  },
+  {
+   "role": "bush",
+   "x": 58.071,
+   "z": 65.924,
+   "yaw": 1.4196
+  },
+  {
+   "role": "bush",
+   "x": 86.014,
+   "z": 101.939,
+   "yaw": 5.7821
+  },
+  {
+   "role": "bush",
+   "x": 94.884,
+   "z": 68.428,
+   "yaw": 2.6596
+  },
+  {
+   "role": "bush",
+   "x": 59.931,
+   "z": 106.591,
+   "yaw": 1.4658
+  },
+  {
+   "role": "bush",
+   "x": 87.04,
+   "z": 98.693,
+   "yaw": 1.2005
+  },
+  {
+   "role": "bush",
+   "x": 54.72,
+   "z": 105.859,
+   "yaw": 4.4483
+  },
+  {
+   "role": "bush",
+   "x": 86.728,
+   "z": 82.72,
+   "yaw": 5.4489
+  },
+  {
+   "role": "bush",
+   "x": 62.024,
+   "z": 108.553,
+   "yaw": 5.7975
+  },
+  {
+   "role": "bush",
+   "x": 75.801,
+   "z": 103.087,
+   "yaw": 5.9376
+  },
+  {
+   "role": "bush",
+   "x": 83.433,
+   "z": 103.339,
+   "yaw": 1.818
+  },
+  {
+   "role": "bush",
+   "x": 55.034,
+   "z": 63.51,
+   "yaw": 0.5406
+  },
+  {
+   "role": "bush",
+   "x": 56.059,
+   "z": 68.51,
+   "yaw": 3.0896
+  },
+  {
+   "role": "bush",
+   "x": 87.672,
+   "z": 86.162,
+   "yaw": 0.5917
+  },
+  {
+   "role": "bush",
+   "x": 55.498,
+   "z": 108.679,
+   "yaw": 5.3054
+  },
+  {
+   "role": "bush",
+   "x": 61.845,
+   "z": 103.72,
+   "yaw": 1.8038
+  },
+  {
+   "role": "bush",
+   "x": 73.732,
+   "z": 104.636,
+   "yaw": 4.0235
+  },
+  {
+   "role": "bush",
+   "x": 89.51,
+   "z": 70.438,
+   "yaw": 3.8071
+  }
+ ],
+ "areas": [
+  {
+   "role": "lot",
+   "ring": [
+    [
+     54.531,
+     58.767
+    ],
+    [
+     62.414,
+     58.767
+    ],
+    [
+     55.749,
+     90.228
+    ],
+    [
+     55.4,
+     90.761
+    ],
+    [
+     55.328,
+     92.219
+    ],
+    [
+     56.45,
+     90.984
+    ],
+    [
+     81.164,
+     96.22
+    ],
+    [
+     90.097,
+     58.767
+    ],
+    [
+     98.088,
+     58.767
+    ],
+    [
+     96.313,
+     65.13
+    ],
+    [
+     96.061,
+     66.192
+    ],
+    [
+     89.56,
+     99.276
+    ],
+    [
+     89.394,
+     100.328
+    ],
+    [
+     87.356,
+     117.534
+    ],
+    [
+     80.157,
+     117.534
+    ],
+    [
+     80.494,
+     113.748
+    ],
+    [
+     64.614,
+     110.386
+    ],
+    [
+     64.31,
+     108.807
+    ],
+    [
+     63.8,
+     110.213
+    ],
+    [
+     62.25,
+     117.534
+    ],
+    [
+     54.531,
+     117.534
+    ]
+   ]
+  }
+ ],
+ "regions": [
+  {
+   "key": "green:0",
+   "tags": [
+    "green"
+   ],
+   "ring": [
+    [
+     80.791,
+     95.63
+    ],
+    [
+     89.583,
+     58.767
+    ],
+    [
+     98.088,
+     58.767
+    ],
+    [
+     96.313,
+     65.13
+    ],
+    [
+     96.061,
+     66.192
+    ],
+    [
+     89.56,
+     99.276
+    ],
+    [
+     89.394,
+     100.328
+    ],
+    [
+     87.356,
+     117.534
+    ],
+    [
+     79.655,
+     117.534
+    ],
+    [
+     79.957,
+     114.145
+    ],
+    [
+     64.186,
+     110.806
+    ],
+    [
+     62.761,
+     117.534
+    ],
+    [
+     54.531,
+     117.534
+    ],
+    [
+     54.531,
+     58.767
+    ],
+    [
+     62.925,
+     58.767
+    ],
+    [
+     56.219,
+     90.424
+    ]
+   ]
+  }
+ ],
+ "zoning": [],
+ "paint": [],
+ "terraform": [],
+ "unknownRoles": {
+  "surfaces": 0,
+  "nets": 0,
+  "objects": 0,
+  "areas": 0
+ },
+ "stats": [
+  {
+   "key": "Stat.Stalls",
+   "value": 0,
+   "unit": "count"
+  },
+  {
+   "key": "Stat.EvStalls",
+   "value": 0,
+   "unit": "count"
+  },
+  {
+   "key": "Stat.AccessibleStalls",
+   "value": 0,
+   "unit": "count"
+  },
+  {
+   "key": "Stat.Area",
+   "value": 1219,
+   "unit": "m2"
+  },
+  {
+   "key": "Stat.AisleLength",
+   "value": 0,
+   "unit": "m"
+  },
+  {
+   "key": "Stat.Trees",
+   "value": 5,
+   "unit": "count"
+  }
+ ],
+ "facts": {
+  "gradeTiers": 1,
+  "capacity": 0,
+  "evCapacity": 0,
+  "disabledCapacity": 0,
+  "parking.fee": 10
+ },
+ "issues": [
+  {
+   "severity": "info",
+   "key": "Issue.PerimeterRoadDropped"
+  },
+  {
+   "severity": "warning",
+   "key": "Issue.EntranceNoPath",
+   "args": [
+    1
+   ]
+  },
+  {
+   "severity": "warning",
+   "key": "Issue.NoStalls"
+  }
+ ]
+}

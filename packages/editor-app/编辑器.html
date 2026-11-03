@@ -1,0 +1,4661 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Context City PCG · 2D 空间授权</title>
+<link rel="icon" href="data:,"/>
+<style>
+/* 编辑器样式。配色与尺寸照搬 PCG `styles.css`（同一个产品，不该长出第二套语言）。
+   只保留这条线用得上的规则，不做主题、不做响应式 —— 桌面编辑器。 */
+
+:root {
+  --bg: #0e1014;
+  --panel: #14171d;
+  --panel-2: #1a1e25;
+  --panel-3: #20252e;
+  --border: #262c36;
+  --border-soft: #1e232b;
+  --text: #e6ebf2;
+  --dim: #8b95a5;
+  --dim-2: #626c7c;
+  --accent: #22d3ee;
+  --accent-dim: rgba(34, 211, 238, 0.14);
+  --warn: #ff6b6b;
+  --ok: #4ade80;
+  --amber: #f2b544;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+* { box-sizing: border-box; }
+html, body, #root { height: 100%; margin: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: ui-sans-serif, system-ui, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  font-size: 13px;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+  user-select: none;
+}
+button { font-family: inherit; color: inherit; cursor: pointer; }
+code { font-family: var(--mono); font-size: 11.5px; color: #9fd2ff; }
+
+.app { display: grid; grid-template-rows: 46px 1fr 26px; height: 100vh; }
+
+/* ───────────────── 顶栏 */
+.topbar {
+  display: flex; align-items: center; gap: 12px; padding: 0 12px;
+  background: var(--panel); border-bottom: 1px solid var(--border);
+}
+.brand { display: flex; align-items: center; gap: 8px; font-weight: 600; letter-spacing: .3px; white-space: nowrap; }
+.brand small { color: var(--dim-2); font-weight: 400; font-size: 10.5px; margin-left: 2px; }
+.brand-mark {
+  width: 16px; height: 16px; border-radius: 4px;
+  background: linear-gradient(135deg, #22d3ee, #6366f1);
+}
+.project-name {
+  width: 210px; padding: 5px 8px; border: 1px solid transparent; border-radius: 5px;
+  background: var(--panel-2); color: var(--text); font: inherit; font-size: 12.5px; outline: none;
+}
+.project-name:focus { border-color: #3a5a7d; }
+.spacer { flex: 1; }
+
+.seg { display: flex; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+.seg button {
+  padding: 5px 12px; border: none; background: var(--panel-2); color: var(--dim);
+  font-size: 12px;
+}
+.seg button.on { background: var(--accent-dim); color: var(--accent); }
+
+.btn {
+  padding: 5px 11px; border: 1px solid var(--border); border-radius: 5px;
+  background: var(--panel-2); color: var(--text); font-size: 12px; white-space: nowrap;
+}
+.btn:hover { border-color: #3a5a7d; }
+.btn.primary { background: #164e63; border-color: #0e7490; color: #e0f7ff; }
+.btn.primary:hover { background: #155e75; }
+.btn.ghost { background: transparent; color: var(--dim); }
+.btn.sm { padding: 2px 10px; }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+
+/* ───────────────── 主区 */
+.main { display: grid; grid-template-columns: 74px 1fr 300px; min-height: 0; }
+
+/* 工具栏 */
+.toolbar {
+  display: flex; flex-direction: column; align-items: stretch; gap: 2px;
+  padding: 6px 6px 12px; background: var(--panel); border-right: 1px solid var(--border);
+  overflow-y: auto;
+}
+.toolbar::-webkit-scrollbar { width: 6px; }
+.toolbar::-webkit-scrollbar-thumb { background: #263241; border-radius: 3px; }
+.tool {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  padding: 6px 2px; border: 1px solid transparent; border-radius: 5px;
+  background: none; color: var(--dim); font-size: 10.5px; line-height: 1.1;
+}
+.tool svg { width: 16px; height: 16px; }
+.tool:hover { background: var(--panel-2); color: var(--text); }
+.tool.on { background: var(--accent-dim); border-color: #1d4b57; color: var(--accent); }
+.tool-sep { height: 1px; margin: 5px 2px; background: var(--border-soft); }
+.tool-label { padding: 2px 2px 3px; color: var(--dim-2); font-size: 10px; letter-spacing: .5px; }
+.mini-grid { display: grid; gap: 3px; }
+.mini-grid.c2 { grid-template-columns: 1fr 1fr; }
+.mini-grid.c3 { grid-template-columns: repeat(3, 1fr); }
+.mini {
+  padding: 4px 0; border: 1px solid var(--border); border-radius: 4px;
+  background: var(--panel-2); color: var(--dim); font-size: 11.5px;
+}
+.mini:hover { color: var(--text); border-color: #3a5a7d; }
+.mini.dim { opacity: .4; }
+
+/* 画布 */
+.stage-wrap { min-width: 0; position: relative; }
+.stage { position: absolute; inset: 0; overflow: hidden; }
+.stage canvas { display: block; outline: none; }
+.canvas-badge {
+  position: absolute; left: 10px; bottom: 10px; display: flex; gap: 6px; align-items: center;
+  padding: 4px 9px; border: 1px solid var(--border); border-radius: 5px;
+  background: rgba(14, 16, 20, .84); color: var(--dim); font-size: 11.5px;
+  pointer-events: none;
+}
+.canvas-badge b { color: var(--text); }
+.toast {
+  position: absolute; left: 50%; top: 14px; transform: translate(-50%, -8px);
+  padding: 6px 14px; border: 1px solid #0e7490; border-radius: 6px;
+  background: rgba(22, 78, 99, .95); color: #e0f7ff; font-size: 12px;
+  opacity: 0; transition: opacity .15s, transform .15s; pointer-events: none;
+}
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+.stage-3d-note {
+  position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 10px; padding: 40px; text-align: center;
+  background: var(--bg); z-index: 3;
+}
+/* 必须显式写：`.stage-3d-note { display: flex }` 的优先级高于浏览器默认的 [hidden]{display:none}，
+   否则这块全屏遮罩一直盖在画布上 —— 表现是"画布什么都点不动、画不出东西"，而且不报错。 */
+.stage-3d-note[hidden] { display: none; }
+.stage-3d-note h3 { margin: 0; font-size: 15px; }
+.stage-3d-note p { margin: 0; max-width: 520px; color: var(--dim); font-size: 12px; line-height: 1.8; }
+
+/* 右栏 */
+.side {
+  display: flex; flex-direction: column; gap: 0; min-height: 0; overflow-y: auto;
+  background: var(--panel); border-left: 1px solid var(--border);
+}
+.side::-webkit-scrollbar { width: 7px; }
+.side::-webkit-scrollbar-thumb { background: #263241; border-radius: 3px; }
+
+.panel { padding: 9px 12px 11px; border-bottom: 1px solid var(--border-soft); }
+.panel h3 {
+  display: flex; align-items: center; gap: 6px; margin: 2px 0 8px;
+  font-size: 11.5px; font-weight: 600; color: #b9c6d4; letter-spacing: .3px;
+}
+.panel h3 .count { margin-left: auto; font-weight: 400; color: var(--dim-2); font-size: 10.5px; }
+.panel summary { cursor: pointer; color: #b9c6d4; font-size: 11.5px; font-weight: 600; }
+.panel summary .count { color: var(--dim-2); font-weight: 400; font-size: 10.5px; margin-left: 6px; }
+
+.field { display: flex; align-items: center; gap: 8px; margin: 5px 0; }
+.field label { flex: 0 0 84px; color: var(--dim); font-size: 11.5px; }
+.field input[type="text"], .field input[type="number"], .field select {
+  flex: 1; min-width: 0; padding: 4px 7px; border: 1px solid var(--border); border-radius: 4px;
+  background: var(--panel-2); color: var(--text); font: inherit; font-size: 12px; outline: none;
+}
+.field input:focus, .field select:focus { border-color: #3a5a7d; }
+
+.row { display: flex; justify-content: space-between; gap: 10px; padding: 2px 0; font-size: 11.5px; }
+.row .k { color: var(--dim); }
+.row .v { color: var(--text); font-family: var(--mono); font-size: 11.5px; }
+
+.row-btns { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.empty { margin-top: 6px; color: var(--dim-2); font-size: 11px; line-height: 1.7; }
+.kbd {
+  display: inline-block; min-width: 15px; padding: 0 4px; margin-right: 2px;
+  border: 1px solid var(--border); border-radius: 3px; background: var(--panel-2);
+  font-family: var(--mono); font-size: 10px; text-align: center; color: var(--dim);
+}
+.chip {
+  padding: 1px 6px; border-radius: 3px; font-size: 10px; font-weight: 400;
+}
+.chip.gen { background: #1e293b; color: #93c5fd; }
+.chip.user { background: #1f2937; color: #a7f3d0; }
+.chip.lock { background: #422006; color: var(--amber); }
+
+/* 图层 */
+.layer { display: flex; align-items: center; gap: 6px; padding: 3px 0; }
+.layer.off { opacity: .45; }
+.layer .ico {
+  width: 20px; height: 20px; padding: 0; border: 1px solid transparent; border-radius: 4px;
+  background: none; font-size: 11px; line-height: 1;
+}
+.layer .ico:hover { background: var(--panel-2); }
+.layer .ico.lit { color: var(--amber); }
+.layer .name { flex: 1; font-size: 11.5px; color: #b9c6d4; }
+.layer .num { font-family: var(--mono); font-size: 10.5px; color: var(--dim-2); }
+
+/* 状态栏 */
+.statusbar {
+  display: flex; align-items: center; gap: 10px; padding: 0 12px;
+  background: var(--panel); border-top: 1px solid var(--border);
+  color: var(--dim-2); font-size: 11px; white-space: nowrap; overflow: hidden;
+}
+.statusbar b { color: var(--text); font-family: var(--mono); font-weight: 500; }
+.statusbar b.ok { color: var(--ok); }
+.statusbar .sep { width: 1px; height: 12px; background: var(--border); }
+
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+var __def = {}, __cache = {};
+function __req(k) {
+  var e = __cache[k]; if (e) return e;
+  e = __cache[k] = {};
+  var f = __def[k];
+  if (!f) throw new Error("模块未打包: " + k);
+  f(e);
+  return e;
+}
+__def["editor-app/src/main.js"] = function (__exports) {
+// 入口。只做"挂载"，任何逻辑都不放在这里 —— 保证 build 出来的包只有一个副作用点。
+const { mount: mount } = __req("editor-app/src/app.js");
+const host = document.getElementById('root');
+if (!host)
+    throw new Error('#root 不存在');
+mount(host);
+
+};
+__def["editor-app/src/app.js"] = function (__exports) {
+// 编辑器外壳。**布局与面板内容照 PCG**（`App.tsx` / `Toolbar.tsx` / `Inspector.tsx` /
+// `Layers.tsx` / `StatusBar.tsx`），只是不用 React —— 本机没有 npm，用模板字符串 + 事件委托。
+//
+// 一条纪律：**面板是"读写同一个 model"的视图，不持有自己的状态**。
+// 所有数字都从 model 现算（面积/周长/尺寸/中心），所以拖完对象面板立刻是对的；
+// 一旦把数字缓存进 DOM，就会出现"拖动后面积还是旧的"这类最难查的 bug。
+const { Camera2D: Camera2D } = __req("editor-app/src/camera.js");
+const { EditorController: EditorController } = __req("editor-app/src/controller.js");
+const { generateParcel: generateParcel } = __req("editor-app/src/gen.js");
+const { ACCESS_LABEL: ACCESS_LABEL, KIND_LABEL: KIND_LABEL, LAYER_OF: LAYER_OF, ROAD_LABEL: ROAD_LABEL, ROAD_WIDTH: ROAD_WIDTH, SURFACE_LABEL: SURFACE_LABEL, ZONE_OPTIONS: ZONE_OPTIONS, areaPaths: areaPaths, isAreaObj: isAreaObj, objectVertices: objectVertices } = __req("editor-app/src/model.js");
+const { boundsOfPaths: boundsOfPaths, boundsValid: boundsValid, pathsArea: pathsArea, pathsPerimeter: pathsPerimeter, ringCenter: ringCenter } = __req("editor-app/src/polygon.js");
+const { DRAW_KIND_LABEL: DRAW_KIND_LABEL, EMPTY_HINT: EMPTY_HINT, Store: Store, TOOL_LABEL: TOOL_LABEL } = __req("editor-app/src/store.js");
+const { fmtArea: fmtArea } = __req("editor-app/src/render2d.js");
+const { DEG: DEG } = __req("editor-app/src/vec.js");
+const ICONS = {
+    select: 'M3 2.5 L10.5 8 L7 8.8 L8.8 12.6 L7.4 13.3 L5.6 9.4 L3 11.6 Z',
+    site: 'M2.5 3.5 H13.5 V12.5 H2.5 Z M2.5 6.5 H13.5 M6 3.5 V12.5',
+    parcel: 'M3 3 H13 V13 H3 Z',
+    building: 'M3.5 13 V4.5 H9 V13 M9 7.5 H12.5 V13 M2 13 H14',
+    road: 'M6 2 V14 M10 2 V14 M8 3.5 V5 M8 7 V8.5 M8 10.5 V12',
+    gate: 'M2.5 12.5 H6 M10 12.5 H13.5 M6 12.5 V8 H10 V12.5',
+    nobuild: 'M3 3 H13 V13 H3 Z M5 5 L11 11 M11 5 L5 11',
+    rect: 'M3 4 H13 V12 H3 Z',
+    polygon: 'M8 2.5 L13.5 6.5 L11.5 13 H4.5 L2.5 6.5 Z',
+    polyline: 'M2.5 12 L6 5 L9 9.5 L13.5 3.5',
+    circle: 'M8 2.5 A5.5 5.5 0 1 0 8.01 2.5',
+    measure: 'M2.5 6.5 L6.5 2.5 L13.5 9.5 L9.5 13.5 Z M5 8.5 L6.5 7 M7 10.5 L8.5 9 M9 6.5 L10.5 5',
+};
+const icon = (d, fill = false) => `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"><path d="${d}" fill="${fill ? 'currentColor' : 'none'}" fill-opacity="${fill ? 0.18 : 0}"/></svg>`;
+const SEMANTIC = [
+    { kind: 'site', tool: 'polygon', label: '园区', icon: 'site' },
+    { kind: 'parcel', tool: 'polygon', label: '地块', icon: 'parcel' },
+    { kind: 'building', tool: 'rect', label: '建筑', icon: 'building' },
+    { kind: 'road', tool: 'polyline', label: '道路', icon: 'road' },
+    { kind: 'access', tool: 'polygon', label: '出入口', icon: 'gate' },
+    { kind: 'nobuild', tool: 'polygon', label: '禁建', icon: 'nobuild' },
+];
+const GEOM = [
+    { tool: 'rect', label: '矩形', icon: 'rect', key: 'R' },
+    { tool: 'polygon', label: '多边形', icon: 'polygon', key: 'P' },
+    { tool: 'polyline', label: '折线', icon: 'polyline', key: 'L' },
+    { tool: 'circle', label: '圆', icon: 'circle', key: 'C' },
+];
+const LAYERS = [
+    { key: 'site', label: '园区边界', hint: 'Site' },
+    { key: 'parcels', label: '地块', hint: 'Parcels' },
+    { key: 'roads', label: '道路', hint: 'Roads' },
+    { key: 'buildings', label: '建筑', hint: 'Buildings' },
+    { key: 'access', label: '出入口', hint: 'Access' },
+    { key: 'ground', label: '地面', hint: 'Ground' },
+    { key: 'landscape', label: '禁建 / 景观', hint: 'Landscape' },
+];
+class EditorApp {
+    host;
+    store = new Store();
+    cam = new Camera2D();
+    ctrl;
+    canvas;
+    ctx;
+    lastPanelKey = '';
+    lastVersion = -1;
+    viewW = 1;
+    viewH = 1;
+    constructor(host) {
+        this.host = host;
+        host.innerHTML = this.template();
+        this.canvas = host.querySelector('#stage-canvas');
+        const ctx = this.canvas.getContext('2d');
+        if (!ctx)
+            throw new Error('当前浏览器不支持 Canvas 2D');
+        this.ctx = ctx;
+        this.ctrl = new EditorController(this.canvas, this.store, this.cam, (reseed) => this.generate(reseed));
+        this.store.subscribe(() => this.onStoreChange());
+        this.bindTop();
+        this.bindTools();
+        this.bindCanvas();
+        this.bindKeys();
+        this.resize();
+        new ResizeObserver(() => this.resize()).observe(host.querySelector('#stage'));
+        this.ctrl.fitAll();
+        this.renderAll();
+        this.loop();
+        // 无头验证用：从外面读状态、模拟点击，都走这两个钩子
+        window.__EDITOR__ = this;
+        window.__STORE__ = this.store;
+        window.__CAM__ = this.cam;
+        window.__CTRL__ = this.ctrl;
+    }
+    // ───────────────────────────── DOM 模板
+    template() {
+        const toolBtn = (id, label, d, title, fill = false) => `<button class="tool" data-tool="${id}" title="${title}">${icon(d, fill)}${label}</button>`;
+        return `
+<div class="app">
+  <div class="topbar">
+    <div class="brand"><div class="brand-mark"></div>Context City PCG<small>2D 空间授权</small></div>
+    <input class="project-name" id="proj-name" spellcheck="false"/>
+    <div class="spacer"></div>
+    <div class="seg">
+      <button id="view-2d" class="on">2D Plan</button>
+      <button id="view-3d" title="3D 预览（G3）">3D Preview</button>
+    </div>
+    <button class="btn ghost" id="btn-demo" title="载入示例园区">示例</button>
+    <button class="btn ghost" id="btn-new" title="清空项目">新建</button>
+    <button class="btn" id="btn-export" title="导出 Project JSON">导出 JSON</button>
+    <button class="btn primary" id="btn-gen" title="对选中（或全部）地块做生成 · Shift 点击 = 换一版">生成</button>
+  </div>
+  <div class="main">
+    <div class="toolbar">
+      ${toolBtn('select', '选择', ICONS.select, '选择 / 移动 (V)', true)}
+      <div class="tool-sep"></div>
+      <div class="tool-label">语义</div>
+      ${SEMANTIC.map((s) => `<button class="tool sem" data-kind="${s.kind}" data-tool="${s.tool}" title="绘制${s.label}">${icon(ICONS[s.icon])}${s.label}</button>`).join('')}
+      <div class="tool-sep"></div>
+      <div class="tool-label">几何</div>
+      ${GEOM.map((g) => `<button class="tool geom" data-tool="${g.tool}" title="${g.label} (${g.key})">${icon(ICONS[g.icon])}${g.label}</button>`).join('')}
+      ${toolBtn('measure', '测量', ICONS.measure, '测量距离 / 面积 (M)')}
+      <div class="tool-sep"></div>
+      <div class="tool-label">布尔</div>
+      <div class="mini-grid c3">
+        <button class="mini" data-bool="union" title="合并 Union（至少 2 个面）">∪</button>
+        <button class="mini" data-bool="subtract" title="减去 Subtract（第一个选中为主对象）">−</button>
+        <button class="mini" data-bool="intersect" title="取交集 Intersect">∩</button>
+      </div>
+      <div class="tool-label">偏移</div>
+      <div class="mini-grid c2">
+        <button class="mini" data-offset="-3" title="向内偏移 3 m">内缩</button>
+        <button class="mini" data-offset="3" title="向外偏移 3 m">外扩</button>
+      </div>
+      <div class="tool-sep"></div>
+      <div class="mini-grid c2">
+        <button class="mini" id="btn-undo" title="撤销 (Ctrl+Z)">↶</button>
+        <button class="mini" id="btn-redo" title="重做 (Ctrl+Shift+Z)">↷</button>
+      </div>
+    </div>
+    <div class="stage-wrap">
+      <div class="stage" id="stage">
+        <canvas id="stage-canvas" tabindex="0"></canvas>
+        <div class="canvas-badge" id="badge"></div>
+        <div class="toast" id="toast"></div>
+        <div class="stage-3d-note" id="stage-3d-note" hidden>
+          <h3>3D 预览（G3）</h3>
+          <p>3D 页签下一步接现有 <code>stage.ts</code> + <code>realizer.ts</code>：ProjectModel → SceneIR → 增量渲染，
+          正交五视图、聚焦选中、<code>1–5</code> 切视图。</p>
+          <p>当前版本只交付 <b>2D 编辑</b>，因为"能画"是产品的地基；3D 是看结果，见 <code>docs/G</code> §5。</p>
+          <button class="btn" id="btn-back-2d">回到 2D</button>
+        </div>
+      </div>
+    </div>
+    <div class="side">
+      <div id="inspector"></div>
+      <div id="layers"></div>
+    </div>
+  </div>
+  <div class="statusbar" id="statusbar"></div>
+</div>`;
+    }
+    // ───────────────────────────── 绑定
+    bindTop() {
+        const name = this.host.querySelector('#proj-name');
+        name.value = this.store.state.model.name;
+        name.addEventListener('change', () => {
+            this.store.pushHistory('重命名项目');
+            this.store.setModel({ ...this.store.state.model, name: name.value });
+        });
+        this.host.querySelector('#btn-demo').addEventListener('click', () => {
+            this.store.loadDemo();
+            this.ctrl.fitAll();
+        });
+        this.host.querySelector('#btn-new').addEventListener('click', () => {
+            this.store.newProject();
+            this.ctrl.fitAll();
+        });
+        this.host.querySelector('#btn-export').addEventListener('click', () => {
+            const blob = new Blob([this.store.exportJson()], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${this.store.state.model.name || 'project'}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            this.store.showToast('Project JSON 已导出');
+        });
+        this.host.querySelector('#btn-gen').addEventListener('click', (e) => this.generate(e.shiftKey));
+        this.host.querySelector('#view-2d').addEventListener('click', () => this.setView('2d'));
+        this.host.querySelector('#view-3d').addEventListener('click', () => this.setView('3d'));
+        const back = this.host.querySelector('#btn-back-2d');
+        back?.addEventListener('click', () => this.setView('2d'));
+        this.host.querySelector('#btn-undo').addEventListener('click', () => this.store.undo());
+        this.host.querySelector('#btn-redo').addEventListener('click', () => this.store.redo());
+    }
+    bindTools() {
+        const toolbar = this.host.querySelector('.toolbar');
+        toolbar.addEventListener('click', (e) => {
+            const t = e.target.closest('button');
+            if (!t)
+                return;
+            if (t.dataset.bool) {
+                this.store.applyBoolean(t.dataset.bool);
+                return;
+            }
+            if (t.dataset.offset) {
+                this.store.applyOffset(Number(t.dataset.offset));
+                return;
+            }
+            if (t.dataset.kind) {
+                this.store.setDrawKind(t.dataset.kind);
+                this.store.setTool(t.dataset.tool);
+                return;
+            }
+            if (t.dataset.tool)
+                this.store.setTool(t.dataset.tool);
+        });
+    }
+    bindCanvas() {
+        const c = this.canvas;
+        c.addEventListener('pointerdown', (e) => {
+            c.focus();
+            this.ctrl.onPointerDown(e);
+        });
+        c.addEventListener('pointermove', (e) => this.ctrl.onPointerMove(e));
+        c.addEventListener('pointerup', (e) => this.ctrl.onPointerUp(e));
+        c.addEventListener('pointerleave', () => this.ctrl.onPointerLeave());
+        c.addEventListener('dblclick', (e) => this.ctrl.onDoubleClick(e));
+        c.addEventListener('wheel', (e) => this.ctrl.onWheel(e), { passive: false });
+        c.addEventListener('contextmenu', (e) => this.ctrl.onContextMenu(e));
+    }
+    bindKeys() {
+        window.addEventListener('keydown', (e) => {
+            const t = e.target;
+            if (t && /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))
+                return;
+            if (this.ctrl.onKeyDown(e))
+                e.preventDefault();
+        });
+        window.addEventListener('keyup', (e) => this.ctrl.onKeyUp(e));
+    }
+    setView(v) {
+        this.store.patchSettings({ activeView: v });
+        const note = this.host.querySelector('#stage-3d-note');
+        const cv = this.canvas;
+        note.hidden = v !== '3d';
+        cv.style.visibility = v === '3d' ? 'hidden' : 'visible';
+        this.host.querySelector('#view-2d').classList.toggle('on', v === '2d');
+        this.host.querySelector('#view-3d').classList.toggle('on', v === '3d');
+    }
+    // ───────────────────────────── 生成
+    generate(reseed) {
+        const { model, view } = this.store.state;
+        const sel = view.selectionIds.map((id) => model.objects[id]).filter((o) => !!o && o.kind === 'parcel');
+        const parcels = sel.length ? sel : model.order.map((id) => model.objects[id]).filter((o) => !!o && o.kind === 'parcel');
+        if (!parcels.length) {
+            this.store.showToast('先画一个地块（P）再生成');
+            return;
+        }
+        this.store.pushHistory(reseed ? '换一版生成' : '生成');
+        let total = 0;
+        const warnings = [];
+        for (const p of parcels) {
+            const target = reseed ? { ...p, seed: (p.seed + 1) % 100000 } : p;
+            if (reseed)
+                this.store.updateObject(p.id, { seed: target.seed });
+            const all = Object.values(this.store.state.model.objects);
+            const res = generateParcel(target, all);
+            this.store.applyGenerated(p.id, res.objects, res.stats);
+            total += res.stats.buildings;
+            if (res.warning)
+                warnings.push(`${p.name}：${res.warning}`);
+        }
+        if (warnings.length)
+            this.store.showToast(warnings[0]);
+        else
+            this.store.showToast(`生成完成：${total} 栋`);
+    }
+    // ───────────────────────────── 渲染循环
+    resize() {
+        const host = this.host.querySelector('#stage');
+        const r = host.getBoundingClientRect();
+        const dpr = Math.min(2, window.devicePixelRatio || 1);
+        const w = Math.max(1, r.width);
+        const h = Math.max(1, r.height);
+        this.canvas.width = Math.round(w * dpr);
+        this.canvas.height = Math.round(h * dpr);
+        this.canvas.style.width = `${w}px`;
+        this.canvas.style.height = `${h}px`;
+        this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        this.cam.setViewport(w, h);
+        this.viewW = w;
+        this.viewH = h;
+    }
+    loop = () => {
+        requestAnimationFrame(this.loop);
+        if (this.store.state.view.activeView !== '2d')
+            return;
+        this.ctrl.render(this.ctx, this.viewW, this.viewH);
+    };
+    onStoreChange() {
+        if (this.store.version === this.lastVersion)
+            return;
+        this.lastVersion = this.store.version;
+        const key = this.panelKey();
+        if (key !== this.lastPanelKey) {
+            this.lastPanelKey = key;
+            this.renderInspector();
+        }
+        this.renderLayers();
+        this.renderToolStates();
+        this.renderBadge();
+        this.renderToast();
+        this.renderStatus();
+        const name = this.host.querySelector('#proj-name');
+        if (document.activeElement !== name)
+            name.value = this.store.state.model.name;
+    }
+    /** 面板要不要重建：选中变了、有非静默改动、生成统计变了才重建。
+     *  拖动（静默）时不重建 —— 否则输入框每次 move 都失焦。 */
+    panelKey() {
+        const v = this.store.state.view;
+        const gens = Object.keys(this.store.state.genStats).length;
+        return `${v.selectionIds.join(',')}|${this.store.version - this.store.silentSeq}|${gens}|${v.activeView}`;
+    }
+    renderAll() {
+        this.renderInspector();
+        this.renderLayers();
+        this.renderToolStates();
+        this.renderBadge();
+        this.renderStatus();
+    }
+    renderToolStates() {
+        const v = this.store.state.view;
+        this.host.querySelectorAll('.tool[data-tool]').forEach((b) => {
+            const el = b;
+            if (el.dataset.kind) {
+                const on = v.drawKind === el.dataset.kind && v.activeTool !== 'select' && v.activeTool !== 'pan';
+                el.classList.toggle('on', on);
+            }
+            else {
+                el.classList.toggle('on', v.activeTool === el.dataset.tool);
+            }
+        });
+        this.host.querySelector('#btn-undo').classList.toggle('dim', this.store.state.past.length === 0);
+        this.host.querySelector('#btn-redo').classList.toggle('dim', this.store.state.future.length === 0);
+    }
+    renderBadge() {
+        const v = this.store.state.view;
+        const isDraw = v.activeTool !== 'select' && v.activeTool !== 'pan';
+        const parts = [`<b>${TOOL_LABEL[v.activeTool]}</b>`];
+        if (isDraw)
+            parts.push(`<span>· 绘制为 ${DRAW_KIND_LABEL[v.drawKind]}</span>`);
+        if (v.activeTool === 'select')
+            parts.push('<span>· 拖动移动 / 双击聚焦 / Shift 多选</span>');
+        if (isDraw)
+            parts.push('<span>· 右键 / 回车 结束 · Esc 退出</span>');
+        this.host.querySelector('#badge').innerHTML = parts.join('');
+    }
+    renderToast() {
+        const box = this.host.querySelector('#toast');
+        const t = this.store.state.toast;
+        if (!t) {
+            box.textContent = '';
+            box.classList.remove('show');
+            return;
+        }
+        // 长了会横穿画布挡住内容；完整信息在生成面板的读数里，toast 只是提示
+        box.textContent = t.length > 46 ? `${t.slice(0, 46)}…` : t;
+        box.classList.add('show');
+        window.clearTimeout(this._toastTimer);
+        this._toastTimer = window.setTimeout(() => {
+            this.store.showToast('');
+        }, 2400);
+    }
+    renderStatus() {
+        const h = this.store.state.hint ?? EMPTY_HINT;
+        const v = this.store.state.view;
+        const sel = v.selectionIds.length;
+        const n = this.store.state.model.order.length;
+        const fmt = (x, d = 2) => x.toFixed(d);
+        const el = this.host.querySelector('#statusbar');
+        el.innerHTML = `
+      <span>X <b>${fmt(h.x)}</b> Y <b>${fmt(h.y)}</b></span><span class="sep"></span>
+      <span>长度 <b>${h.length !== undefined ? `${fmt(h.length)} m` : '—'}</b></span>
+      <span>角度 <b>${h.angle !== undefined ? `${fmt(h.angle * DEG, 1)}°` : '—'}</b></span>
+      <span>面积 <b>${h.area !== undefined ? fmtArea(h.area) : '—'}</b></span><span class="sep"></span>
+      <span>Snap: <b class="${h.snapLabel ? 'ok' : ''}">${h.snapLabel || (v.snapEnabled ? 'on' : 'off')}</b></span>
+      <span>Grid: <b>${v.gridSize} m</b>${v.gridSnap ? '' : ' (不吸附)'}</span><span class="sep"></span>
+      <span>工具 <b>${TOOL_LABEL[v.activeTool]}</b></span>
+      <span>选中 <b>${sel}</b></span><span class="sep"></span>
+      <span>缩放 <b>${fmt(v.zoom, 2)}</b> px/m</span><span class="sep"></span>
+      <span>对象 ${n}</span>`;
+    }
+    // ───────────────────────────── 图层
+    renderLayers() {
+        const { model, view } = this.store.state;
+        const counts = {};
+        for (const id of model.order) {
+            const o = model.objects[id];
+            if (!o)
+                continue;
+            const layer = LAYER_OF[o.kind];
+            counts[layer] = (counts[layer] ?? 0) + 1;
+        }
+        const html = `
+      <div class="panel">
+        <h3>图层 <span class="count">语义层</span></h3>
+        ${LAYERS.map((l) => {
+            const vis = view.layerVisibility[l.key];
+            const lock = view.layerLocked[l.key];
+            return `<div class="layer ${vis ? '' : 'off'}">
+            <button class="ico ${vis ? 'active' : ''}" data-vis="${l.key}" title="${vis ? '隐藏图层' : '显示图层'}">${vis ? '👁' : '🚫'}</button>
+            <button class="ico ${lock ? 'lit' : ''}" data-lock="${l.key}" title="${lock ? '解锁图层' : '锁定图层'}">${lock ? '🔒' : '🔓'}</button>
+            <span class="name">${l.label}</span>
+            <span class="num">${counts[l.key] ?? 0}</span>
+          </div>`;
+        }).join('')}
+      </div>`;
+        const host = this.host.querySelector('#layers');
+        host.innerHTML = html;
+        host.querySelectorAll('[data-vis]').forEach((b) => b.addEventListener('click', () => this.store.toggleLayerVisible(b.dataset.vis)));
+        host.querySelectorAll('[data-lock]').forEach((b) => b.addEventListener('click', () => this.store.toggleLayerLocked(b.dataset.lock)));
+    }
+    // ───────────────────────────── 属性面板
+    renderInspector() {
+        const host = this.host.querySelector('#inspector');
+        const { model, view } = this.store.state;
+        const sel = view.selectionIds.map((id) => model.objects[id]).filter((o) => !!o);
+        if (sel.length === 0) {
+            host.innerHTML = this.inspectorEmpty();
+            this.bindInspectorEmpty(host);
+            return;
+        }
+        if (sel.length > 1) {
+            host.innerHTML = `
+        <div class="panel">
+          <h3>多选 <span class="count">${sel.length} 个对象</span></h3>
+          <div class="empty">布尔以 <b>第一个选中</b> 的对象为主对象；<b>减去</b> 只改主对象，被减体保留。</div>
+          <div class="row-btns">
+            <button class="btn" data-act="dup">复制</button>
+            <button class="btn" data-act="lock">锁定 / 解锁</button>
+            <button class="btn" data-act="del">删除</button>
+          </div>
+        </div>`;
+            this.bindActs(host);
+            return;
+        }
+        const o = sel[0];
+        const paths = areaPaths(o);
+        const b = paths ? boundsOfPaths(paths) : null;
+        const area = paths ? pathsArea(paths) : 0;
+        const per = paths ? pathsPerimeter(paths) : 0;
+        const badge = `<span class="chip ${o.origin === 'generated' ? 'gen' : 'user'}">${o.origin === 'generated' ? 'Generated' : 'Fixed'}</span>${o.locked ? '<span class="chip lock">Locked</span>' : ''}`;
+        host.innerHTML = `
+      <div class="panel">
+        <h3>${KIND_LABEL[o.kind]} <span class="count">${badge}</span></h3>
+        <div class="field"><label>名称</label><input id="f-name" type="text" value="${esc(o.name)}"/></div>
+        <div class="row-btns">
+          <button class="btn" data-act="lock">${o.locked ? '解锁' : '锁定'}</button>
+          <button class="btn" data-act="fix">转为固定</button>
+          <button class="btn" data-act="del">删除</button>
+        </div>
+      </div>
+      ${paths && b && boundsValid(b)
+            ? `<div class="panel">
+        <h3>几何</h3>
+        ${row('面积', fmtArea(area))}
+        ${row('周长', `${per.toFixed(2)} m`)}
+        ${row('尺寸', `${(b.maxX - b.minX).toFixed(2)} × ${(b.maxY - b.minY).toFixed(2)} m`)}
+        ${row('中心', `${ringCenter(paths[0] ?? []).x.toFixed(1)}, ${ringCenter(paths[0] ?? []).y.toFixed(1)}`)}
+        ${row('环 / 顶点', `${paths.length} / ${objectVertices(o).length}`)}
+      </div>`
+            : ''}
+      ${this.paramsPanel(o)}
+      ${this.genPanel(o)}
+      ${isAreaObj(o)
+            ? `<div class="panel"><h3>对象操作</h3><div class="row-btns">
+          <button class="btn" data-act="dup">复制 (Ctrl+D)</button>
+          <button class="btn" data-offset="-3">内缩 3 m</button>
+          <button class="btn" data-offset="3">外扩 3 m</button>
+        </div></div>`
+            : ''}`;
+        this.bindActs(host);
+        this.bindParams(host, o);
+    }
+    inspectorEmpty() {
+        const { model, view } = this.store.state;
+        const counts = { parcel: 0, building: 0, road: 0, access: 0, ground: 0, nobuild: 0 };
+        for (const id of model.order) {
+            const o = model.objects[id];
+            if (!o)
+                continue;
+            if (o.kind in counts)
+                counts[o.kind]++;
+        }
+        return `
+      <div class="panel">
+        <h3>项目设置</h3>
+        ${numField('网格间距 (m)', view.gridSize, 0.5, 2, 'f-grid')}
+        ${toggleField('网格显示', view.gridVisible, 'gridVisible')}
+        ${toggleField('网格吸附', view.gridSnap, 'gridSnap')}
+        ${toggleField('对象吸附', view.snapEnabled, 'snap')}
+      </div>
+      <div class="panel">
+        <h3>选择过滤 <span class="count">Selection Filter</span></h3>
+        <div class="field"><label>仅可选</label>
+          <select id="f-filter">
+            ${[
+            ['all', '全部'],
+            ['parcels', '地块'],
+            ['buildings', '建筑'],
+            ['roads', '道路'],
+            ['ground', '地面 / 禁建'],
+            ['generated', '仅生成物'],
+        ]
+            .map(([k, v]) => `<option value="${k}" ${view.selectionFilter === k ? 'selected' : ''}>${v}</option>`)
+            .join('')}
+          </select>
+        </div>
+      </div>
+      <details class="panel" open>
+        <summary>模型统计 <span class="count">${model.order.length} 个对象</span></summary>
+        ${row('地块', String(counts.parcel))}
+        ${row('建筑', String(counts.building))}
+        ${row('道路', String(counts.road))}
+        ${row('出入口', String(counts.access))}
+        ${row('地面', String(counts.ground))}
+        ${row('禁建区', String(counts.nobuild))}
+      </details>
+      <details class="panel">
+        <summary>快捷键 <span class="count">Keyboard</span></summary>
+        <div class="empty">
+          <span class="kbd">V</span> 选择 · <span class="kbd">R</span> 矩形 · <span class="kbd">P</span> 多边形 ·
+          <span class="kbd">L</span> 折线 · <span class="kbd">C</span> 圆 · <span class="kbd">M</span> 测量<br/>
+          <span class="kbd">F</span> 聚焦选中 · <span class="kbd">Home</span> 全览 · <span class="kbd">Space</span> 拖拽平移<br/>
+          <span class="kbd">G</span> 生成地块 · <span class="kbd">Shift+G</span> 换一版<br/>
+          <span class="kbd">Shift</span> 多选 / 45° 约束 · <span class="kbd">Ctrl+Z</span> 撤销 · <span class="kbd">Del</span> 删除
+        </div>
+      </details>`;
+    }
+    bindInspectorEmpty(host) {
+        const g = host.querySelector('#f-grid');
+        g?.addEventListener('change', () => this.store.patchSettings({ gridSize: Math.max(0.05, Number(g.value) || 1) }));
+        host.querySelectorAll('[data-tg]').forEach((b) => b.addEventListener('click', () => {
+            const k = b.dataset.tg;
+            const v = this.store.state.view;
+            if (k === 'gridVisible')
+                this.store.patchSettings({ gridVisible: !v.gridVisible });
+            if (k === 'gridSnap')
+                this.store.patchSettings({ gridSnap: !v.gridSnap });
+            if (k === 'snap')
+                this.store.patchSettings({ snapEnabled: !v.snapEnabled });
+        }));
+        const f = host.querySelector('#f-filter');
+        f?.addEventListener('change', () => this.store.setFilter(f.value));
+    }
+    /** 按类型的参数块 —— 这就是"工具的界面定义"，一项不能少。 */
+    paramsPanel(o) {
+        if (o.kind === 'parcel') {
+            return `<div class="panel"><h3>地块参数</h3>
+        <div class="field"><label>用地类型</label>
+          <select id="p-zone">${Object.entries(ZONE_OPTIONS)
+                .map(([k, v]) => `<option value="${k}" ${o.zoneKind === k ? 'selected' : ''}>${v}</option>`)
+                .join('')}</select>
+        </div>
+        ${numField('建筑密度', o.density, 0.05, 2, 'p-density')}
+        ${numField('容积率', o.far, 0.1, 2, 'p-far')}
+        ${numField('高度下限', o.heightRange[0], 1, 0, 'p-hmin')}
+        ${numField('高度上限', o.heightRange[1], 1, 0, 'p-hmax')}
+        ${numField('Seed', o.seed, 1, 0, 'p-seed')}
+        <div class="empty">密度 / 容积率 / 高度区间 / Seed 都真的进生成算法，不是摆设（docs/G §3）。</div>
+      </div>`;
+        }
+        if (o.kind === 'building') {
+            return `<div class="panel"><h3>建筑参数</h3>
+        ${numField('高度 (m)', o.height, 0.5, 2, 'b-height')}
+        ${numField('层数', o.floors, 1, 0, 'b-floors')}
+        <div class="field"><label>风格</label>
+          <select id="b-style">
+            <option value="geometric" ${o.style === 'geometric' ? 'selected' : ''}>Geometric</option>
+            <option value="semiRealistic" ${o.style === 'semiRealistic' ? 'selected' : ''}>Semi-Realistic</option>
+          </select>
+        </div>
+        ${toggleField('固定（生成不再改动）', o.fixed, 'b-fixed')}
+        ${o.slotId ? `<div class="empty">由楼位 <code>${esc(o.slotId)}</code> 生成。</div>` : ''}
+      </div>`;
+        }
+        if (o.kind === 'road') {
+            const len = o.centerline.reduce((s, p, i) => (i ? s + Math.hypot(p.x - o.centerline[i - 1].x, p.y - o.centerline[i - 1].y) : 0), 0);
+            return `<div class="panel"><h3>道路参数</h3>
+        <div class="field"><label>道路等级</label>
+          <select id="r-class">${Object.entries(ROAD_LABEL)
+                .map(([k, v]) => `<option value="${k}" ${o.roadClass === k ? 'selected' : ''}>${v}</option>`)
+                .join('')}</select>
+        </div>
+        ${numField('宽度 (m)', o.width, 0.5, 1, 'r-width')}
+        ${toggleField('人行道', o.sidewalk, 'r-side')}
+        ${row('中心线长度', `${len.toFixed(2)} m`)}
+        ${row('控制点', String(o.centerline.length))}
+      </div>`;
+        }
+        if (o.kind === 'access') {
+            return `<div class="panel"><h3>出入口</h3>
+        ${numField('开口宽度 (m)', o.width, 0.5, 1, 'a-width')}
+        ${numField('朝向 (°)', o.dir * DEG, 15, 1, 'a-dir')}
+        <div class="field"><label>类型</label>
+          <select id="a-type">${Object.entries(ACCESS_LABEL)
+                .map(([k, v]) => `<option value="${k}" ${o.accessType === k ? 'selected' : ''}>${v}</option>`)
+                .join('')}</select>
+        </div>
+        <div class="empty">拖动 2D 里的方向箭头可改朝向（按住 Shift 吸附 45°）。</div>
+      </div>`;
+        }
+        if (o.kind === 'ground') {
+            return `<div class="panel"><h3>地面 <span class="count">${SURFACE_LABEL[o.surface]}</span></h3>
+        <div class="field"><label>表面</label>
+          <select id="g-surface">${Object.entries(SURFACE_LABEL)
+                .map(([k, v]) => `<option value="${k}" ${o.surface === k ? 'selected' : ''}>${v}</option>`)
+                .join('')}</select>
+        </div>
+        ${row('铺设面积', fmtArea(Math.abs(pathsArea(areaPaths(o) ?? []))))}
+        ${o.generatedFrom ? '<div class="empty">这块地面由地块生成；改表面类型会保留，重新生成会被覆盖。</div>' : ''}
+      </div>`;
+        }
+        return '';
+    }
+    /** 地块的生成面板：读数只在有统计时显示，撤销回到"没统计"就显示提示，不显示上一次的读数。 */
+    genPanel(o) {
+        if (o.kind !== 'parcel')
+            return '';
+        const st = this.store.state.genStats[o.id];
+        const count = this.store.state.model.order.reduce((n, id) => {
+            const x = this.store.state.model.objects[id];
+            return x && x.kind === 'building' && x.generatedFrom === o.id ? n + 1 : n;
+        }, 0);
+        const pct = (v) => `${(v * 100).toFixed(0)}%`;
+        return `<div class="panel">
+      <h3>生成（TS v0）</h3>
+      <div class="row-btns">
+        <button class="btn primary" data-gen="1">生成</button>
+        <button class="btn" data-gen="reseed">换一版</button>
+        <button class="btn ghost" data-gen="clear" ${count ? '' : 'disabled'}>清除生成</button>
+      </div>
+      ${count === 0
+            ? '<div class="empty">尚未生成。生成只写入本图层的 Generated 对象；手绘建筑与"固定"对象不会被改动。</div>'
+            : st
+                ? `${row('生成建筑', `${count} 栋`)}
+               ${row('覆盖率', `${pct(st.coverage)} / 上限 ${pct(o.density)}`)}
+               ${row('容积率', `${st.far.toFixed(2)} / 目标 ${o.far.toFixed(2)}`)}
+               ${row('最高', `${st.maxHeight.toFixed(1)} m`)}
+               ${row('退线', `${st.setback} m`)}
+               ${row('退线后可建', fmtArea(st.buildableArea))}
+               ${row('净可建', fmtArea(st.freeArea))}
+               ${row('街道 / 宗地 / 楼位', `${st.streets} / ${st.zoning} / ${st.slots}`)}`
+                : `${row('生成建筑', `${count} 栋（重新生成可查看统计）`)}`}
+      <div class="empty">v0 只做：脊街 + 沿街宗地 + 楼位。断街交叉、ready 判定在 G5 接 C#。</div>
+    </div>`;
+    }
+    bindActs(host) {
+        host.querySelectorAll('[data-act]').forEach((b) => b.addEventListener('click', () => {
+            const a = b.dataset.act;
+            if (a === 'del')
+                this.store.deleteSelected();
+            if (a === 'dup')
+                this.store.duplicateSelected();
+            if (a === 'lock')
+                this.store.toggleLock();
+            if (a === 'fix')
+                this.store.promoteToFixed();
+        }));
+        host.querySelectorAll('[data-offset]').forEach((b) => b.addEventListener('click', () => this.store.applyOffset(Number(b.dataset.offset))));
+        host.querySelectorAll('[data-gen]').forEach((b) => b.addEventListener('click', () => {
+            const m = b.dataset.gen;
+            const id = this.store.state.view.selectionIds[0];
+            if (m === 'clear')
+                this.store.clearGenerated(id);
+            else
+                this.generate(m === 'reseed');
+        }));
+        const name = host.querySelector('#f-name');
+        if (name) {
+            name.addEventListener('change', () => {
+                const id = this.store.state.view.selectionIds[0];
+                this.store.pushHistory('重命名');
+                this.store.updateObject(id, { name: name.value });
+            });
+        }
+    }
+    bindParams(host, o) {
+        const commit = (patch, label) => {
+            this.store.pushHistory(label);
+            this.store.updateObject(o.id, patch);
+        };
+        const num = (id, fn) => {
+            const el = host.querySelector(`#${id}`);
+            if (!el)
+                return;
+            el.addEventListener('change', () => {
+                const n = Number(el.value);
+                if (Number.isFinite(n))
+                    fn(n);
+            });
+        };
+        if (o.kind === 'parcel') {
+            const zone = host.querySelector('#p-zone');
+            zone?.addEventListener('change', () => commit({ zoneKind: zone.value }, '修改用地类型'));
+            num('p-density', (n) => commit({ density: Math.max(0.05, Math.min(0.95, n)) }, '修改密度'));
+            num('p-far', (n) => commit({ far: Math.max(0.1, n) }, '修改容积率'));
+            num('p-hmin', (n) => commit({ heightRange: [n, Math.max(n, o.heightRange[1])] }, '修改高度区间'));
+            num('p-hmax', (n) => commit({ heightRange: [Math.min(n, o.heightRange[0]), n] }, '修改高度区间'));
+            num('p-seed', (n) => commit({ seed: Math.round(n) }, '修改 Seed'));
+        }
+        if (o.kind === 'building') {
+            num('b-height', (n) => commit({ height: Math.max(1, n) }, '修改高度'));
+            num('b-floors', (n) => commit({ floors: Math.max(1, Math.round(n)) }, '修改层数'));
+            const style = host.querySelector('#b-style');
+            style?.addEventListener('change', () => commit({ style: style.value }, '修改风格'));
+        }
+        if (o.kind === 'road') {
+            const cls = host.querySelector('#r-class');
+            cls?.addEventListener('change', () => {
+                const rc = cls.value;
+                commit({ roadClass: rc, width: ROAD_WIDTH[rc] }, '修改道路等级');
+            });
+            num('r-width', (n) => commit({ width: Math.max(1, n) }, '修改路宽'));
+        }
+        if (o.kind === 'access') {
+            num('a-width', (n) => commit({ width: Math.max(1, n) }, '修改开口宽度'));
+            num('a-dir', (n) => commit({ dir: n / DEG }, '修改朝向'));
+            const t = host.querySelector('#a-type');
+            t?.addEventListener('change', () => commit({ accessType: t.value }, '修改出入口类型'));
+        }
+        if (o.kind === 'ground') {
+            const s = host.querySelector('#g-surface');
+            s?.addEventListener('change', () => commit({ surface: s.value }, '修改表面'));
+        }
+        host.querySelectorAll('[data-tg]').forEach((b) => b.addEventListener('click', () => {
+            const k = b.dataset.tg;
+            if (k === 'b-fixed') {
+                if (o.fixed)
+                    commit({ fixed: false }, '取消固定');
+                else
+                    this.store.promoteToFixed(o.id);
+            }
+            if (k === 'r-side')
+                commit({ sidewalk: !o.sidewalk }, '人行道切换');
+        }));
+    }
+}
+// ───────────────────────────── 小组件
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+const row = (k, v) => `<div class="row"><span class="k">${k}</span><span class="v">${v}</span></div>`;
+const numField = (label, value, step, digits, id) => `<div class="field"><label>${label}</label><input id="${id}" type="number" step="${step}" value="${value.toFixed(digits)}"/></div>`;
+const toggleField = (label, on, key) => `<div class="field"><label>${label}</label><button class="btn ${on ? 'primary' : 'ghost'} sm" data-tg="${key}">${on ? '开' : '关'}</button></div>`;
+function mount(host) {
+    return new EditorApp(host);
+}
+
+__exports["mount"] = mount;
+__exports["EditorApp"] = EditorApp;
+};
+__def["editor-app/src/camera.js"] = function (__exports) {
+// 2D 相机。世界坐标 y 朝上，屏幕 y 朝下 —— 换号只在这个文件里发生一次。
+//
+// 一条经验（来自 PCG `camera.ts`）：**缩放要以光标为锚点**。
+// 以屏幕中心为锚点时，用户每滚一次轮都要重新找刚才那个位置，编辑大图会疯。
+// 所以这里的 `zoomAt` 必须接收锚点，并保证"锚点下的世界坐标"在缩放前后不变。
+class Camera2D {
+    /** 屏幕中心对应的世界坐标 */
+    cx = 0;
+    cy = 0;
+    /** 像素 / 米 */
+    zoom = 5;
+    width = 1;
+    height = 1;
+    setViewport(w, h) {
+        this.width = Math.max(1, w);
+        this.height = Math.max(1, h);
+    }
+    toScreen(p) {
+        return {
+            x: this.width / 2 + (p.x - this.cx) * this.zoom,
+            y: this.height / 2 - (p.y - this.cy) * this.zoom,
+        };
+    }
+    toWorld(p) {
+        return {
+            x: this.cx + (p.x - this.width / 2) / this.zoom,
+            y: this.cy - (p.y - this.height / 2) / this.zoom,
+        };
+    }
+    /** 世界长度 → 像素 */
+    px(meters) {
+        return meters * this.zoom;
+    }
+    /** 像素 → 世界长度（命中容差用） */
+    meters(px) {
+        return px / this.zoom;
+    }
+    panBy(dxScreen, dyScreen) {
+        this.cx -= dxScreen / this.zoom;
+        this.cy += dyScreen / this.zoom;
+    }
+    /** 以屏幕点 anchor 为锚点缩放到 nextZoom。 */
+    zoomAt(anchor, nextZoom) {
+        const z0 = this.zoom;
+        const z1 = Math.max(0.4, Math.min(400, nextZoom));
+        if (Math.abs(z1 - z0) < 1e-9)
+            return;
+        const before = this.toWorld(anchor);
+        this.zoom = z1;
+        const after = this.toWorld(anchor);
+        this.cx += before.x - after.x;
+        this.cy += before.y - after.y;
+    }
+    zoomBy(factor, anchor) {
+        this.zoomAt(anchor, this.zoom * factor);
+    }
+    /** 把世界包围盒装进视口（留 8% 边距）。 */
+    fit(b, padRatio = 0.08) {
+        const w = Math.max(b.maxX - b.minX, 1e-3);
+        const h = Math.max(b.maxY - b.minY, 1e-3);
+        this.cx = (b.minX + b.maxX) / 2;
+        this.cy = (b.minY + b.maxY) / 2;
+        this.zoom = Math.max(0.04, Math.min(this.width / w, this.height / h) * (1 - padRatio * 2));
+    }
+    /** 视口对应的世界矩形（渲染网格/背景用）。 */
+    viewBounds() {
+        const a = this.toWorld({ x: 0, y: 0 });
+        const b = this.toWorld({ x: this.width, y: this.height });
+        return {
+            minX: Math.min(a.x, b.x),
+            minY: Math.min(a.y, b.y),
+            maxX: Math.max(a.x, b.x),
+            maxY: Math.max(a.y, b.y),
+        };
+    }
+}
+
+__exports["Camera2D"] = Camera2D;
+};
+__def["editor-app/src/controller.js"] = function (__exports) {
+// 交互控制器。**照搬 PCG `editor/controller.ts` 的行为**，按我们的对象模型重写。
+//
+// 一次指针操作的生命周期只有两种：
+//   1. **拖拽型**（矩形/圆/框选/移动/顶点/平移）：down 记锚点 → move 更新 → up 提交；
+//   2. **点击型**（多边形/折线/测量/出入口）：每次 down 落一个点，右键或回车结束。
+// 把这两类分开之后，工具再多也不会互相打架 —— 这是整个控制器最重要的一条结构。
+//
+// 三个容易忘但用户一定会碰到的细节：
+//   · `Space` 按住 + 拖 = 平移（不切工具，松手还回原工具）
+//   · 拖动超过 3 px 才算拖，否则算点击（否则点选时会意外挪动对象）
+//   · `Esc` 是分层的：先撤销正在画的东西，再切回选择工具，最后才清空选中
+const { snapPoint: snapPoint, hitRing: hitRing } = __req("editor-app/src/snap.js");
+const { LAYER_OF: LAYER_OF, ROAD_WIDTH: ROAD_WIDTH, areaPaths: areaPaths, commonDefaults: commonDefaults, isAreaObj: isAreaObj } = __req("editor-app/src/model.js");
+const { boundsOfPaths: boundsOfPaths, boundsValid: boundsValid, cleanRing: cleanRing, circleRing: circleRing, distToPaths: distToPaths, isSimple: isSimple, pointInPaths: pointInPaths, polylineLength: polylineLength, rectRing: rectRing, ringArea: ringArea, strokeEnvelope: strokeEnvelope } = __req("editor-app/src/polygon.js");
+const { TOOL_SHORTCUT: TOOL_SHORTCUT } = __req("editor-app/src/store.js");
+const { DEG: DEG, dist: dist, snapAngle: snapAngle } = __req("editor-app/src/vec.js");
+const { render2d: render2d } = __req("editor-app/src/render2d.js");
+const DRAG_PX = 3;
+class EditorController {
+    canvas;
+    store;
+    cam;
+    onGenerate;
+    draft = null;
+    spaceDown = false;
+    shiftDown = false;
+    cursorWorld = { x: 0, y: 0 };
+    snap = null;
+    guides = [];
+    measureCursor;
+    downScreen = null;
+    moved = false;
+    constructor(canvas, store, cam, onGenerate) {
+        this.canvas = canvas;
+        this.store = store;
+        this.cam = cam;
+        this.onGenerate = onGenerate;
+    }
+    // ───────────────────────────── 渲染
+    render(ctx, w, h) {
+        const { model, view } = this.store.state;
+        const measure = this.draft?.t === 'measure' ? { pts: this.draft.pts, cursor: this.measureCursor, mode: view.measureMode } : null;
+        render2d({
+            ctx,
+            width: w,
+            height: h,
+            cam: this.cam,
+            model,
+            view,
+            previews: this.buildPreviews(),
+            snap: this.snap,
+            guides: this.guides,
+            measure,
+        });
+    }
+    buildPreviews() {
+        const d = this.draft;
+        const v = this.store.state.view;
+        if (!d)
+            return [];
+        const out = [];
+        if (d.t === 'rect') {
+            const ring = rectRing(d.a.x, d.a.y, d.b.x, d.b.y);
+            out.push({ kind: 'ring', ring, label: ringLabel(ring, v.drawKind) });
+            out.push({ kind: 'polyline', pts: [d.a, { x: d.b.x, y: d.a.y }, d.b, { x: d.a.x, y: d.b.y }, d.a] });
+        }
+        else if (d.t === 'circle') {
+            const ring = circleRing(d.c, d.r, 48);
+            out.push({ kind: 'ring', ring, label: ringLabel(ring, v.drawKind) });
+            out.push({ kind: 'polyline', pts: [d.c, { x: d.c.x + d.r, y: d.c.y }], label: `R ${d.r.toFixed(2)} m` });
+        }
+        else if (d.t === 'poly' || d.t === 'line') {
+            const pts = d.pts;
+            if (pts.length)
+                out.push({ kind: 'polyline', pts: [...pts, this.cursorWorld] });
+            if (d.t === 'poly' && pts.length >= 2) {
+                const ring = [...pts, this.cursorWorld];
+                if (ring.length >= 3)
+                    out.push({ kind: 'ring', ring, label: ringLabel(ring, v.drawKind), ghost: true });
+            }
+            if (d.t === 'line' && pts.length >= 1) {
+                const len = polylineLength([...pts, this.cursorWorld]);
+                const ang = Math.atan2(this.cursorWorld.y - pts[pts.length - 1].y, this.cursorWorld.x - pts[pts.length - 1].x);
+                out.push({
+                    kind: 'polyline',
+                    pts: [pts[pts.length - 1], this.cursorWorld],
+                    label: `${len.toFixed(1)} m · ${(ang * DEG).toFixed(0)}°`,
+                    width: ROAD_WIDTH.local,
+                });
+            }
+        }
+        // 框选的矩形由 view.boxSelect 画，这里不重复
+        return out;
+    }
+    // ───────────────────────────── 指针
+    onPointerDown(e) {
+        // 合成事件（无头验证）里 pointerId 可能不是活动指针，setPointerCapture 会抛
+        try {
+            this.canvas.setPointerCapture(e.pointerId);
+        }
+        catch {
+            /* 拿不到捕获也不影响：拖动靠 pointermove 的目标就是画布本身 */
+        }
+        this.canvas.focus();
+        this.downScreen = { x: e.clientX, y: e.clientY };
+        this.moved = false;
+        this.shiftDown = e.shiftKey;
+        const raw = this.worldOf(e);
+        const v = this.store.state.view;
+        // 中键 / 右键 / 空格 = 平移，优先级最高（任何工具下都能平移）
+        if (e.button === 1 || (e.button === 0 && this.spaceDown) || v.activeTool === 'pan') {
+            this.draft = { t: 'pan', last: { x: e.clientX, y: e.clientY } };
+            return;
+        }
+        if (e.button === 2) {
+            // 右键：结束当前绘制（PCG 的手感），没有绘制就什么也不做
+            this.finishDraft();
+            return;
+        }
+        if (e.button !== 0)
+            return;
+        const snapped = this.applySnap(raw, e.shiftKey);
+        switch (v.activeTool) {
+            case 'select':
+                this.downSelect(raw, e.shiftKey);
+                return;
+            case 'rect':
+                this.draft = { t: 'rect', a: snapped, b: snapped };
+                return;
+            case 'circle':
+                this.draft = { t: 'circle', c: snapped, r: 0 };
+                return;
+            case 'polygon':
+                if (this.draft?.t === 'poly') {
+                    // 点回第一个点 = 闭合
+                    if (this.draft.pts.length >= 3 && dist(snapped, this.draft.pts[0]) <= this.cam.meters(10)) {
+                        this.closePolygon();
+                        return;
+                    }
+                    this.draft.pts.push(snapped);
+                }
+                else {
+                    this.draft = { t: 'poly', pts: [snapped] };
+                }
+                return;
+            case 'polyline':
+                if (this.draft?.t === 'line')
+                    this.draft.pts.push(snapped);
+                else
+                    this.draft = { t: 'line', pts: [snapped] };
+                return;
+            case 'measure':
+                if (this.draft?.t === 'measure')
+                    this.draft.pts.push(snapped);
+                else
+                    this.draft = { t: 'measure', pts: [snapped] };
+                return;
+        }
+    }
+    onPointerMove(e) {
+        const raw = this.worldOf(e);
+        if (this.downScreen && !this.moved) {
+            if (Math.hypot(e.clientX - this.downScreen.x, e.clientY - this.downScreen.y) > DRAG_PX)
+                this.moved = true;
+        }
+        this.cursorWorld = raw;
+        const d = this.draft;
+        if (d?.t === 'pan') {
+            const dx = e.clientX - d.last.x;
+            const dy = e.clientY - d.last.y;
+            d.last = { x: e.clientX, y: e.clientY };
+            this.cam.panBy(dx, dy);
+            this.store.patchSettings({ zoom: this.cam.zoom });
+            return;
+        }
+        const v = this.store.state.view;
+        // 选择工具下悬停高亮：这是"点得中"的第一层反馈，没有它整个编辑器像块铁板
+        if (!d && v.activeTool === 'select') {
+            const hit = this.hitTest(raw);
+            this.store.hover(hit?.id);
+            this.setCursor(hit ? 'move' : 'default');
+        }
+        else if (!d && v.activeTool !== 'select') {
+            this.setCursor('crosshair');
+        }
+        const snapped = this.applySnap(raw, e.shiftKey, this.anchorOf());
+        if (d?.t === 'rect')
+            d.b = snapped;
+        else if (d?.t === 'circle')
+            d.r = dist(d.c, snapped);
+        else if (d?.t === 'poly' || d?.t === 'line' || d?.t === 'measure') {
+            if (d.t === 'measure')
+                this.measureCursor = snapped;
+        }
+        else if (d?.t === 'move') {
+            if (this.moved)
+                this.applyMove(d, snapped);
+        }
+        else if (d?.t === 'vertex') {
+            if (this.moved)
+                this.applyVertex(d, snapped, e.shiftKey);
+        }
+        else if (d?.t === 'box') {
+            d.b = snapped;
+            this.store.patchSettings({ boxSelect: { minX: Math.min(d.a.x, d.b.x), minY: Math.min(d.a.y, d.b.y), maxX: Math.max(d.a.x, d.b.x), maxY: Math.max(d.a.y, d.b.y) } });
+        }
+        const hint = this.hintFor(snapped);
+        this.store.setHint(hint);
+    }
+    onPointerUp(e) {
+        try {
+            this.canvas.releasePointerCapture(e.pointerId);
+        }
+        catch {
+            /* 同上 */
+        }
+        const d = this.draft;
+        this.downScreen = null;
+        if (d?.t === 'pan') {
+            this.draft = null;
+            return;
+        }
+        if (d?.t === 'rect') {
+            this.draft = null;
+            const ring = cleanRing(rectRing(d.a.x, d.a.y, d.b.x, d.b.y));
+            if (ring.length >= 3 && ringArea(ring) > 0.01)
+                this.commitArea(ring);
+            else
+                this.store.showToast('矩形太小，已取消');
+            return;
+        }
+        if (d?.t === 'circle') {
+            this.draft = null;
+            if (d.r > 0.1)
+                this.commitArea(circleRing(d.c, d.r, 48));
+            return;
+        }
+        if (d?.t === 'move' || d?.t === 'vertex') {
+            this.draft = null;
+            return;
+        }
+        if (d?.t === 'box') {
+            this.draft = null;
+            const b = { minX: Math.min(d.a.x, d.b.x), minY: Math.min(d.a.y, d.b.y), maxX: Math.max(d.a.x, d.b.x), maxY: Math.max(d.a.y, d.b.y) };
+            this.store.patchSettings({ boxSelect: null });
+            const ids = this.selectInBox(b, e.shiftKey);
+            this.store.select(ids, e.shiftKey);
+            return;
+        }
+        // 点击型工具在 up 时不做提交
+    }
+    onPointerLeave() {
+        this.store.hover(undefined);
+        this.snap = null;
+        this.guides = [];
+        this.store.setHint({ snapLabel: '' });
+    }
+    onDoubleClick(e) {
+        const raw = this.worldOf(e);
+        const hit = this.hitTest(raw);
+        if (hit) {
+            this.store.select([hit.id]);
+            this.focusObject(hit.id);
+        }
+        else {
+            this.fitAll();
+        }
+    }
+    onWheel(e) {
+        e.preventDefault();
+        const anchor = this.screenOf(e);
+        const factor = Math.exp(-e.deltaY * 0.0016);
+        this.cam.zoomBy(factor, anchor);
+        this.store.patchSettings({ zoom: this.cam.zoom });
+    }
+    onContextMenu(e) {
+        e.preventDefault();
+        this.finishDraft();
+    }
+    // ───────────────────────────── 键盘
+    onKeyDown(e) {
+        const st = this.store;
+        if (e.key === ' ')
+            this.spaceDown = true;
+        const k = e.key.toLowerCase();
+        const mod = e.ctrlKey || e.metaKey;
+        if (mod && k === 'z' && !e.shiftKey) {
+            st.undo();
+            return true;
+        }
+        if ((mod && k === 'y') || (mod && e.shiftKey && k === 'z')) {
+            st.redo();
+            return true;
+        }
+        if (mod && k === 'd') {
+            st.duplicateSelected();
+            return true;
+        }
+        if (e.key === 'Escape') {
+            if (this.draft && this.draft.t !== 'measure') {
+                this.draft = null;
+                this.guides = [];
+                st.setHint({ message: undefined, warning: false });
+            }
+            else if (this.draft) {
+                this.draft = null;
+            }
+            else if (st.state.view.activeTool !== 'select') {
+                st.setTool('select');
+            }
+            else {
+                st.select([]);
+            }
+            return true;
+        }
+        if (e.key === 'Enter') {
+            this.finishDraft();
+            return true;
+        }
+        if (e.key === 'Delete' || e.key === 'Backspace') {
+            st.deleteSelected();
+            return true;
+        }
+        if (k === 'f') {
+            this.focusSelection();
+            return true;
+        }
+        if (e.key === 'Home') {
+            this.fitAll();
+            return true;
+        }
+        if (k === 'g' && !mod) {
+            // G 生成 / Shift+G 换一版：和顶栏按钮走同一条路
+            this.onGenerate(e.shiftKey);
+            return true;
+        }
+        if (e.key === 'Shift') {
+            this.shiftDown = true;
+            return false;
+        }
+        if (!mod) {
+            const tool = TOOL_SHORTCUT[k];
+            if (tool) {
+                this.draft = null;
+                st.setTool(tool);
+                return true;
+            }
+        }
+        return false;
+    }
+    onKeyUp(e) {
+        if (e.key === ' ')
+            this.spaceDown = false;
+        if (e.key === 'Shift')
+            this.shiftDown = false;
+    }
+    // ───────────────────────────── 选择 / 移动
+    downSelect(raw, shift) {
+        const st = this.store;
+        const v = st.state.view;
+        // 1) 单选且未锁 → 先判顶点
+        if (v.selectionIds.length === 1) {
+            const o = st.state.model.objects[v.selectionIds[0]];
+            if (o && !o.locked) {
+                const vh = this.hitVertex(o, raw);
+                if (vh) {
+                    this.draft = { t: 'vertex', id: o.id, pathIndex: vh.pathIndex, index: vh.index, start: raw, orig: o, moved: false };
+                    return;
+                }
+            }
+        }
+        // 2) 命中对象 → 拖动移动
+        const hit = this.hitTest(raw);
+        if (hit) {
+            if (!v.selectionIds.includes(hit.id))
+                st.select([hit.id], shift);
+            const ids = shift && v.selectionIds.includes(hit.id) ? v.selectionIds : [hit.id];
+            const orig = new Map();
+            for (const id of ids) {
+                const o = st.state.model.objects[id];
+                if (o && !o.locked)
+                    orig.set(id, JSON.parse(JSON.stringify(o)));
+            }
+            if (orig.size)
+                this.draft = { t: 'move', start: raw, orig, moved: false };
+            return;
+        }
+        // 3) 空白 → 框选
+        if (!shift)
+            st.select([]);
+        this.draft = { t: 'box', a: raw, b: raw };
+    }
+    applyMove(d, raw) {
+        let dx = raw.x - d.start.x;
+        let dy = raw.y - d.start.y;
+        if (this.shiftDown) {
+            // Shift = 只沿主方向移动（和绘制时的 45° 约束一致）
+            if (Math.abs(dx) > Math.abs(dy))
+                dy = 0;
+            else
+                dx = 0;
+        }
+        const wasMoved = d.moved;
+        d.moved = Math.abs(dx) > 1e-9 || Math.abs(dy) > 1e-9;
+        if (!d.moved)
+            return;
+        // 历史要记"拖动前"的状态：所以第一次移动时先 pushHistory（此刻 model 还没被改），
+        // 之后再静默替换 model。顺序反了的话 Ctrl+Z 会回到拖动后的状态 —— 看着像撤销失效。
+        if (!wasMoved)
+            this.store.pushHistory('移动对象');
+        const model = this.store.state.model;
+        const objects = { ...model.objects };
+        for (const [id, orig] of d.orig)
+            objects[id] = translate(orig, { x: dx, y: dy });
+        this.store.replaceModelSilent({ ...model, objects });
+    }
+    applyVertex(d, raw, shift) {
+        let p = raw;
+        if (shift) {
+            const paths = areaPaths(d.orig);
+            const ring = paths?.[d.pathIndex];
+            if (d.orig.kind === 'road') {
+                const pts = d.orig.centerline;
+                const prev = pts[Math.max(0, d.index - 1)];
+                p = snapAngle(prev, p);
+            }
+            else if (ring) {
+                const prev = ring[(d.index - 1 + ring.length) % ring.length];
+                p = snapAngle(prev, p);
+            }
+        }
+        if (!d.moved)
+            this.store.pushHistory('移动顶点');
+        d.moved = true;
+        const model = this.store.state.model;
+        const o = model.objects[d.id];
+        if (!o)
+            return;
+        const paths = areaPaths(o);
+        const next = JSON.parse(JSON.stringify(o));
+        if (next.kind === 'road') {
+            next.centerline = next.centerline.map((q, i) => (i === d.index ? p : q));
+        }
+        else if (next.kind === 'access') {
+            next.pos = p;
+        }
+        else if (paths) {
+            const np = areaPaths(next);
+            if (np?.[d.pathIndex])
+                np[d.pathIndex][d.index] = p;
+        }
+        const objects = { ...model.objects, [d.id]: next };
+        this.store.replaceModelSilent({ ...model, objects });
+    }
+    // ───────────────────────────── 提交
+    finishDraft() {
+        const d = this.draft;
+        if (!d)
+            return;
+        if (d.t === 'poly') {
+            this.closePolygon();
+            return;
+        }
+        if (d.t === 'line') {
+            this.draft = null;
+            if (d.pts.length >= 2)
+                this.commitRoad(cleanPts(d.pts));
+            else
+                this.store.showToast('折线至少两个点');
+            return;
+        }
+        if (d.t === 'measure') {
+            this.draft = null;
+            this.measureCursor = undefined;
+            this.store.setHint({ length: undefined, area: undefined });
+            return;
+        }
+        this.draft = null;
+    }
+    closePolygon() {
+        const d = this.draft;
+        if (d?.t !== 'poly')
+            return;
+        const ring = cleanRing(d.pts);
+        this.draft = null;
+        if (ring.length < 3) {
+            this.store.showToast('多边形至少三个点');
+            return;
+        }
+        if (!isSimple(ring)) {
+            this.store.showToast('多边形自交，已取消');
+            return;
+        }
+        this.commitArea(ring);
+    }
+    commitArea(ring) {
+        const st = this.store;
+        const kind = st.state.view.drawKind;
+        const ccw = ringArea(ring) > 0 ? ring : [...ring].reverse();
+        if (kind === 'access') {
+            this.placeAccess(ring[0]);
+            return;
+        }
+        if (kind === 'road') {
+            this.store.showToast('道路请用折线工具（L）');
+            return;
+        }
+        const label = { site: '园区', parcel: '地块', building: '建筑', nobuild: '禁建区', ground: '地面' }[kind] ?? '对象';
+        let o;
+        if (kind === 'building') {
+            const b = {
+                ...commonDefaults('building', `${label} ${countOf(st.state.model, 'building') + 1}`),
+                footprint: [ccw],
+                height: 9,
+                floors: 3,
+                style: 'geometric',
+                archetype: 'generic',
+            };
+            o = b;
+        }
+        else if (kind === 'site') {
+            const s = { ...commonDefaults('site', `${label} ${countOf(st.state.model, 'site') + 1}`), boundary: [ccw] };
+            o = s;
+        }
+        else if (kind === 'nobuild') {
+            const n = { ...commonDefaults('nobuild', `${label} ${countOf(st.state.model, 'nobuild') + 1}`), boundary: [ccw] };
+            o = n;
+        }
+        else if (kind === 'ground') {
+            const g = {
+                ...commonDefaults('ground', `${label} ${countOf(st.state.model, 'ground') + 1}`),
+                boundary: [ccw],
+                surface: 'paving',
+            };
+            o = g;
+        }
+        else {
+            const p = {
+                ...commonDefaults('parcel', `地块 ${countOf(st.state.model, 'parcel') + 1}`),
+                boundary: [ccw],
+                zoneKind: 'commercialLow',
+                density: 0.45,
+                far: 1,
+                heightRange: [6, 18],
+                seed: Math.floor(Math.random() * 9999),
+            };
+            o = p;
+        }
+        st.create(o, `绘制${KIND_CN[o.kind]}`);
+    }
+    commitRoad(pts) {
+        const st = this.store;
+        const o = {
+            ...commonDefaults('road', `道路 ${countOf(st.state.model, 'road') + 1}`),
+            centerline: pts,
+            roadClass: 'local',
+            width: ROAD_WIDTH.local,
+            sidewalk: true,
+        };
+        st.create(o, '绘制道路');
+    }
+    placeAccess(pos) {
+        const st = this.store;
+        const o = {
+            ...commonDefaults('access', `出入口 ${countOf(st.state.model, 'access') + 1}`),
+            pos,
+            width: 6,
+            dir: 0,
+            accessType: 'main',
+            priority: 1,
+        };
+        st.create(o, '放置出入口');
+    }
+    // ───────────────────────────── 命中
+    hitTest(raw) {
+        const { model, view } = this.store.state;
+        const tol = this.cam.meters(6);
+        const filter = view.selectionFilter;
+        const candidates = [...model.order].reverse();
+        for (const id of candidates) {
+            const o = model.objects[id];
+            if (!o || !o.visible)
+                continue;
+            const layer = LAYER_OF[o.kind];
+            if (!view.layerVisibility[layer] || view.layerLocked[layer])
+                continue;
+            if (filter === 'parcels' && o.kind !== 'parcel')
+                continue;
+            if (filter === 'buildings' && o.kind !== 'building')
+                continue;
+            if (filter === 'roads' && o.kind !== 'road')
+                continue;
+            if (filter === 'ground' && o.kind !== 'ground' && o.kind !== 'nobuild')
+                continue;
+            if (filter === 'generated' && o.origin !== 'generated')
+                continue;
+            if (this.hits(o, raw, tol))
+                return o;
+        }
+        return null;
+    }
+    hits(o, p, tol) {
+        const paths = areaPaths(o);
+        if (paths)
+            return hitRing(paths, p, tol);
+        if (o.kind === 'road') {
+            // 先判包络宽度，再退化成中心线容差：窄路也点得中
+            const env = strokeEnvelope(o.centerline, o.width);
+            if (env.length >= 3 && pointInPaths([env], p))
+                return true;
+            return distToPaths([o.centerline], p) <= Math.max(tol, o.width / 2);
+        }
+        if (o.kind === 'access')
+            return dist(p, o.pos) <= Math.max(1.2, o.width / 2) + tol;
+        return false;
+    }
+    hitVertex(o, p) {
+        const tol = this.cam.meters(8);
+        const paths = areaPaths(o);
+        if (paths) {
+            for (let pi = 0; pi < paths.length; pi++) {
+                for (let i = 0; i < paths[pi].length; i++) {
+                    if (dist(p, paths[pi][i]) <= tol)
+                        return { pathIndex: pi, index: i };
+                }
+            }
+            return null;
+        }
+        if (o.kind === 'road') {
+            for (let i = 0; i < o.centerline.length; i++)
+                if (dist(p, o.centerline[i]) <= tol)
+                    return { pathIndex: 0, index: i };
+        }
+        if (o.kind === 'access' && dist(p, o.pos) <= tol)
+            return { pathIndex: 0, index: 0 };
+        return null;
+    }
+    selectInBox(b, _additive) {
+        const { model, view } = this.store.state;
+        const out = [];
+        for (const id of model.order) {
+            const o = model.objects[id];
+            if (!o || !o.visible)
+                continue;
+            const layer = LAYER_OF[o.kind];
+            if (!view.layerVisibility[layer] || view.layerLocked[layer])
+                continue;
+            const paths = areaPaths(o);
+            if (paths) {
+                const ob = boundsOfPaths(paths);
+                if (boundsValid(ob) && ob.minX >= b.minX && ob.maxX <= b.maxX && ob.minY >= b.minY && ob.maxY <= b.maxY)
+                    out.push(id);
+            }
+            else if (o.kind === 'access') {
+                if (o.pos.x >= b.minX && o.pos.x <= b.maxX && o.pos.y >= b.minY && o.pos.y <= b.maxY)
+                    out.push(id);
+            }
+            else if (o.kind === 'road') {
+                const ob = boundsOfPaths([o.centerline]);
+                if (boundsValid(ob) && ob.minX >= b.minX && ob.maxX <= b.maxX && ob.minY >= b.minY && ob.maxY <= b.maxY)
+                    out.push(id);
+            }
+        }
+        return out;
+    }
+    // ───────────────────────────── 捕捉 / 相机
+    applySnap(raw, shift, anchor) {
+        const { model, view } = this.store.state;
+        const { result, guides } = snapPoint(raw, model, view, this.cam, { anchor, allowOrtho: !shift });
+        this.snap = result;
+        this.guides = guides;
+        return result.p;
+    }
+    anchorOf() {
+        const d = this.draft;
+        if (d?.t === 'poly' || d?.t === 'line' || d?.t === 'measure')
+            return d.pts[d.pts.length - 1];
+        return undefined;
+    }
+    hintFor(p) {
+        const d = this.draft;
+        let length;
+        let angle;
+        let area;
+        let message;
+        if (d?.t === 'rect') {
+            const ring = rectRing(d.a.x, d.a.y, d.b.x, d.b.y);
+            area = ringArea(ring);
+            length = dist(d.a, d.b);
+            angle = Math.atan2(d.b.y - d.a.y, d.b.x - d.a.x);
+        }
+        else if (d?.t === 'circle') {
+            area = Math.PI * d.r * d.r;
+            length = d.r * 2 * Math.PI;
+        }
+        else if (d?.t === 'poly' && d.pts.length) {
+            const ring = [...d.pts, p];
+            if (ring.length >= 3)
+                area = Math.abs(ringArea(ring));
+        }
+        else if (d?.t === 'line' && d.pts.length) {
+            const pts = [...d.pts, p];
+            length = polylineLength(pts);
+            const last = d.pts[d.pts.length - 1];
+            angle = Math.atan2(p.y - last.y, p.x - last.x);
+        }
+        else if (d?.t === 'measure') {
+            const pts = [...d.pts, p];
+            if (this.store.state.view.measureMode === 'distance')
+                length = polylineLength(pts);
+            else if (pts.length >= 3)
+                area = Math.abs(ringArea(pts));
+        }
+        void message;
+        return { x: p.x, y: p.y, snapLabel: this.snap?.label ?? '', length, angle, area };
+    }
+    fitAll() {
+        const { model } = this.store.state;
+        const all = [];
+        for (const id of model.order) {
+            const o = model.objects[id];
+            if (!o)
+                continue;
+            const paths = areaPaths(o);
+            if (paths)
+                all.push(...paths);
+            else if (o.kind === 'road')
+                all.push(o.centerline);
+            else if (o.kind === 'access')
+                all.push([o.pos]);
+        }
+        const b = all.length ? boundsOfPaths(all) : null;
+        if (b && boundsValid(b))
+            this.cam.fit(b);
+        else {
+            this.cam.cx = 0;
+            this.cam.cy = 0;
+            this.cam.zoom = 5;
+        }
+        this.store.patchSettings({ zoom: this.cam.zoom });
+    }
+    focusSelection() {
+        const ids = this.store.state.view.selectionIds;
+        if (!ids.length) {
+            this.fitAll();
+            return;
+        }
+        this.focusObject(ids[0]);
+    }
+    focusObject(id) {
+        const o = this.store.state.model.objects[id];
+        if (!o)
+            return;
+        const paths = areaPaths(o);
+        const rings = paths ? [...paths] : o.kind === 'road' ? [o.centerline] : o.kind === 'access' ? [[o.pos]] : [];
+        const b = boundsOfPaths(rings);
+        if (!boundsValid(b))
+            return;
+        const pad = 6;
+        this.cam.fit({ minX: b.minX - pad, minY: b.minY - pad, maxX: b.maxX + pad, maxY: b.maxY + pad }, 0.12);
+        this.store.patchSettings({ zoom: this.cam.zoom });
+    }
+    getSnap() {
+        return this.snap;
+    }
+    // ───────────────────────────── 杂项
+    worldOf(e) {
+        const r = this.canvas.getBoundingClientRect();
+        return this.cam.toWorld({ x: e.clientX - r.left, y: e.clientY - r.top });
+    }
+    screenOf(e) {
+        const r = this.canvas.getBoundingClientRect();
+        return { x: e.clientX - r.left, y: e.clientY - r.top };
+    }
+    setCursor(c) {
+        if (this.canvas.style.cursor !== c)
+            this.canvas.style.cursor = c;
+    }
+}
+const KIND_CN = {
+    site: '园区',
+    parcel: '地块',
+    building: '建筑',
+    road: '道路',
+    access: '出入口',
+    nobuild: '禁建区',
+    ground: '地面',
+};
+function countOf(model, kind) {
+    let n = 0;
+    for (const id of model.order)
+        if (model.objects[id]?.kind === kind)
+            n++;
+    return n;
+}
+function translate(o, d) {
+    const next = JSON.parse(JSON.stringify(o));
+    const move = (p) => ({ x: p.x + d.x, y: p.y + d.y });
+    const paths = areaPaths(next);
+    if (paths) {
+        const moved = paths.map((r) => r.map(move));
+        if (next.kind === 'building')
+            next.footprint = moved;
+        else if (isAreaObj(next))
+            next.boundary = moved;
+    }
+    else if (next.kind === 'road') {
+        next.centerline = next.centerline.map(move);
+    }
+    else if (next.kind === 'access') {
+        next.pos = move(next.pos);
+    }
+    return next;
+}
+function cleanPts(pts) {
+    const out = [];
+    for (const p of pts) {
+        const last = out[out.length - 1];
+        if (last && dist(last, p) < 1e-6)
+            continue;
+        out.push(p);
+    }
+    return out;
+}
+function ringLabel(ring, kind) {
+    const a = Math.abs(ringArea(ring));
+    if (kind === 'road')
+        return `${polylineLength(ring).toFixed(1)} m`;
+    return `${a.toFixed(1)} m² · ${KIND_CN[kind] ?? kind}`;
+}
+
+__exports["EditorController"] = EditorController;
+};
+__def["editor-app/src/gen.js"] = function (__exports) {
+// TS 生成器 v0：一块地 → 街道 + 宗地 + 楼位 + 建筑。
+//
+// 为什么现在只能叫 v0：Placemaker 只给**宗地**，不给街道；它默认"街道是玩家画的"。
+// 而我们这个编辑器必须自己造街道，否则整条链（出入口接街 → ready → 允许布局）断掉。
+// docs/A 把街道规则整理成了 R1–R11 验收条件，v0 是第一个"能满足最低几条"的版本：
+//   · 街道是一条贯通地块的直路（有起点有终点，不悬空）
+//   · 街道两侧留出人行道，车行道宽度由路型决定
+//   · 宗地**沿街**切分，临街面朝街（这是 Placemaker 判断出入口的依据）
+//   · 楼位落在宗地内，尺寸走 KIND_SPECS（面宽/进深/层数区间）
+//
+// v0 明确没做的事（写在面板上，不假装）：
+//   · 没有 ready 判定（那是 C# 的 CheckReady，要逐家族移植，仍在 G5）
+//   · 没有多街道交叉/环路（一条脊街，够小地块用）
+//   · 没有地形高差（全平）
+//
+// 参数怎么用（docs/G §3 的映射表，逐条落实，不许静默忽略）：
+//   density   → 基底面积上限，超了就不再放楼
+//   far       → 总建筑面积上限，超了就把楼层压到下限
+//   heightRange → 夹取层数（覆盖 KIND_SPECS 的默认区间）
+//   seed      → 街道偏移与楼位层数的唯一随机源
+const { ZONE_PREFAB: ZONE_PREFAB } = __req("plan-ir/src/types.js");
+const { KIND_SPECS: KIND_SPECS, cutZoning: cutZoning } = __req("slots/src/cut.js");
+const { areaPaths: areaPaths, commonDefaults: commonDefaults } = __req("editor-app/src/model.js");
+const { boundsOfPaths: boundsOfPaths, ringArea: ringArea } = __req("editor-app/src/polygon.js");
+const { dist: dist, norm: norm, perp: perp, sub: sub } = __req("editor-app/src/vec.js");
+/** 退线：楼不贴着地块边线。真实城市都有，缺了画面一眼假。 */
+const SETBACK = 4;
+/** 脊街两侧留的余量（人行道 + 楼前场地）。 */
+const STREET_MARGIN = 6;
+/** 宗地最小进深（8 m 模数的一格）。 */
+const MIN_DEPTH = 8;
+function generateParcel(parcel, all) {
+    const empty = {
+        buildings: 0,
+        coverage: 0,
+        far: 0,
+        maxHeight: 0,
+        setback: SETBACK,
+        buildableArea: 0,
+        freeArea: 0,
+        streets: 0,
+        zoning: 0,
+        slots: 0,
+    };
+    const paths = areaPaths(parcel);
+    const ring = paths?.[0];
+    if (!ring || ring.length < 3)
+        return { objects: [], stats: empty, warning: '地块没有有效轮廓' };
+    const parcelArea = Math.abs(ringArea(ring));
+    if (parcelArea < 200)
+        return { objects: [], stats: empty, warning: '地块太小（< 200 m²），无法排布' };
+    // 1) 局部坐标系：用最长边当 u 轴。宗地大多是矩形，这样切出来的带状宗地更整齐，
+    //    而且"临街面"天然朝向脊街，不需要再做方向搜索。
+    const frame = frameOf(ring);
+    const locals = ring.map((p) => toLocal(p, frame));
+    const su = locals.map((p) => p.x);
+    const sv = locals.map((p) => p.y);
+    const u0 = Math.min(...su);
+    const u1 = Math.max(...su);
+    const v0 = Math.min(...sv);
+    const v1 = Math.max(...sv);
+    const W = u1 - u0;
+    const H = v1 - v0;
+    if (W < SETBACK * 2 + 12 || H < SETBACK * 2 + MIN_DEPTH) {
+        return { objects: [], stats: empty, warning: `地块太窄（有效 ${W.toFixed(0)}×${H.toFixed(0)} m），退线后放不下楼` };
+    }
+    const objects = [];
+    const uid = `${parcel.id}`;
+    // 2) 脊街：从地块一端贯通到另一端。位置按 seed 在中间三分之一内浮动，
+    //    这样"换一版"（Shift+G）能看出差别，又不会把路甩到地块外。
+    const rnd = mulberry32(parcel.seed);
+    const vc = v0 + H * (0.35 + rnd() * 0.3);
+    const roadW = 6;
+    const road = {
+        ...commonDefaults('road', `生成街道 · ${parcel.name}`),
+        origin: 'generated',
+        generatedFrom: uid,
+        centerline: [
+            toWorld({ x: u0 + SETBACK * 0.5, y: vc }, frame),
+            toWorld({ x: u1 - SETBACK * 0.5, y: vc }, frame),
+        ],
+        roadClass: 'local',
+        width: roadW,
+        sidewalk: true,
+    };
+    objects.push(road);
+    // 3) 两侧带状宗地。每一带是一个"沿街地块"，临街面就是脊街那一侧。
+    const bands = [];
+    const northDepth = v1 - SETBACK - (vc + roadW / 2 + STREET_MARGIN / 2);
+    const southDepth = vc - roadW / 2 - STREET_MARGIN / 2 - (v0 + SETBACK);
+    if (northDepth >= MIN_DEPTH) {
+        bands.push({
+            quad: quadOf(frame, u0 + SETBACK, vc + roadW / 2 + STREET_MARGIN / 2, u1 - SETBACK, v1 - SETBACK),
+            dir: toWorldDir({ x: 0, y: -1 }, frame), // 朝街 = 朝南
+        });
+    }
+    if (southDepth >= MIN_DEPTH) {
+        bands.push({
+            quad: quadOf(frame, u0 + SETBACK, v0 + SETBACK, u1 - SETBACK, vc - roadW / 2 - STREET_MARGIN / 2),
+            dir: toWorldDir({ x: 0, y: 1 }, frame),
+        });
+    }
+    if (!bands.length) {
+        return { objects, stats: { ...empty, streets: 1 }, warning: `脊街两侧都放不下 ${MIN_DEPTH} m 进深的宗地` };
+    }
+    // 4) 铺装：把可建范围铺成硬质地面（含街道两侧的楼前场地）。
+    //    没有这一层，2D 里地块是空的、3D 里楼浮在土上，两边都不像样。
+    const pad = {
+        ...commonDefaults('ground', `生成铺装 · ${parcel.name}`),
+        origin: 'generated',
+        generatedFrom: uid,
+        surface: 'paving',
+        boundary: [quadOf(frame, u0 + SETBACK * 0.5, v0 + SETBACK * 0.5, u1 - SETBACK * 0.5, v1 - SETBACK * 0.5)],
+    };
+    objects.push(pad);
+    // 5) 宗地 → 楼位 → 楼。切分走 slots 的 cutZoning，和 C# 烘焙结果同一套规则。
+    const spec = KIND_SPECS[parcel.zoneKind];
+    const maxFoot = parcelArea * clamp01(parcel.density);
+    const maxFloorArea = parcelArea * Math.max(0.1, parcel.far);
+    let footSum = 0;
+    let floorSum = 0;
+    let tallest = 0;
+    let slots = 0;
+    let zoning = 0;
+    for (let bi = 0; bi < bands.length; bi++) {
+        const band = bands[bi];
+        zoning++;
+        // 宗地四边形 → PlanZoning（plan-ir 用 [x, z] 元组，这里只转一次）
+        const quad = band.quad.map((p) => [p.x, p.y]);
+        const cut = cutZoning({ zoneId: ZONE_PREFAB[parcel.zoneKind], quad }, parcel.zoneKind, [band.dir.x, band.dir.y], `z${parcel.seed}b${bi}`);
+        for (const slot of cut.slots) {
+            slots++;
+            const foot = slot.width * slot.depth;
+            if (footSum + foot > maxFoot)
+                continue; // 密度上限：超了就不放，不留半栋
+            const [f0, f1] = spec.floors;
+            // 层数：KIND_SPECS 区间 → 被 heightRange 夹 → 被容积率压
+            const auto = f0 + Math.floor(hash01(`${parcel.seed}:${slot.id}`) * (f1 - f0 + 1));
+            let floors = clampInt(auto, f0, f1);
+            const hMin = Math.ceil(parcel.heightRange[0] / spec.floorHeight);
+            const hMax = Math.max(hMin, Math.floor(parcel.heightRange[1] / spec.floorHeight));
+            floors = clampInt(floors, Math.max(f0, hMin), Math.min(f1, hMax));
+            // 容积率：这栋楼加进去会不会超过总建筑面积上限
+            while (floors > 1 && floorSum + foot * floors > maxFloorArea)
+                floors--;
+            if (floorSum + foot * floors > maxFloorArea && floorSum > 0)
+                continue;
+            const h = floors * spec.floorHeight;
+            const b = {
+                ...commonDefaults('building', `${zhOf(parcel.zoneKind)} ${floors}F`),
+                origin: 'generated',
+                generatedFrom: uid,
+                footprint: [slot.quad.map((p) => ({ x: p[0], y: p[1] }))],
+                height: h,
+                floors,
+                style: 'geometric',
+                archetype: parcel.zoneKind,
+                slotId: slot.id,
+            };
+            objects.push(b);
+            footSum += foot;
+            floorSum += foot * floors;
+            tallest = Math.max(tallest, h);
+        }
+    }
+    if (!floorSum)
+        return { objects, stats: { ...empty, streets: 1, zoning, slots }, warning: '一个楼位都没排上，检查密度/容积率是否太小' };
+    const buildableArea = bands.reduce((s, b) => s + Math.abs(ringArea(b.quad)), 0);
+    const stats = {
+        buildings: objects.filter((o) => o.kind === 'building').length,
+        coverage: footSum / parcelArea,
+        far: floorSum / parcelArea,
+        maxHeight: tallest,
+        setback: SETBACK,
+        buildableArea,
+        freeArea: Math.max(0, buildableArea - footSum),
+        streets: 1,
+        zoning,
+        slots,
+    };
+    // 6) 出入口：如果这块地附近没有用户放的出入口，就在脊街端头补一个生成出入口。
+    //    Placemaker 的 ready 靠出入口接街，缺了它整块地会"收地"（台账 D-023）。
+    const hasGeneratedDoor = all.some((o) => o.kind === 'access' && o.generatedFrom === uid);
+    const userDoorNear = all.some((o) => {
+        if (o.kind !== 'access')
+            return false;
+        if (o.generatedFrom === uid)
+            return false;
+        return dist(o.pos, road.centerline[0]) < 40;
+    });
+    if (!hasGeneratedDoor && !userDoorNear) {
+        const door = {
+            ...commonDefaults('access', `生成出入口 · ${parcel.name}`),
+            origin: 'generated',
+            generatedFrom: uid,
+            pos: road.centerline[0],
+            width: 6,
+            dir: Math.atan2(road.centerline[1].y - road.centerline[0].y, road.centerline[1].x - road.centerline[0].x),
+            accessType: 'service',
+            priority: 2,
+        };
+        objects.push(door);
+    }
+    const warning = footSum < maxFoot * 0.5
+        ? `楼位只占到密度上限的 ${((footSum / maxFoot) * 100).toFixed(0)}% —— 宗地切分受宽度模数限制，不是密度参数没生效`
+        : undefined;
+    return { objects, stats, warning };
+}
+function frameOf(ring) {
+    // 最长边当 u 轴
+    let best = 0;
+    let bi = 0;
+    for (let i = 0; i < ring.length; i++) {
+        const d = dist(ring[i], ring[(i + 1) % ring.length]);
+        if (d > best) {
+            best = d;
+            bi = i;
+        }
+    }
+    const o = ring[bi];
+    const u = norm(sub(ring[(bi + 1) % ring.length], o));
+    return { o, u };
+}
+function toLocal(p, f) {
+    const d = sub(p, f.o);
+    const v = perp(f.u);
+    return { x: d.x * f.u.x + d.y * f.u.y, y: d.x * v.x + d.y * v.y };
+}
+function toWorld(p, f) {
+    const v = perp(f.u);
+    return { x: f.o.x + f.u.x * p.x + v.x * p.y, y: f.o.y + f.u.y * p.x + v.y * p.y };
+}
+function toWorldDir(p, f) {
+    const v = perp(f.u);
+    return norm({ x: f.u.x * p.x + v.x * p.y, y: f.u.y * p.x + v.y * p.y });
+}
+function quadOf(f, ua, va, ub, vb) {
+    return [
+        toWorld({ x: ua, y: va }, f),
+        toWorld({ x: ub, y: va }, f),
+        toWorld({ x: ub, y: vb }, f),
+        toWorld({ x: ua, y: vb }, f),
+    ];
+}
+// ─────────────────────────────────────────── 小工具
+function hash01(s) {
+    let h = 2166136261;
+    for (let i = 0; i < s.length; i++) {
+        h ^= s.charCodeAt(i);
+        h = Math.imul(h, 16777619);
+    }
+    return ((h >>> 0) % 100000) / 100000;
+}
+function mulberry32(seed) {
+    let a = seed >>> 0;
+    return () => {
+        a = (a + 0x6d2b79f5) >>> 0;
+        let t = a;
+        t = Math.imul(t ^ (t >>> 15), t | 1);
+        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+}
+const clamp01 = (v) => Math.max(0.05, Math.min(1, v));
+const clampInt = (v, lo, hi) => Math.max(lo, Math.min(hi, Math.round(v)));
+function zhOf(kind) {
+    const m = {
+        commercialLow: '低密度商业',
+        commercialHigh: '高密度商业',
+        mixed: '混合',
+        residentialLow: '低密度住宅',
+        residentialRow: '联排住宅',
+        residentialMedium: '中密度住宅',
+        residentialHigh: '高密度住宅',
+        lowRent: '廉租住宅',
+        officeLow: '低层办公',
+        officeHigh: '高层办公',
+        industrial: '工业',
+    };
+    return m[kind] ?? kind;
+}
+/** 地块包围盒（供 UI 显示"可建范围"）。 */
+function parcelBounds(p) {
+    const ring = areaPaths(p)?.[0];
+    if (!ring)
+        return null;
+    const b = boundsOfPaths([ring]);
+    return { w: b.maxX - b.minX, h: b.maxY - b.minY };
+}
+
+__exports["generateParcel"] = generateParcel;
+__exports["parcelBounds"] = parcelBounds;
+};
+__def["editor-app/src/model.js"] = function (__exports) {
+// ProjectModel —— 编辑器的骨架。**照搬 PCG**（`vendor/pcg-editor-src/core/model.ts`），
+// 只改一处：`parcel.landUse`（6 类）换成 `parcel.zoneKind`（我们的 11 类）。
+//
+// 为什么必须换：`landUse` 是个"给美术看"的粗分类，而我们的生成算法
+// （slots / KIND_SPECS / 资产匹配）需要的是"这块地盖什么"的精确口径 ——
+// 11 类 ZoneKind 直接决定面宽、进深、层数区间与层高。留着两套分类只会让面板说谎。
+// 详见 docs/G §3 的映射表。
+//
+// 三条语义铁律（PCG PRD §39/§41/§70，不能丢）：
+//   1. `origin`: 用户画的 user / 生成的 generated —— 永远可区分，颜色也不同
+//   2. `fixed`: 生成物可"转为固定"，此后生成算法不再改动它
+//   3. `generatedFrom`: 生成物记住"我是哪块地生成的"，重算时**只清这一块**
+const { ZONE_LABEL: ZONE_LABEL } = __req("plan-ir/src/types.js");
+const ZONE_KINDS = [
+    'commercialLow',
+    'commercialHigh',
+    'mixed',
+    'residentialLow',
+    'residentialRow',
+    'residentialMedium',
+    'residentialHigh',
+    'lowRent',
+    'officeLow',
+    'officeHigh',
+    'industrial',
+];
+/** 面板下拉用（中文名直接取 plan-ir 的表，避免三处各写一份）。 */
+const ZONE_OPTIONS = Object.fromEntries(ZONE_KINDS.map((k) => [k, ZONE_LABEL[k]]));
+const LAYER_OF = {
+    site: 'site',
+    parcel: 'parcels',
+    building: 'buildings',
+    road: 'roads',
+    access: 'access',
+    nobuild: 'landscape',
+    ground: 'ground',
+};
+const KIND_LABEL = {
+    site: '园区范围',
+    parcel: '地块',
+    building: '建筑',
+    road: '道路',
+    access: '出入口',
+    nobuild: '禁建区',
+    ground: '地面',
+};
+const SURFACE_LABEL = {
+    paving: '硬质铺装',
+    lawn: '绿地',
+    parking: '停车场',
+    water: '水面',
+    dirt: '土面',
+};
+const ROAD_LABEL = {
+    primary: '主干道',
+    secondary: '次干道',
+    local: '支路',
+    service: '服务道路',
+    pedestrian: '人行道',
+};
+const ROAD_WIDTH = {
+    primary: 12,
+    secondary: 8,
+    local: 6,
+    service: 5,
+    pedestrian: 3,
+};
+const ACCESS_LABEL = {
+    main: '主入口',
+    service: '服务入口',
+    pedestrian: '人行入口',
+};
+function isAreaObj(o) {
+    return o.kind === 'site' || o.kind === 'parcel' || o.kind === 'building' || o.kind === 'nobuild' || o.kind === 'ground';
+}
+function areaPaths(o) {
+    if (!isAreaObj(o))
+        return null;
+    if (o.kind === 'building')
+        return o.footprint;
+    return o.boundary;
+}
+/** 所有可拖的顶点（顶点编辑 / 捕捉都用它）。 */
+function objectVertices(o) {
+    const p = areaPaths(o);
+    if (p)
+        return p.flat();
+    if (o.kind === 'road')
+        return o.centerline;
+    if (o.kind === 'access')
+        return [o.pos];
+    return [];
+}
+const defaultSettings = () => ({
+    gridSize: 1,
+    gridVisible: true,
+    gridSnap: true,
+    snapEnabled: true,
+    unit: 'm',
+});
+let idSeq = 0;
+function newId(prefix) {
+    idSeq += 1;
+    return `${prefix}_${Date.now().toString(36)}${idSeq.toString(36)}`;
+}
+/**
+ * 建对象时补默认字段，避免每处 new 都写全 8 个字段。
+ *
+ * 泛型 `<K extends ObjKind>` 是必须的：返回 `CommonObj` 的话 `kind` 会被拓宽成
+ * `ObjKind`，于是 `{...commonDefaults('building', x), footprint}` 就不是 `BuildingObj` 了 ——
+ * 44 个字面量类型会在每个调用处报错。这个坑写一次就够了。
+ */
+function commonDefaults(kind, name) {
+    return { id: newId(kind), kind, name, origin: 'user', locked: false, visible: true, fixed: false };
+}
+function emptyProject(name = '未命名项目') {
+    return { version: 1, id: newId('proj'), name, objects: {}, order: [], settings: defaultSettings() };
+}
+function addObject(model, o) {
+    return { ...model, objects: { ...model.objects, [o.id]: o }, order: [...model.order, o.id] };
+}
+function updateObjectIn(model, id, patch) {
+    const cur = model.objects[id];
+    if (!cur)
+        return model;
+    return { ...model, objects: { ...model.objects, [id]: { ...cur, ...patch } } };
+}
+function removeObjects(model, ids) {
+    const strip = new Set(ids);
+    const objects = {};
+    for (const [k, v] of Object.entries(model.objects))
+        if (!strip.has(k))
+            objects[k] = v;
+    return { ...model, objects, order: model.order.filter((id) => !strip.has(id)) };
+}
+function cloneObject(o, shift) {
+    const copy = JSON.parse(JSON.stringify(o));
+    copy.id = newId(o.kind);
+    copy.name = `${o.name} 副本`;
+    copy.origin = 'user';
+    copy.fixed = false;
+    delete copy.generatedFrom;
+    const move = (p) => ({ x: p.x + shift.x, y: p.y + shift.y });
+    if (isAreaObj(copy)) {
+        const paths = copy.kind === 'building' ? copy.footprint : copy.boundary;
+        const next = paths.map((r) => r.map(move));
+        if (copy.kind === 'building')
+            copy.footprint = next;
+        else
+            copy.boundary = next;
+    }
+    else if (copy.kind === 'road') {
+        copy.centerline = copy.centerline.map(move);
+    }
+    else if (copy.kind === 'access') {
+        copy.pos = move(copy.pos);
+    }
+    return copy;
+}
+// ─────────────────────────────────────────── 示例项目
+/**
+ * 示例园区：一块 L 形园区 + 两块地块 + 一条主路 + 两个出入口 + 一片绿地。
+ *
+ * 为什么要有它：PCG 的顶栏有「示例」按钮，作用不是好看的 demo，而是
+ * **让第一次打开的人三秒内看到"这套东西能做什么"**。空画布 + 空面板是最差的第一次体验。
+ * 尺寸按真实小镇街区给（约 160 × 120 m），这样生成出来的楼是真尺度。
+ */
+function demoProject() {
+    const m = emptyProject('示例园区');
+    const site = {
+        ...commonDefaults('site', '园区 A'),
+        origin: 'user',
+        boundary: [
+            [
+                { x: 0, y: 0 },
+                { x: 160, y: 0 },
+                { x: 160, y: 80 },
+                { x: 90, y: 80 },
+                { x: 90, y: 120 },
+                { x: 0, y: 120 },
+            ],
+        ],
+    };
+    const road = {
+        ...commonDefaults('road', '主路'),
+        origin: 'user',
+        centerline: [
+            { x: -10, y: 60 },
+            { x: 80, y: 60 },
+            { x: 175, y: 62 },
+        ],
+        roadClass: 'secondary',
+        width: 8,
+        sidewalk: true,
+    };
+    const p1 = {
+        ...commonDefaults('parcel', '地块 1 · 商业'),
+        origin: 'user',
+        boundary: [
+            [
+                { x: 12, y: 14 },
+                { x: 76, y: 14 },
+                { x: 76, y: 48 },
+                { x: 12, y: 48 },
+            ],
+        ],
+        zoneKind: 'commercialLow',
+        density: 0.45,
+        far: 0.9,
+        heightRange: [6, 15],
+        seed: 1,
+    };
+    const p2 = {
+        ...commonDefaults('parcel', '地块 2 · 住宅'),
+        origin: 'user',
+        boundary: [
+            [
+                { x: 100, y: 14 },
+                { x: 150, y: 14 },
+                { x: 150, y: 48 },
+                { x: 100, y: 48 },
+            ],
+        ],
+        zoneKind: 'residentialMedium',
+        density: 0.4,
+        far: 1.2,
+        heightRange: [9, 24],
+        seed: 2,
+    };
+    const g1 = {
+        ...commonDefaults('ground', '中心绿地'),
+        origin: 'user',
+        boundary: [
+            [
+                { x: 12, y: 70 },
+                { x: 80, y: 70 },
+                { x: 80, y: 110 },
+                { x: 12, y: 110 },
+            ],
+        ],
+        surface: 'lawn',
+    };
+    const a1 = {
+        ...commonDefaults('access', '园区主入口'),
+        origin: 'user',
+        pos: { x: 80, y: 60 },
+        width: 8,
+        dir: 0,
+        accessType: 'main',
+        priority: 1,
+    };
+    const a2 = {
+        ...commonDefaults('access', '地块 1 车行口'),
+        origin: 'user',
+        pos: { x: 40, y: 48 },
+        width: 6,
+        dir: -Math.PI / 2,
+        accessType: 'service',
+        priority: 2,
+    };
+    for (const o of [site, road, p1, p2, g1, a1, a2])
+        addTo(m, o);
+    return m;
+}
+function addTo(m, o) {
+    m.objects[o.id] = o;
+    m.order.push(o.id);
+}
+
+__exports["isAreaObj"] = isAreaObj;
+__exports["areaPaths"] = areaPaths;
+__exports["objectVertices"] = objectVertices;
+__exports["newId"] = newId;
+__exports["commonDefaults"] = commonDefaults;
+__exports["emptyProject"] = emptyProject;
+__exports["addObject"] = addObject;
+__exports["updateObjectIn"] = updateObjectIn;
+__exports["removeObjects"] = removeObjects;
+__exports["cloneObject"] = cloneObject;
+__exports["demoProject"] = demoProject;
+__exports["ZONE_KINDS"] = ZONE_KINDS;
+__exports["ZONE_OPTIONS"] = ZONE_OPTIONS;
+__exports["LAYER_OF"] = LAYER_OF;
+__exports["KIND_LABEL"] = KIND_LABEL;
+__exports["SURFACE_LABEL"] = SURFACE_LABEL;
+__exports["ROAD_LABEL"] = ROAD_LABEL;
+__exports["ROAD_WIDTH"] = ROAD_WIDTH;
+__exports["ACCESS_LABEL"] = ACCESS_LABEL;
+__exports["defaultSettings"] = defaultSettings;
+};
+__def["editor-app/src/polygon.js"] = function (__exports) {
+// 多边形工具。Ring = 一个闭合环；Paths = 一组环（外环 + 洞）。
+//
+// 两个约定，全项目统一（写错会静默出错，不会报）：
+//   1. **面积符号表示方向**：正的 = 逆时针（CCW）= 实体；负的 = 顺时针 = 洞。
+//      所以 `pathsArea` 是**代数和**，不是绝对值之和 —— 带洞的面积才对。
+//   2. **点的顺序就是边的顺序**：不做隐式闭合，需要闭合的地方自己接上最后一条边。
+const { dist: dist, distToSegment: distToSegment, len: len, sub: sub } = __req("editor-app/src/vec.js");
+const emptyBounds = () => ({ minX: Infinity, minY: Infinity, maxX: -Infinity, maxY: -Infinity });
+function signedArea(ring) {
+    let a = 0;
+    for (let i = 0; i < ring.length; i++) {
+        const p = ring[i];
+        const q = ring[(i + 1) % ring.length];
+        a += p.x * q.y - q.x * p.y;
+    }
+    return a / 2;
+}
+const ringArea = (ring) => Math.abs(signedArea(ring));
+/** 带洞面积：外环正、洞负，直接相加就是真面积。 */
+function pathsArea(paths) {
+    let a = 0;
+    for (const r of paths)
+        a += signedArea(r);
+    return a;
+}
+function ringPerimeter(ring) {
+    let s = 0;
+    for (let i = 0; i < ring.length; i++)
+        s += dist(ring[i], ring[(i + 1) % ring.length]);
+    return s;
+}
+function pathsPerimeter(paths) {
+    return paths.reduce((s, r) => s + ringPerimeter(r), 0);
+}
+const polylineLength = (pts) => {
+    let s = 0;
+    for (let i = 1; i < pts.length; i++)
+        s += dist(pts[i - 1], pts[i]);
+    return s;
+};
+function ringCentroid(ring) {
+    if (!ring.length)
+        return { x: 0, y: 0 };
+    let x = 0;
+    let y = 0;
+    for (const p of ring) {
+        x += p.x;
+        y += p.y;
+    }
+    return { x: x / ring.length, y: y / ring.length };
+}
+/** 面积加权重心。质心（顶点平均）在凹多边形上会跑到形外，统计用这个。 */
+function ringCenter(ring) {
+    const a = signedArea(ring);
+    if (Math.abs(a) < 1e-9)
+        return ringCentroid(ring);
+    let cx = 0;
+    let cy = 0;
+    for (let i = 0; i < ring.length; i++) {
+        const p = ring[i];
+        const q = ring[(i + 1) % ring.length];
+        const f = p.x * q.y - q.x * p.y;
+        cx += (p.x + q.x) * f;
+        cy += (p.y + q.y) * f;
+    }
+    return { x: cx / (6 * a), y: cy / (6 * a) };
+}
+function boundsOfPoints(pts) {
+    const b = emptyBounds();
+    for (const p of pts) {
+        if (p.x < b.minX)
+            b.minX = p.x;
+        if (p.y < b.minY)
+            b.minY = p.y;
+        if (p.x > b.maxX)
+            b.maxX = p.x;
+        if (p.y > b.maxY)
+            b.maxY = p.y;
+    }
+    return b;
+}
+function boundsOfPaths(paths) {
+    return boundsOfPoints(paths.flat());
+}
+const boundsValid = (b) => Number.isFinite(b.minX) && b.maxX >= b.minX;
+function mergeBounds(a, b) {
+    return {
+        minX: Math.min(a.minX, b.minX),
+        minY: Math.min(a.minY, b.minY),
+        maxX: Math.max(a.maxX, b.maxX),
+        maxY: Math.max(a.maxY, b.maxY),
+    };
+}
+const boundsContains = (b, p) => p.x >= b.minX && p.x <= b.maxX && p.y >= b.minY && p.y <= b.maxY;
+function boundsIntersect(a, b) {
+    return !(a.maxX < b.minX || b.maxX < a.minX || a.maxY < b.minY || b.maxY < a.minY);
+}
+/** 射线法。边界上的点算"内"还是"外"不确定 —— 调用方要么容忍，要么先判距离。 */
+function pointInRing(ring, p) {
+    let inside = false;
+    for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+        const a = ring[i];
+        const b = ring[j];
+        if (a.y > p.y !== b.y > p.y) {
+            const x = ((b.x - a.x) * (p.y - a.y)) / (b.y - a.y) + a.x;
+            if (p.x < x)
+                inside = !inside;
+        }
+    }
+    return inside;
+}
+/** 点是否在 paths 内：奇偶规则（洞里的点算外）。 */
+function pointInPaths(paths, p) {
+    let inside = false;
+    for (const r of paths)
+        if (pointInRing(r, p))
+            inside = !inside;
+    return inside;
+}
+function distToRing(ring, p) {
+    let best = Infinity;
+    for (let i = 0; i < ring.length; i++) {
+        best = Math.min(best, distToSegment(p, ring[i], ring[(i + 1) % ring.length]));
+    }
+    return best;
+}
+function distToPaths(paths, p) {
+    let best = Infinity;
+    for (const r of paths)
+        best = Math.min(best, distToRing(r, p));
+    return best;
+}
+function ensureCCW(ring) {
+    return signedArea(ring) < 0 ? [...ring].reverse() : [...ring];
+}
+function ensureCW(ring) {
+    return signedArea(ring) > 0 ? [...ring].reverse() : [...ring];
+}
+/** 去掉挨得太近的重复点。闭合环首尾相连也要判。 */
+function cleanRing(ring, eps = 1e-6) {
+    const out = [];
+    for (const p of ring) {
+        const last = out[out.length - 1];
+        if (last && Math.abs(last.x - p.x) < eps && Math.abs(last.y - p.y) < eps)
+            continue;
+        out.push(p);
+    }
+    while (out.length > 1 && dist(out[0], out[out.length - 1]) < eps)
+        out.pop();
+    return out;
+}
+function rectRing(x0, y0, x1, y1) {
+    const ax = Math.min(x0, x1);
+    const ay = Math.min(y0, y1);
+    const bx = Math.max(x0, x1);
+    const by = Math.max(y0, y1);
+    return [
+        { x: ax, y: ay },
+        { x: bx, y: ay },
+        { x: bx, y: by },
+        { x: ax, y: by },
+    ];
+}
+function circleRing(c, r, segments = 32) {
+    const out = [];
+    for (let i = 0; i < segments; i++) {
+        const a = (i / segments) * Math.PI * 2;
+        out.push({ x: c.x + Math.cos(a) * r, y: c.y + Math.sin(a) * r });
+    }
+    return out;
+}
+/** 简单多边形判定：非相邻边不相交。自我相交的环所有面积/包含判断都不可信。 */
+function isSimple(ring) {
+    const n = ring.length;
+    if (n < 3)
+        return false;
+    for (let i = 0; i < n; i++) {
+        const a1 = ring[i];
+        const a2 = ring[(i + 1) % n];
+        for (let j = i + 2; j < n; j++) {
+            if (i === 0 && j === n - 1)
+                continue;
+            const b1 = ring[j];
+            const b2 = ring[(j + 1) % n];
+            if (segIntersect(a1, a2, b1, b2))
+                return false;
+        }
+    }
+    return true;
+}
+/** 线段是否真相交（不含端点擦碰的端点判定放宽 —— 用在这里只需排除"明显交叉"）。 */
+function segIntersect(a1, a2, b1, b2) {
+    const d1 = cross(sub(a2, a1), sub(b1, a1));
+    const d2 = cross(sub(a2, a1), sub(b2, a1));
+    const d3 = cross(sub(b2, b1), sub(a1, b1));
+    const d4 = cross(sub(b2, b1), sub(a2, b1));
+    return ((d1 > 1e-12 && d2 < -1e-12) || (d1 < -1e-12 && d2 > 1e-12)) && ((d3 > 1e-12 && d4 < -1e-12) || (d3 < -1e-12 && d4 > 1e-12));
+}
+const cross = (a, b) => a.x * b.y - a.y * b.x;
+/**
+ * 一组环 → 外环 + 洞。
+ * 判定"谁包着谁"用"顶点在另一个环内"的多数票（面积最大的那个当外环）。
+ * 不做完整的多层嵌套（外环-岛-洞里的岛），编辑器的输入不需要那么复杂。
+ */
+function groupRings(paths) {
+    const valid = paths.filter((r) => r.length >= 3);
+    if (valid.length <= 1)
+        return valid.length ? [{ outer: valid[0], holes: [] }] : [];
+    const sorted = [...valid].sort((a, b) => Math.abs(signedArea(b)) - Math.abs(signedArea(a)));
+    const outers = [];
+    const used = new Set();
+    for (let i = 0; i < sorted.length; i++) {
+        if (used.has(i))
+            continue;
+        const outer = sorted[i];
+        used.add(i);
+        const holes = [];
+        for (let j = i + 1; j < sorted.length; j++) {
+            if (used.has(j))
+                continue;
+            const r = sorted[j];
+            let inside = 0;
+            for (const p of r)
+                if (pointInRing(outer, p))
+                    inside++;
+            if (inside > r.length / 2) {
+                holes.push(r);
+                used.add(j);
+            }
+        }
+        outers.push({ outer, holes });
+    }
+    return outers;
+}
+/** 环 → plan-ir / slots 用的元组形式。跨包边界只在这里转。 */
+function ringToTuples(ring) {
+    return ring.map((p) => [p.x, p.y]);
+}
+function tuplesToRing(t) {
+    return t.map((p) => ({ x: p[0], y: p[1] }));
+}
+/** 折线 → 带状包络（道路）。端头平切，不封口。 */
+function strokeEnvelope(centerline, width) {
+    if (centerline.length < 2)
+        return [];
+    const half = Math.max(width, 0.2) / 2;
+    const left = [];
+    const right = [];
+    for (let i = 0; i < centerline.length; i++) {
+        const prev = centerline[Math.max(0, i - 1)];
+        const next = centerline[Math.min(centerline.length - 1, i + 1)];
+        const d = sub(next, prev);
+        const l = len(d) || 1;
+        const nx = -d.y / l;
+        const ny = d.x / l;
+        left.push({ x: centerline[i].x + nx * half, y: centerline[i].y + ny * half });
+        right.push({ x: centerline[i].x - nx * half, y: centerline[i].y - ny * half });
+    }
+    return [...left, ...right.reverse()];
+}
+/** 屏幕像素容差 → 世界容差。命中测试统一走它，缩放后手感才一致。 */
+const tolOf = (px, zoom) => px / Math.max(zoom, 1e-6);
+
+__exports["signedArea"] = signedArea;
+__exports["pathsArea"] = pathsArea;
+__exports["ringPerimeter"] = ringPerimeter;
+__exports["pathsPerimeter"] = pathsPerimeter;
+__exports["ringCentroid"] = ringCentroid;
+__exports["ringCenter"] = ringCenter;
+__exports["boundsOfPoints"] = boundsOfPoints;
+__exports["boundsOfPaths"] = boundsOfPaths;
+__exports["mergeBounds"] = mergeBounds;
+__exports["boundsIntersect"] = boundsIntersect;
+__exports["pointInRing"] = pointInRing;
+__exports["pointInPaths"] = pointInPaths;
+__exports["distToRing"] = distToRing;
+__exports["distToPaths"] = distToPaths;
+__exports["ensureCCW"] = ensureCCW;
+__exports["ensureCW"] = ensureCW;
+__exports["cleanRing"] = cleanRing;
+__exports["rectRing"] = rectRing;
+__exports["circleRing"] = circleRing;
+__exports["isSimple"] = isSimple;
+__exports["segIntersect"] = segIntersect;
+__exports["groupRings"] = groupRings;
+__exports["ringToTuples"] = ringToTuples;
+__exports["tuplesToRing"] = tuplesToRing;
+__exports["strokeEnvelope"] = strokeEnvelope;
+__exports["emptyBounds"] = emptyBounds;
+__exports["ringArea"] = ringArea;
+__exports["polylineLength"] = polylineLength;
+__exports["boundsValid"] = boundsValid;
+__exports["boundsContains"] = boundsContains;
+__exports["cross"] = cross;
+__exports["tolOf"] = tolOf;
+};
+__def["editor-app/src/store.js"] = function (__exports) {
+// 编辑器状态与动作。**照搬 PCG 的 store 语义**（撤销/重做、选中、图层、生成），
+// 只是不用 zustand —— 本机没有 npm，用一个 30 行的订阅器就够了。
+//
+// 一条纪律：**所有会改 model 的动作都必须先 pushHistory(label)**。
+// 没有 label 的撤销记录等于没有撤销（用户看到"撤销：未知操作"只会更慌）。
+const { addObject: addObject, areaPaths: areaPaths, cloneObject: cloneObject, demoProject: demoProject, emptyProject: emptyProject, isAreaObj: isAreaObj, removeObjects: removeObjects, updateObjectIn: updateObjectIn } = __req("editor-app/src/model.js");
+const { booleanOp: booleanOp, offsetRing: offsetRing } = __req("editor-app/src/boolean.js");
+const TOOL_LABEL = {
+    select: '选择',
+    rect: '矩形',
+    polygon: '多边形',
+    polyline: '折线',
+    circle: '圆',
+    measure: '测量',
+    pan: '平移',
+};
+const TOOL_SHORTCUT = {
+    v: 'select',
+    r: 'rect',
+    p: 'polygon',
+    l: 'polyline',
+    c: 'circle',
+    m: 'measure',
+    h: 'pan',
+};
+const DRAW_KIND_LABEL = {
+    site: '园区范围',
+    parcel: '地块',
+    building: '建筑',
+    road: '道路',
+    access: '出入口',
+    nobuild: '禁建区',
+    ground: '地面',
+};
+const EMPTY_HINT = { x: 0, y: 0, snapLabel: '' };
+const defaultView = () => ({
+    activeView: '2d',
+    selectionIds: [],
+    activeTool: 'select',
+    drawKind: 'parcel',
+    measureMode: 'distance',
+    snapEnabled: true,
+    gridVisible: true,
+    gridSnap: true,
+    gridSize: 1,
+    layerVisibility: { site: true, parcels: true, roads: true, buildings: true, access: true, ground: true, landscape: true },
+    layerLocked: { site: false, parcels: false, roads: false, buildings: false, access: false, ground: false, landscape: false },
+    selectionFilter: 'all',
+    zoom: 5,
+    boxSelect: null,
+    measurePts: [],
+});
+const HISTORY_LIMIT = 80;
+class Store {
+    state;
+    /** 每一次 set 都 +1（渲染循环/面板用它判断"要不要重画"） */
+    version = 0;
+    /** 静默更新（拖动）次数。面板据此区分"要不要重建 DOM"：拖动时重建会丢输入焦点。 */
+    silentSeq = 0;
+    listeners = [];
+    constructor(model) {
+        this.state = {
+            model: model ?? demoProject(),
+            view: defaultView(),
+            past: [],
+            future: [],
+            hint: EMPTY_HINT,
+            toast: '',
+            genStats: {},
+        };
+    }
+    subscribe(fn) {
+        this.listeners.push(fn);
+        return () => {
+            this.listeners = this.listeners.filter((f) => f !== fn);
+        };
+    }
+    emit() {
+        this.version += 1;
+        for (const f of this.listeners)
+            f();
+    }
+    set(patch) {
+        this.state = { ...this.state, ...patch };
+        this.emit();
+    }
+    setView(patch) {
+        this.set({ view: { ...this.state.view, ...patch } });
+    }
+    // ───────────────────────────── 历史
+    pushHistory(label) {
+        const past = [...this.state.past, { label, model: this.state.model }];
+        if (past.length > HISTORY_LIMIT)
+            past.shift();
+        this.set({ past, future: [] });
+    }
+    undo() {
+        const { past, future, model } = this.state;
+        if (!past.length) {
+            this.showToast('没有可撤销的操作');
+            return;
+        }
+        const last = past[past.length - 1];
+        this.set({
+            model: last.model,
+            past: past.slice(0, -1),
+            future: [...future, { label: last.label, model }],
+            view: { ...this.state.view, selectionIds: [] },
+            toast: `已撤销：${last.label}`,
+        });
+    }
+    redo() {
+        const { past, future, model } = this.state;
+        if (!future.length) {
+            this.showToast('没有可重做的操作');
+            return;
+        }
+        const next = future[future.length - 1];
+        this.set({
+            model: next.model,
+            past: [...past, { label: next.label, model }],
+            future: future.slice(0, -1),
+            view: { ...this.state.view, selectionIds: [] },
+            toast: `已重做：${next.label}`,
+        });
+    }
+    // ───────────────────────────── 视图 / 选中
+    select(ids, additive = false) {
+        const cur = this.state.view.selectionIds;
+        const next = additive ? [...new Set([...cur, ...ids])] : ids;
+        this.setView({ selectionIds: next });
+    }
+    hover(id) {
+        if (this.state.view.hoverId === id)
+            return;
+        this.setView({ hoverId: id });
+    }
+    setTool(t) {
+        this.setView({ activeTool: t, measurePts: [], boxSelect: null, selectionIds: t === 'select' ? this.state.view.selectionIds : [] });
+    }
+    setDrawKind(k) {
+        this.setView({ drawKind: k });
+    }
+    setFilter(f) {
+        this.setView({ selectionFilter: f });
+    }
+    patchSettings(p) {
+        this.setView(p);
+    }
+    toggleLayerVisible(key) {
+        this.setView({ layerVisibility: { ...this.state.view.layerVisibility, [key]: !this.state.view.layerVisibility[key] } });
+    }
+    toggleLayerLocked(key) {
+        this.setView({ layerLocked: { ...this.state.view.layerLocked, [key]: !this.state.view.layerLocked[key] } });
+    }
+    setHint(h) {
+        this.set({ hint: { ...this.state.hint, ...h } });
+    }
+    showToast(t) {
+        this.set({ toast: t });
+    }
+    setModel(m) {
+        this.set({ model: m, view: { ...this.state.view, selectionIds: [] } });
+    }
+    /**
+     * 静默替换模型：**拖动过程中**用，不写历史（历史在拖动开始时已经写好）。
+     *
+     * 为什么需要它：拖一个对象会连发几十次 move 事件。每次都 pushHistory 的话，
+     * 撤销一次只退一个像素 —— 用户会以为撤销坏了。
+     */
+    replaceModelSilent(m) {
+        this.silentSeq += 1;
+        this.set({ model: m });
+    }
+    // ───────────────────────────── 对象
+    /** 新建对象（控制器画完就调它）。origin 默认 user。 */
+    create(o, label) {
+        this.pushHistory(label);
+        this.set({ model: addObject(this.state.model, o), view: { ...this.state.view, selectionIds: [o.id] } });
+    }
+    updateObject(id, patch) {
+        this.set({ model: updateObjectIn(this.state.model, id, patch) });
+    }
+    deleteSelected() {
+        const ids = this.state.view.selectionIds;
+        if (!ids.length)
+            return;
+        const deletable = ids.filter((id) => {
+            const o = this.state.model.objects[id];
+            return o && !o.locked;
+        });
+        if (!deletable.length) {
+            this.showToast('选中的对象被锁定，先解锁');
+            return;
+        }
+        this.pushHistory(`删除 ${deletable.length} 个对象`);
+        this.set({
+            model: removeObjects(this.state.model, deletable),
+            view: { ...this.state.view, selectionIds: [] },
+            genStats: stripStats(this.state.genStats, deletable),
+        });
+    }
+    duplicateSelected() {
+        const sel = this.state.view.selectionIds;
+        if (!sel.length)
+            return;
+        this.pushHistory('复制');
+        let model = this.state.model;
+        const ids = [];
+        for (const id of sel) {
+            const o = model.objects[id];
+            if (!o)
+                continue;
+            const copy = cloneObject(o, { x: 4, y: 4 });
+            model = addObject(model, copy);
+            ids.push(copy.id);
+        }
+        this.set({ model, view: { ...this.state.view, selectionIds: ids } });
+    }
+    toggleLock(id) {
+        const ids = id ? [id] : this.state.view.selectionIds;
+        if (!ids.length)
+            return;
+        // 锁定/解锁不进历史：它不是几何改动，进历史会让 Ctrl+Z 变得难以预测
+        let model = this.state.model;
+        for (const i of ids) {
+            const o = model.objects[i];
+            if (o)
+                model = updateObjectIn(model, i, { locked: !o.locked });
+        }
+        this.set({ model, toast: '已切换锁定' });
+    }
+    promoteToFixed(id) {
+        const ids = id ? [id] : this.state.view.selectionIds;
+        if (!ids.length)
+            return;
+        this.pushHistory('转为固定');
+        let model = this.state.model;
+        for (const i of ids) {
+            const o = model.objects[i];
+            if (o)
+                model = updateObjectIn(model, i, { fixed: true, origin: 'user' });
+        }
+        this.set({ model, toast: '已转为固定：生成算法不再改动它' });
+    }
+    // ───────────────────────────── 布尔 / 偏移
+    applyBoolean(op) {
+        const sel = this.state.view.selectionIds;
+        const objs = sel.map((id) => this.state.model.objects[id]).filter((o) => !!o && isAreaObj(o));
+        if (objs.length < 2) {
+            this.showToast('布尔需要至少 2 个面对象');
+            return;
+        }
+        const [main, ...rest] = objs;
+        const mainPaths = areaPaths(main);
+        if (!mainPaths)
+            return;
+        let acc = mainPaths;
+        for (const o of rest) {
+            const p = areaPaths(o);
+            if (!p)
+                continue;
+            acc = booleanOp(op, acc, p);
+            if (!acc.length) {
+                // 结果为空（减光了 / 没交集）—— 整体回滚，不要把空几何写进项目
+                this.showToast(op === 'intersect' ? '两个对象没有交集' : '运算结果为空，已取消');
+                return;
+            }
+        }
+        const label = op === 'union' ? '合并' : op === 'subtract' ? '减去' : '取交集';
+        this.pushHistory(label);
+        let model = this.state.model;
+        const patch = main.kind === 'building' ? { footprint: acc } : { boundary: acc };
+        model = updateObjectIn(model, main.id, patch);
+        // 合并/交集：参与对象被并进主对象；减去：被减体保留（PCG 同规则）
+        if (op !== 'subtract')
+            model = removeObjects(model, rest.map((o) => o.id));
+        this.set({ model, view: { ...this.state.view, selectionIds: [main.id] }, toast: `${label}完成` });
+    }
+    applyOffset(delta) {
+        const sel = this.state.view.selectionIds;
+        const objs = sel.map((id) => this.state.model.objects[id]).filter((o) => !!o && isAreaObj(o));
+        if (objs.length !== 1) {
+            this.showToast('偏移只支持单选一个面对象');
+            return;
+        }
+        const o = objs[0];
+        const paths = areaPaths(o);
+        if (!paths || paths.length !== 1) {
+            this.showToast('带洞的对象暂不支持偏移');
+            return;
+        }
+        const next = offsetRing(paths[0], delta);
+        if (!next.length) {
+            this.showToast(`${delta < 0 ? '内缩' : '外扩'} ${Math.abs(delta)} m 会让几何自交，已取消`);
+            return;
+        }
+        this.pushHistory(`${delta < 0 ? '内缩' : '外扩'} ${Math.abs(delta)} m`);
+        const patch = o.kind === 'building' ? { footprint: next } : { boundary: next };
+        this.set({ model: updateObjectIn(this.state.model, o.id, patch), toast: '偏移完成' });
+    }
+    // ───────────────────────────── 项目
+    newProject() {
+        this.pushHistory('新建项目');
+        this.set({ model: emptyProject(), view: { ...defaultView(), gridSize: this.state.view.gridSize }, genStats: {} });
+        this.showToast('已清空');
+    }
+    loadDemo() {
+        this.pushHistory('载入示例');
+        this.set({ model: demoProject(), view: defaultView(), genStats: {} });
+        this.showToast('已载入示例园区');
+    }
+    exportJson() {
+        return JSON.stringify(this.state.model, null, 2);
+    }
+    /** 由生成器回写：一次替换某地块的全部生成物（局部重算的唯一入口）。 */
+    applyGenerated(parcelId, produce, stats) {
+        const model = this.state.model;
+        const keep = [];
+        for (const id of model.order) {
+            const o = model.objects[id];
+            if (!o)
+                continue;
+            const generatedHere = o.generatedFrom === parcelId;
+            // fixed 的对象永不被生成算法动 —— 这是产品承诺，不是优化项
+            if (generatedHere && !o.fixed)
+                continue;
+            keep.push(id);
+        }
+        let next = { ...model, order: keep, objects: {} };
+        for (const id of keep)
+            next.objects[id] = model.objects[id];
+        for (const o of produce)
+            next = addObject(next, o);
+        this.set({
+            model: next,
+            genStats: { ...this.state.genStats, [parcelId]: stats },
+            toast: `生成完成：${stats.buildings} 栋 · 覆盖率 ${(stats.coverage * 100).toFixed(0)}%`,
+        });
+    }
+    clearGenerated(parcelId) {
+        const model = this.state.model;
+        const toRemove = model.order.filter((id) => {
+            const o = model.objects[id];
+            return o && o.generatedFrom === parcelId && !o.fixed;
+        });
+        if (!toRemove.length) {
+            this.showToast('这块地没有生成物');
+            return;
+        }
+        this.pushHistory('清除生成');
+        const genStats = { ...this.state.genStats };
+        delete genStats[parcelId];
+        this.set({ model: removeObjects(model, toRemove), genStats, toast: `已清除 ${toRemove.length} 个生成物` });
+    }
+}
+function stripStats(map, removed) {
+    const out = { ...map };
+    for (const id of removed)
+        delete out[id];
+    return out;
+}
+
+__exports["Store"] = Store;
+__exports["TOOL_LABEL"] = TOOL_LABEL;
+__exports["TOOL_SHORTCUT"] = TOOL_SHORTCUT;
+__exports["DRAW_KIND_LABEL"] = DRAW_KIND_LABEL;
+__exports["EMPTY_HINT"] = EMPTY_HINT;
+};
+__def["editor-app/src/render2d.js"] = function (__exports) {
+// 2D 渲染。**只有绘制，没有状态**：所有交互状态由控制器写进 store / previews，这里照着画。
+//
+// 视觉语言照搬 PCG（`editor/render.ts` 的 C / SURFACE_2D / DRAW_ORDER）：
+// 园区黄、地块蓝、建筑亮灰、道路深灰带虚线中心线、禁建红、生成物偏暗弱。
+// 这套配色的目的只有一个：**一眼分得出"这是什么东西""是我画的还是机器画的"**。
+const { LAYER_OF: LAYER_OF, areaPaths: areaPaths } = __req("editor-app/src/model.js");
+const { boundsOfPaths: boundsOfPaths, distToPaths: distToPaths, pointInPaths: pointInPaths, polylineLength: polylineLength, ringCenter: ringCenter } = __req("editor-app/src/polygon.js");
+const { strokeEnvelope: strokeEnvelope } = __req("editor-app/src/polygon.js");
+const { DEG: DEG, dist: dist, len: len, sub: sub } = __req("editor-app/src/vec.js");
+const C = {
+    bg: '#0e1014',
+    gridMinor: 'rgba(255,255,255,0.035)',
+    gridMajor: 'rgba(255,255,255,0.08)',
+    axis: 'rgba(120,190,255,0.22)',
+    siteLine: '#f2b544',
+    siteFill: 'rgba(242,181,68,0.06)',
+    parcelLine: '#6ea8fe',
+    parcelFill: 'rgba(110,168,254,0.08)',
+    buildingFill: 'rgba(176,196,220,0.24)',
+    buildingLine: '#d7e0ec',
+    genFill: 'rgba(201,180,137,0.32)',
+    genLine: 'rgba(233,213,170,0.8)',
+    noBuildFill: 'rgba(255,92,92,0.09)',
+    noBuildLine: '#ff6b6b',
+    roadFill: '#33383f',
+    roadLine: 'rgba(255,255,255,0.20)',
+    roadDash: 'rgba(255,255,255,0.5)',
+    access: '#4ade80',
+    hover: 'rgba(34,211,238,0.55)',
+    sel: '#22d3ee',
+    selFill: 'rgba(34,211,238,0.10)',
+    locked: '#f59e0b',
+    invalid: '#ff5c5c',
+    guide: 'rgba(255,94,168,0.8)',
+    snap: '#e879f9',
+    measure: '#facc15',
+    text: '#e6ebf2',
+    textDim: 'rgba(230,235,242,0.6)',
+};
+const SURFACE_2D = {
+    paving: { fill: 'rgba(168,182,203,0.16)', line: 'rgba(186,200,220,0.5)', dash: [7, 5] },
+    lawn: { fill: 'rgba(74,222,128,0.13)', line: 'rgba(110,231,183,0.45)', dash: [7, 5] },
+    parking: { fill: 'rgba(96,110,130,0.28)', line: 'rgba(210,220,235,0.55)', dash: [], hatch: 'rgba(208,220,236,0.16)' },
+    water: { fill: 'rgba(56,189,248,0.16)', line: 'rgba(125,211,252,0.5)', dash: [7, 5] },
+    dirt: { fill: 'rgba(180,140,90,0.14)', line: 'rgba(196,154,104,0.45)', dash: [7, 5] },
+};
+/** 图层绘制顺序：园区在下、建筑在上（PCG PRD §38）。 */
+const DRAW_ORDER = {
+    site: 0,
+    ground: 1,
+    parcels: 2,
+    roads: 3,
+    buildings: 4,
+    landscape: 5,
+    access: 6,
+};
+function render2d(input) {
+    const { ctx, width, height, cam, model, view } = input;
+    ctx.save();
+    ctx.clearRect(0, 0, width, height);
+    ctx.fillStyle = C.bg;
+    ctx.fillRect(0, 0, width, height);
+    drawBackground(input);
+    const order = [...model.order].sort((a, b) => {
+        const oa = model.objects[a];
+        const ob = model.objects[b];
+        if (!oa || !ob)
+            return 0;
+        return (DRAW_ORDER[LAYER_OF[oa.kind]] ?? 0) - (DRAW_ORDER[LAYER_OF[ob.kind]] ?? 0);
+    });
+    const sel = new Set(view.selectionIds);
+    for (const id of order) {
+        const o = model.objects[id];
+        if (!o || !o.visible)
+            continue;
+        const layer = LAYER_OF[o.kind];
+        if (!view.layerVisibility[layer])
+            continue;
+        drawObject(input, o, sel.has(id), view.hoverId === id);
+    }
+    // 单选时的顶点手柄：只有解锁的对象才画（锁了不给拖，画了就是骗人）
+    if (view.selectionIds.length === 1) {
+        const o = model.objects[view.selectionIds[0]];
+        if (o && !o.locked && view.layerVisibility[LAYER_OF[o.kind]])
+            drawHandles(ctx, cam, o);
+    }
+    for (const p of input.previews)
+        drawPreview(ctx, cam, p);
+    if (input.measure)
+        drawMeasure(ctx, cam, input.measure);
+    if (input.guides.length)
+        drawGuides(ctx, cam, input.guides);
+    if (input.snap)
+        drawSnap(ctx, cam, input.snap);
+    if (view.boxSelect)
+        drawBox(ctx, cam, view.boxSelect);
+    ctx.restore();
+}
+function drawBackground(input) {
+    const { ctx, cam, view } = input;
+    if (input.bgImage) {
+        // 底图按世界坐标贴（导入时已经记下 origin / metersPerPixel），所以缩放时不会飘
+        const img = input.bgImage;
+        const tl = cam.toScreen({ x: 0, y: 0 });
+        ctx.save();
+        ctx.globalAlpha = 0.85;
+        ctx.drawImage(img, tl.x, tl.y, img.width, img.height);
+        ctx.restore();
+    }
+    if (!view.gridVisible)
+        return;
+    const b = cam.viewBounds();
+    const s = view.gridSize > 0 ? view.gridSize : 1;
+    // 太密就不画：1 px 间距以下全是糊的，还拖慢渲染
+    const stepPx = cam.px(s);
+    ctx.lineWidth = 1;
+    if (stepPx >= 6) {
+        ctx.strokeStyle = C.gridMinor;
+        ctx.beginPath();
+        for (let x = Math.floor(b.minX / s) * s; x <= b.maxX; x += s) {
+            const sx = Math.round(cam.toScreen({ x, y: 0 }).x) + 0.5;
+            ctx.moveTo(sx, 0);
+            ctx.lineTo(sx, input.height);
+        }
+        for (let y = Math.floor(b.minY / s) * s; y <= b.maxY; y += s) {
+            const sy = Math.round(cam.toScreen({ x: 0, y }).y) + 0.5;
+            ctx.moveTo(0, sy);
+            ctx.lineTo(input.width, sy);
+        }
+        ctx.stroke();
+    }
+    // 每 10 格一条粗线
+    const major = s * 10;
+    if (cam.px(major) >= 12) {
+        ctx.strokeStyle = C.gridMajor;
+        ctx.beginPath();
+        for (let x = Math.floor(b.minX / major) * major; x <= b.maxX; x += major) {
+            const sx = Math.round(cam.toScreen({ x, y: 0 }).x) + 0.5;
+            ctx.moveTo(sx, 0);
+            ctx.lineTo(sx, input.height);
+        }
+        for (let y = Math.floor(b.minY / major) * major; y <= b.maxY; y += major) {
+            const sy = Math.round(cam.toScreen({ x: 0, y }).y) + 0.5;
+            ctx.moveTo(0, sy);
+            ctx.lineTo(input.width, sy);
+        }
+        ctx.stroke();
+    }
+    // 原点轴线：没有它，大图里完全不知道自己在哪
+    ctx.strokeStyle = C.axis;
+    ctx.beginPath();
+    const o = cam.toScreen({ x: 0, y: 0 });
+    ctx.moveTo(0, Math.round(o.y) + 0.5);
+    ctx.lineTo(input.width, Math.round(o.y) + 0.5);
+    ctx.moveTo(Math.round(o.x) + 0.5, 0);
+    ctx.lineTo(Math.round(o.x) + 0.5, input.height);
+    ctx.stroke();
+}
+function pathOf(ctx, cam, ring) {
+    if (ring.length < 2)
+        return;
+    ctx.beginPath();
+    const p0 = cam.toScreen(ring[0]);
+    ctx.moveTo(p0.x, p0.y);
+    for (let i = 1; i < ring.length; i++) {
+        const p = cam.toScreen(ring[i]);
+        ctx.lineTo(p.x, p.y);
+    }
+    ctx.closePath();
+}
+function drawObject(input, o, selected, hovered) {
+    const { ctx, cam, model } = input;
+    if (o.kind === 'site' || o.kind === 'parcel' || o.kind === 'nobuild' || o.kind === 'ground' || o.kind === 'building') {
+        const paths = areaPaths(o);
+        if (!paths)
+            return;
+        for (const ring of paths) {
+            pathOf(ctx, cam, ring);
+            if (o.kind === 'building') {
+                ctx.fillStyle = o.origin === 'generated' ? C.genFill : C.buildingFill;
+                ctx.fill();
+                ctx.strokeStyle = o.origin === 'generated' ? C.genLine : C.buildingLine;
+                ctx.lineWidth = 1.2;
+                ctx.stroke();
+            }
+            else if (o.kind === 'ground') {
+                const st = SURFACE_2D[o.surface];
+                ctx.fillStyle = st.fill;
+                ctx.fill();
+                ctx.setLineDash(st.dash);
+                ctx.strokeStyle = st.line;
+                ctx.lineWidth = 1;
+                ctx.stroke();
+                ctx.setLineDash([]);
+                if (st.hatch)
+                    hatch(ctx, cam, ring, st.hatch);
+            }
+            else {
+                const fill = o.kind === 'site' ? C.siteFill : o.kind === 'nobuild' ? C.noBuildFill : C.parcelFill;
+                const line = o.kind === 'site' ? C.siteLine : o.kind === 'nobuild' ? C.noBuildLine : C.parcelLine;
+                ctx.fillStyle = fill;
+                ctx.fill();
+                ctx.strokeStyle = o.locked ? C.locked : line;
+                ctx.lineWidth = o.kind === 'site' ? 1.8 : 1.3;
+                if (o.origin === 'generated')
+                    ctx.setLineDash([6, 4]);
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
+        }
+        // 面对象标名字：认不出"哪块是地块 1"的话，属性面板就没法用
+        if (o.kind !== 'building' && paths[0]?.length) {
+            const c = cam.toScreen(ringCenter(paths[0]));
+            label(ctx, c, o.name, C.textDim);
+        }
+    }
+    else if (o.kind === 'road') {
+        const env = strokeEnvelope(o.centerline, o.width);
+        if (env.length >= 3) {
+            pathOf(ctx, cam, env);
+            ctx.fillStyle = C.roadFill;
+            ctx.fill();
+            ctx.strokeStyle = o.locked ? C.locked : C.roadLine;
+            ctx.lineWidth = 1;
+            ctx.stroke();
+        }
+        // 中心线虚线：路宽撑起来之后，没有中心线就看不出走向
+        ctx.beginPath();
+        o.centerline.forEach((p, i) => {
+            const s = cam.toScreen(p);
+            if (i === 0)
+                ctx.moveTo(s.x, s.y);
+            else
+                ctx.lineTo(s.x, s.y);
+        });
+        ctx.setLineDash([6, 6]);
+        ctx.strokeStyle = C.roadDash;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        ctx.setLineDash([]);
+        if (cam.px(o.width) > 14) {
+            // 放在 1/3 处而不是中点：中点常常正好是出入口，两个标签会叠成一团
+            const at = cam.toScreen(o.centerline[Math.floor(o.centerline.length / 3)]);
+            label(ctx, { x: at.x, y: at.y - 11 }, `${o.name} · ${o.width} m`, C.textDim);
+        }
+    }
+    else if (o.kind === 'access') {
+        const p = cam.toScreen(o.pos);
+        const dir = { x: Math.cos(o.dir), y: -Math.sin(o.dir) };
+        const tip = { x: p.x + dir.x * 22, y: p.y + dir.y * 22 };
+        ctx.strokeStyle = C.access;
+        ctx.fillStyle = C.access;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(p.x, p.y);
+        ctx.lineTo(tip.x, tip.y);
+        ctx.stroke();
+        // 箭头
+        const n = { x: -dir.y, y: dir.x };
+        ctx.beginPath();
+        ctx.moveTo(tip.x, tip.y);
+        ctx.lineTo(tip.x - dir.x * 7 + n.x * 4, tip.y - dir.y * 7 + n.y * 4);
+        ctx.lineTo(tip.x - dir.x * 7 - n.x * 4, tip.y - dir.y * 7 - n.y * 4);
+        ctx.closePath();
+        ctx.fill();
+        // 开口宽度标注
+        const half = cam.px(o.width / 2);
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(p.x + n.x * half, p.y + n.y * half);
+        ctx.lineTo(p.x - n.x * half, p.y - n.y * half);
+        ctx.stroke();
+        label(ctx, { x: p.x, y: p.y + 14 }, o.name, C.access);
+    }
+    if (selected) {
+        strokeOutline(input, o, C.sel, 2.4);
+    }
+    else if (hovered) {
+        strokeOutline(input, o, C.hover, 1.8);
+    }
+}
+function strokeOutline(input, o, color, w) {
+    const { ctx, cam } = input;
+    const paths = areaPaths(o);
+    ctx.strokeStyle = color;
+    ctx.lineWidth = w;
+    if (paths) {
+        for (const ring of paths) {
+            pathOf(ctx, cam, ring);
+            ctx.stroke();
+        }
+    }
+    else if (o.kind === 'road') {
+        const env = strokeEnvelope(o.centerline, o.width);
+        if (env.length >= 3) {
+            pathOf(ctx, cam, env);
+            ctx.stroke();
+        }
+    }
+    else if (o.kind === 'access') {
+        const p = cam.toScreen(o.pos);
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 9, 0, Math.PI * 2);
+        ctx.stroke();
+    }
+}
+function drawHandles(ctx, cam, o) {
+    const pts = [];
+    const paths = areaPaths(o);
+    if (paths)
+        for (const r of paths)
+            pts.push(...r);
+    else if (o.kind === 'road')
+        pts.push(...o.centerline);
+    else if (o.kind === 'access')
+        pts.push(o.pos);
+    ctx.fillStyle = '#0e1014';
+    ctx.strokeStyle = C.sel;
+    ctx.lineWidth = 1.6;
+    for (const p of pts) {
+        const s = cam.toScreen(p);
+        ctx.beginPath();
+        ctx.rect(s.x - 3.5, s.y - 3.5, 7, 7);
+        ctx.fill();
+        ctx.stroke();
+    }
+}
+function drawPreview(ctx, cam, p) {
+    if (p.kind === 'ring') {
+        pathOf(ctx, cam, p.ring);
+        ctx.fillStyle = p.ghost ? 'rgba(34,211,238,0.05)' : 'rgba(34,211,238,0.12)';
+        ctx.fill();
+        ctx.setLineDash([5, 4]);
+        ctx.strokeStyle = p.invalid ? C.invalid : C.sel;
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+        ctx.setLineDash([]);
+        if (p.label) {
+            const c = cam.toScreen(ringCenter(p.ring));
+            label(ctx, c, p.label, p.invalid ? C.invalid : C.sel);
+        }
+    }
+    else if (p.kind === 'polyline') {
+        ctx.beginPath();
+        p.pts.forEach((pt, i) => {
+            const s = cam.toScreen(pt);
+            if (i === 0)
+                ctx.moveTo(s.x, s.y);
+            else
+                ctx.lineTo(s.x, s.y);
+        });
+        ctx.strokeStyle = C.sel;
+        ctx.lineWidth = p.width ? Math.max(1, cam.px(p.width)) : 1.5;
+        ctx.setLineDash([5, 4]);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        if (p.label) {
+            const last = p.pts[p.pts.length - 1];
+            if (last)
+                label(ctx, cam.toScreen(last), p.label, C.text);
+        }
+    }
+    else {
+        const s = cam.toScreen(p.p);
+        ctx.strokeStyle = C.sel;
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, 5, 0, Math.PI * 2);
+        ctx.stroke();
+        if (p.dir !== undefined) {
+            ctx.beginPath();
+            ctx.moveTo(s.x, s.y);
+            ctx.lineTo(s.x + Math.cos(p.dir) * 22, s.y - Math.sin(p.dir) * 22);
+            ctx.stroke();
+        }
+        if (p.label)
+            label(ctx, { x: s.x, y: s.y - 12 }, p.label, C.text);
+    }
+}
+function drawMeasure(ctx, cam, m) {
+    const pts = m.cursor ? [...m.pts, m.cursor] : m.pts;
+    if (pts.length < 2)
+        return;
+    ctx.beginPath();
+    pts.forEach((p, i) => {
+        const s = cam.toScreen(p);
+        if (i === 0)
+            ctx.moveTo(s.x, s.y);
+        else
+            ctx.lineTo(s.x, s.y);
+    });
+    ctx.strokeStyle = C.measure;
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([4, 4]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    for (const p of pts) {
+        const s = cam.toScreen(p);
+        ctx.fillStyle = C.measure;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, 3, 0, Math.PI * 2);
+        ctx.fill();
+    }
+    const text = m.mode === 'distance'
+        ? `${polylineLength(pts).toFixed(2)} m`
+        : `${Math.abs(ringAreaSigned(pts)).toFixed(1)} m²`;
+    const at = cam.toScreen(pts[Math.floor(pts.length / 2)]);
+    label(ctx, { x: at.x, y: at.y - 12 }, text, C.measure);
+}
+function ringAreaSigned(pts) {
+    let a = 0;
+    for (let i = 0; i < pts.length; i++) {
+        const p = pts[i];
+        const q = pts[(i + 1) % pts.length];
+        a += p.x * q.y - q.x * p.y;
+    }
+    return a / 2;
+}
+function drawGuides(ctx, cam, guides) {
+    ctx.save();
+    ctx.setLineDash([3, 4]);
+    ctx.strokeStyle = C.guide;
+    ctx.lineWidth = 1;
+    for (const g of guides) {
+        const a = cam.toScreen(g.a);
+        const b = cam.toScreen(g.b);
+        ctx.beginPath();
+        ctx.moveTo(a.x, a.y);
+        ctx.lineTo(b.x, b.y);
+        ctx.stroke();
+    }
+    ctx.restore();
+}
+function drawSnap(ctx, cam, snap) {
+    if (!snap.label)
+        return;
+    const s = cam.toScreen(snap.p);
+    ctx.strokeStyle = C.snap;
+    ctx.lineWidth = 1.4;
+    ctx.beginPath();
+    ctx.rect(s.x - 5, s.y - 5, 10, 10);
+    ctx.stroke();
+    label(ctx, { x: s.x + 9, y: s.y - 9 }, snap.label, C.snap);
+}
+function drawBox(ctx, cam, b) {
+    const a = cam.toScreen({ x: b.minX, y: b.minY });
+    const c = cam.toScreen({ x: b.maxX, y: b.maxY });
+    const x = Math.min(a.x, c.x);
+    const y = Math.min(a.y, c.y);
+    const w = Math.abs(c.x - a.x);
+    const h = Math.abs(c.y - a.y);
+    ctx.fillStyle = 'rgba(34,211,238,0.06)';
+    ctx.fillRect(x, y, w, h);
+    ctx.strokeStyle = C.sel;
+    ctx.lineWidth = 1;
+    ctx.setLineDash([4, 4]);
+    ctx.strokeRect(x + 0.5, y + 0.5, w, h);
+    ctx.setLineDash([]);
+}
+function hatch(ctx, cam, ring, color) {
+    const b = boundsOfPaths([ring]);
+    if (!boundsOk(b))
+        return;
+    const step = Math.max(0.4, cam.meters(6));
+    ctx.save();
+    pathOf(ctx, cam, ring);
+    ctx.clip();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    for (let k = b.minX - (b.maxY - b.minY); k < b.maxX; k += step) {
+        const a = cam.toScreen({ x: k, y: b.minY });
+        const c = cam.toScreen({ x: k + (b.maxY - b.minY), y: b.maxY });
+        ctx.moveTo(a.x, a.y);
+        ctx.lineTo(c.x, c.y);
+    }
+    ctx.stroke();
+    ctx.restore();
+}
+const boundsOk = (b) => Number.isFinite(b.minX) && b.maxX > b.minX;
+function label(ctx, at, text, color) {
+    if (!text)
+        return;
+    ctx.save();
+    ctx.font = '11px "Segoe UI", "Microsoft YaHei", system-ui, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    const w = ctx.measureText(text).width;
+    ctx.fillStyle = 'rgba(14,16,20,0.72)';
+    ctx.fillRect(at.x - w / 2 - 4, at.y - 8, w + 8, 16);
+    ctx.fillStyle = color;
+    ctx.fillText(text, at.x, at.y);
+    ctx.restore();
+}
+
+function fmtArea(m2) {
+    const v = Math.abs(m2);
+    if (v >= 10000)
+        return `${(v / 10000).toFixed(2)} 公顷`;
+    return `${v.toFixed(0)} m²`;
+}
+function fmtLen(m) {
+    return `${m.toFixed(2)} m`;
+}
+const fmtAngle = (rad) => `${(rad * DEG).toFixed(1)}°`;
+/** 命中测试的公差与几何求交（控制器共用，避免两处各写一份）。 */
+const hitTolerance = (cam) => cam.meters(6);
+
+
+__exports["COLORS"] = C;
+__exports["SURFACE_2D"] = SURFACE_2D;
+__exports["DRAW_ORDER"] = DRAW_ORDER;
+__exports["dist"] = dist;
+__exports["len"] = len;
+__exports["sub"] = sub;
+__exports["distToPaths"] = distToPaths;
+__exports["pointInPaths"] = pointInPaths;
+__exports["render2d"] = render2d;
+__exports["fmtArea"] = fmtArea;
+__exports["fmtLen"] = fmtLen;
+__exports["fmtAngle"] = fmtAngle;
+__exports["hitTolerance"] = hitTolerance;
+};
+__def["editor-app/src/vec.js"] = function (__exports) {
+// 二维基础量。**用 {x, y} 对象而不是 [x, y] 元组**，和 PCG 原项目一致 ——
+// 编辑器的几何代码里到处是 p.x / p.y，元组写法会让整份代码读起来像在解密。
+// 交给生成算法（plan-ir / slots）时再转成元组，只在边界转换一次。
+const v2 = (x = 0, y = 0) => ({ x, y });
+const clone = (p) => ({ x: p.x, y: p.y });
+const add = (a, b) => ({ x: a.x + b.x, y: a.y + b.y });
+const sub = (a, b) => ({ x: a.x - b.x, y: a.y - b.y });
+const mul = (a, k) => ({ x: a.x * k, y: a.y * k });
+const mid = (a, b) => ({ x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 });
+const dot = (a, b) => a.x * b.x + a.y * b.y;
+const len = (a) => Math.hypot(a.x, a.y);
+const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
+function norm(a) {
+    const l = Math.hypot(a.x, a.y) || 1;
+    return { x: a.x / l, y: a.y / l };
+}
+/** 左法向（逆时针转 90°）。道路包络、边界推墙都用它。 */
+const perp = (a) => ({ x: -a.y, y: a.x });
+const DEG = 180 / Math.PI;
+const RAD = Math.PI / 180;
+/** 从 a 指向 b 的方位角（弧度，0 = +X）。 */
+const angleOf = (a, b) => Math.atan2(b.y - a.y, b.x - a.x);
+/** 绕原点旋转。 */
+function rotate(p, rad) {
+    const c = Math.cos(rad);
+    const s = Math.sin(rad);
+    return { x: p.x * c - p.y * s, y: p.x * s + p.y * c };
+}
+/** 绕 c 旋转。 */
+function rotateAround(p, c, rad) {
+    const r = rotate(sub(p, c), rad);
+    return { x: r.x + c.x, y: r.y + c.y };
+}
+/** 点到线段距离。命中测试用它，比点到直线距离可靠（否则延长线上的点也算命中）。 */
+function distToSegment(p, a, b) {
+    const abx = b.x - a.x;
+    const aby = b.y - a.y;
+    const l2 = abx * abx + aby * aby;
+    if (l2 === 0)
+        return dist(p, a);
+    let t = ((p.x - a.x) * abx + (p.y - a.y) * aby) / l2;
+    t = Math.max(0, Math.min(1, t));
+    return Math.hypot(p.x - (a.x + t * abx), p.y - (a.y + t * aby));
+}
+/** 把向量吸附到最近的 45° 倍数（Shift 约束）。 */
+function snapAngle(from, to, stepDeg = 45) {
+    const d = sub(to, from);
+    const l = len(d);
+    if (l < 1e-9)
+        return clone(to);
+    const a = Math.round(Math.atan2(d.y, d.x) / (stepDeg * RAD)) * stepDeg * RAD;
+    return { x: from.x + Math.cos(a) * l, y: from.y + Math.sin(a) * l };
+}
+
+__exports["norm"] = norm;
+__exports["rotate"] = rotate;
+__exports["rotateAround"] = rotateAround;
+__exports["distToSegment"] = distToSegment;
+__exports["snapAngle"] = snapAngle;
+__exports["v2"] = v2;
+__exports["clone"] = clone;
+__exports["add"] = add;
+__exports["sub"] = sub;
+__exports["mul"] = mul;
+__exports["mid"] = mid;
+__exports["dot"] = dot;
+__exports["len"] = len;
+__exports["dist"] = dist;
+__exports["perp"] = perp;
+__exports["DEG"] = DEG;
+__exports["RAD"] = RAD;
+__exports["angleOf"] = angleOf;
+};
+__def["editor-app/src/snap.js"] = function (__exports) {
+// 捕捉。优先级：对象顶点 > 边中点 > 网格 > 原始点。
+//
+// 状态栏要显示"捕捉到什么"（`snapLabel`），这不是装饰：**用户必须知道那一下为什么吸住了**。
+// 没有标签时，画出来的东西"差 0.3 m"会让人怀疑软件有 bug，其实是他自己开着网格吸附。
+const { pointInRing: pointInRing, distToRing: distToRing } = __req("editor-app/src/polygon.js");
+const { dist: dist, mid: mid } = __req("editor-app/src/vec.js");
+const { areaPaths: areaPaths } = __req("editor-app/src/model.js");
+const PX_TOL = 10;
+/** 收集可见且未锁层的所有顶点与中点。锁层的对象不参与捕捉 —— 否则会被看不见的东西吸住。 */
+function collectTargets(model, view) {
+    const verts = [];
+    const mids = [];
+    for (const id of model.order) {
+        const o = model.objects[id];
+        if (!o || !o.visible)
+            continue;
+        const layer = layerOfKind(o.kind);
+        if (!view.layerVisibility[layer] || view.layerLocked[layer])
+            continue;
+        const paths = areaPaths(o);
+        if (paths) {
+            for (const r of paths) {
+                for (let i = 0; i < r.length; i++) {
+                    verts.push({ p: r[i], id });
+                    mids.push({ p: mid(r[i], r[(i + 1) % r.length]), id });
+                }
+            }
+        }
+        else if (o.kind === 'road') {
+            for (const p of o.centerline)
+                verts.push({ p, id });
+            for (let i = 1; i < o.centerline.length; i++)
+                mids.push({ p: mid(o.centerline[i - 1], o.centerline[i]), id });
+        }
+        else if (o.kind === 'access') {
+            verts.push({ p: o.pos, id });
+        }
+    }
+    return { verts, mids };
+}
+function layerOfKind(kind) {
+    const map = {
+        site: 'site',
+        parcel: 'parcels',
+        building: 'buildings',
+        road: 'roads',
+        access: 'access',
+        nobuild: 'landscape',
+        ground: 'ground',
+    };
+    return map[kind] ?? 'site';
+}
+function snapPoint(raw, model, view, cam, opts = {}) {
+    const tol = cam.meters(PX_TOL);
+    const guides = [];
+    if (!view.snapEnabled) {
+        return { result: { p: applyGrid(raw, view), label: view.gridSnap ? `网格 ${view.gridSize} m` : '' }, guides };
+    }
+    const { verts, mids } = collectTargets(model, view);
+    let best = null;
+    let bestD = tol;
+    for (const v of verts) {
+        const d = dist(raw, v.p);
+        if (d < bestD) {
+            bestD = d;
+            best = { p: v.p, label: '顶点', refId: v.id };
+        }
+    }
+    if (!best) {
+        for (const m of mids) {
+            const d = dist(raw, m.p);
+            if (d < bestD) {
+                bestD = d;
+                best = { p: m.p, label: '中点', refId: m.id };
+            }
+        }
+    }
+    if (best) {
+        // 顶点/中点捕捉优先于正交：用户明确指向了一个已有特征点
+        if (opts.anchor && best.refId) {
+            const t = collectTargets(model, view).verts.find((v) => v.id === best.refId);
+            if (t && Math.abs(t.p.x - best.p.x) < 1e-9) {
+                guides.push({ a: { x: best.p.x, y: best.p.y - 50 }, b: { x: best.p.x, y: best.p.y + 50 } });
+            }
+        }
+        return { result: best, guides };
+    }
+    // 正交：从 anchor 出发吸到水平/垂直
+    if (opts.anchor && opts.allowOrtho !== false) {
+        const dx = Math.abs(raw.x - opts.anchor.x);
+        const dy = Math.abs(raw.y - opts.anchor.y);
+        if (dx < tol) {
+            guides.push({ a: opts.anchor, b: { x: opts.anchor.x, y: raw.y } });
+            return { result: { p: { x: opts.anchor.x, y: raw.y }, label: '正交 · 竖直' }, guides };
+        }
+        if (dy < tol) {
+            guides.push({ a: opts.anchor, b: { x: raw.x, y: opts.anchor.y } });
+            return { result: { p: { x: raw.x, y: opts.anchor.y }, label: '正交 · 水平' }, guides };
+        }
+    }
+    const g = applyGrid(raw, view);
+    return { result: { p: g, label: view.gridSnap ? `网格 ${view.gridSize} m` : '' }, guides };
+}
+function applyGrid(p, view) {
+    if (!view.gridSnap || view.gridSize <= 0)
+        return p;
+    const s = view.gridSize;
+    return { x: Math.round(p.x / s) * s, y: Math.round(p.y / s) * s };
+}
+/** 命中测试用：这个点是否落在某个面的环内（含边容差）。 */
+function hitRing(paths, p, tol) {
+    for (const r of paths) {
+        if (pointInRing(r, p))
+            return true;
+        if (distToRing(r, p) <= tol)
+            return true;
+    }
+    return false;
+}
+
+__exports["snapPoint"] = snapPoint;
+__exports["hitRing"] = hitRing;
+};
+__def["plan-ir/src/types.js"] = function (__exports) {
+// Placemaker 的输入契约与输出契约（Plan IR）——两侧唯一共用的类型。
+//
+// 来源：vendor/placemaker/Core/Contracts.cs（输入）+ tools/oracle/driver/Emit.cs（输出的 JSON 协议）。
+// 命名刻意贴近 C#，方便逐字段对照移植；不贴的地方是 JS 习惯（Vec2 用元组）。
+//
+// 三条硬约定（照抄桥接层注释，别改）：
+//   1) 单位一律米。换算必须在调用方做。
+//   2) 平面写 [x, z]，+z 是北，两个轴都不翻转（翻了是镜像，车位朝向全反）。
+//   3) yaw 绕 +Y，0 = 朝 +Z。
+const ZONE_KINDS = [
+    'commercialLow',
+    'commercialHigh',
+    'mixed',
+    'residentialLow',
+    'residentialRow',
+    'residentialMedium',
+    'residentialHigh',
+    'lowRent',
+    'officeLow',
+    'officeHigh',
+    'industrial',
+];
+/** kind → CS2 prefab id（计划里写 EU，游戏层按城市主题换前缀）。 */
+const ZONE_PREFAB = {
+    commercialLow: 'EU Commercial Low',
+    commercialHigh: 'EU Commercial High',
+    mixed: 'EU Residential Mixed',
+    residentialLow: 'EU Residential Low',
+    residentialRow: 'EU Residential Medium Row',
+    residentialMedium: 'EU Residential Medium',
+    residentialHigh: 'EU Residential High',
+    lowRent: 'Residential LowRent',
+    officeLow: 'Office Low',
+    officeHigh: 'Office High',
+    industrial: 'Industrial Manufacturing',
+};
+/** 界面中文名（docs/C 术语表 §2.3）。 */
+const ZONE_LABEL = {
+    commercialLow: '低密度商业',
+    commercialHigh: '高密度商业',
+    mixed: '混合用地',
+    residentialLow: '低密度住宅',
+    residentialRow: '联排住宅',
+    residentialMedium: '中密度住宅',
+    residentialHigh: '高密度住宅',
+    lowRent: '廉租住宅',
+    officeLow: '低层办公',
+    officeHigh: '高层办公',
+    industrial: '工业制造',
+};
+function isZoneKind(s) {
+    return ZONE_KINDS.includes(s);
+}
+
+__exports["isZoneKind"] = isZoneKind;
+__exports["ZONE_KINDS"] = ZONE_KINDS;
+__exports["ZONE_PREFAB"] = ZONE_PREFAB;
+__exports["ZONE_LABEL"] = ZONE_LABEL;
+};
+__def["slots/src/cut.js"] = function (__exports) {
+// Slot 切分（docs/E §3.3）：把 Placemaker 给的 zoning 四边形切成建筑位。
+//
+// 两条来自实测的硬事实，决定了这里为什么这么写：
+//   1) **进深是整格**：Placemaker 的宗地深度按 8 m 格算（zoningDepth 1..6 格），
+//      实测 3 格 = 24.0 m，一分不差。
+//   2) **面宽不是整格**：宗地沿街是被"均分"出来的，实测 150 m 的边切成
+//      34.5 / 34.5 / 34 / 34（还让出了一个 13 m 的出入口），根本不是 8 的倍数。
+//
+// 所以切分策略不能是"把四边形按 8 m 铺满"，而是：
+//   面宽按目标面宽取整块 → 余量 <8 m 就留作侧院（不硬塞）→ 只有余量 ≥8 m 才补一块
+//   进深严格按格数
+//
+// 边角料"不硬塞"是有代价的（浪费面积），但它避免了 3 m × 5 m 的畸形楼
+// （那种楼在 3D 里一眼假，而且会让压楼检测失灵）。
+const { area: area, centroid: centroid, dist: dist, dot: dot, frameAt: frameAt, norm: norm, perp: perp, pointInRing: pointInRing, rectRing: rectRing, sub: sub, toLocal: toLocal } = __req("plan-ir/src/geom.js");
+/** 十一类预设（docs/B §3.2）。数值是默认值，可被生成器覆盖。 */
+const KIND_SPECS = {
+    commercialLow: { targetWidth: 16, depth: 16, maxDepth: 24, floors: [1, 2], floorHeight: 4.5 },
+    commercialHigh: { targetWidth: 32, depth: 32, maxDepth: 48, floors: [3, 8], floorHeight: 4.5 },
+    mixed: { targetWidth: 16, depth: 16, maxDepth: 24, floors: [3, 6], floorHeight: 3.6 },
+    residentialLow: { targetWidth: 16, depth: 16, maxDepth: 16, floors: [2, 3], floorHeight: 3.0 },
+    residentialRow: { targetWidth: 8, depth: 16, maxDepth: 16, floors: [2, 3], floorHeight: 3.0 },
+    residentialMedium: { targetWidth: 24, depth: 24, maxDepth: 24, floors: [4, 6], floorHeight: 3.0 },
+    residentialHigh: { targetWidth: 24, depth: 32, maxDepth: 32, floors: [8, 20], floorHeight: 3.0 },
+    lowRent: { targetWidth: 32, depth: 16, maxDepth: 16, floors: [4, 6], floorHeight: 3.0 },
+    officeLow: { targetWidth: 24, depth: 24, maxDepth: 24, floors: [2, 4], floorHeight: 4.0 },
+    officeHigh: { targetWidth: 24, depth: 32, maxDepth: 48, floors: [10, 30], floorHeight: 4.0 },
+    industrial: { targetWidth: 32, depth: 32, maxDepth: 48, floors: [1, 3], floorHeight: 8.0 },
+};
+const CELL = 8;
+/** 找朝向街道的那条边：方向最平行、且左侧含形心（保证逆时针朝内）。 */
+function pickFrontEdge(quad, streetDir) {
+    const c = centroid(quad);
+    let best = null;
+    for (let i = 0; i < quad.length; i++) {
+        const a = quad[i];
+        const b = quad[(i + 1) % quad.length];
+        const u = norm(sub(b, a));
+        const v = perp(u);
+        const inside = dot(sub(c, a), v) > 0;
+        if (!inside)
+            continue;
+        const par = Math.abs(dot(u, norm(streetDir)));
+        if (!best || par > best.par)
+            best = { edge: i, u, v, par };
+    }
+    return best ? { edge: best.edge, u: best.u, v: best.v } : null;
+}
+/**
+ * 一个宗地 → 若干建筑位。
+ * 面宽按目标面宽铺，进深按格数；多排时按 maxDepth 拆。
+ */
+function cutZoning(zoning, kind, streetDir, idPrefix = 'z') {
+    const spec = KIND_SPECS[kind];
+    const quad = zoning.quad;
+    const notes = [];
+    const front = pickFrontEdge(quad, streetDir);
+    if (!front) {
+        return { slots: [], waste: area(quad), zoningArea: area(quad), notes: ['宗地绕序异常，找不到临街边'] };
+    }
+    const frame = frameAt(quad[front.edge], front.u);
+    const locals = quad.map((p) => toLocal(frame, p));
+    const uMin = Math.min(...locals.map((p) => p[0]));
+    const uMax = Math.max(...locals.map((p) => p[0]));
+    const vMin = Math.min(...locals.map((p) => p[1]));
+    const vMax = Math.max(...locals.map((p) => p[1]));
+    // 临街边在 v ≈ 0，向内是 +v
+    const frontV = locals[front.edge][1];
+    const inward = Math.abs(vMax - frontV) > Math.abs(vMin - frontV) ? 1 : -1;
+    const v0 = frontV;
+    const v1 = inward > 0 ? vMax : vMin;
+    const depthSpan = Math.abs(v1 - v0);
+    if (depthSpan < CELL) {
+        return { slots: [], waste: area(quad), zoningArea: area(quad), notes: [`进深 ${depthSpan.toFixed(1)} m < 1 格，不切`] };
+    }
+    // 进深：按格取整；不足一格当边角料
+    const depthCells = Math.max(1, Math.floor(depthSpan / CELL + 1e-6));
+    const rows = Math.max(1, Math.ceil((depthCells * CELL) / spec.maxDepth));
+    let rowDepth = (depthCells * CELL) / rows;
+    // 只有一排 + 进深余量 ≥ 半格 → 直接铺满到边。
+    //
+    // 实测真实宗地的进深是 17.00 / 25.00 / 33.00 / 14.00 / 22.00 / 12.75 / 8.50，
+    // **根本不是 8 的整数倍**（早先"进深必是整格"的结论来自合成用例，被真实数据否掉了）。
+    // 一条 14 m 深的宗地若按格取整只给 8 m 的楼，白扔 6 m（43%）——shopsPark 就是这么
+    // 浪费到 46.9% 的。退半格（<4 m）仍然当后院，那点深度盖不了东西。
+    const depthFilled = rows === 1 && depthCells === 1 && depthSpan - CELL >= CELL / 2;
+    if (depthFilled) {
+        rowDepth = Math.round(depthSpan * 10) / 10;
+        notes.push(`单排宗地进深 ${depthSpan.toFixed(1)} m，余量 ≥ 半格，直接铺满（不进格取整）`);
+    }
+    const depthModule = Math.abs(rowDepth - Math.round(rowDepth / CELL) * CELL) < 0.05;
+    // 面宽：目标宽度铺，余量处理
+    const targetW = Math.max(CELL, Math.round(spec.targetWidth / CELL) * CELL);
+    const uSpan = uMax - uMin;
+    if (uSpan < CELL - 0.05) {
+        return { slots: [], waste: area(quad), zoningArea: area(quad), notes: [`面宽 ${uSpan.toFixed(1)} m < 1 格，不切`] };
+    }
+    const widths = [];
+    if (uSpan < targetW) {
+        // 宗地本身就比目标面宽还窄：铺一块"有多少用多少"的楼，标成补位块。
+        // 这里早先填的是 targetW —— 真实城市的窄宗地（实测最窄 8.56 m）会被塞进
+        // 16 m 的楼，越界 7.4 m，并且和左右邻宗地的楼互相重叠。
+        // E2/E3 在 31 块真实宗地上就是这么爆出来的（重叠对 10~66，越界 3~11）。
+        widths.push(Math.round(uSpan * 10) / 10);
+        notes.push(`面宽 ${uSpan.toFixed(1)} m < 目标 ${targetW} m，整块当一块补位`);
+    }
+    else {
+        const bays = Math.floor(uSpan / targetW + 1e-6);
+        for (let i = 0; i < bays; i++)
+            widths.push(targetW);
+        const rest = uSpan - bays * targetW;
+        if (rest >= CELL) {
+            widths.push(Math.round(rest * 10) / 10);
+            notes.push(`余量 ${rest.toFixed(1)} m ≥ 1 格，补一块非模数面宽`);
+        }
+        else if (rest > 0.05) {
+            notes.push(`余量 ${rest.toFixed(1)} m < 1 格，留作侧院（不硬塞）`);
+        }
+    }
+    const widthModule = (w) => Math.abs(w - Math.round(w / CELL) * CELL) < 0.05;
+    const slots = [];
+    let cursor = uMin;
+    for (let bay = 0; bay < widths.length; bay++) {
+        const w = widths[bay];
+        for (let row = 0; row < rows; row++) {
+            const vv0 = v0 + inward * row * rowDepth;
+            const vv1 = vv0 + inward * rowDepth;
+            const lo = Math.min(vv0, vv1);
+            const hi = Math.max(vv0, vv1);
+            const ring = rectRing(frame, cursor, cursor + w, lo, hi);
+            slots.push({
+                id: `${idPrefix}-b${bay}-r${row}`,
+                kind,
+                // zoningRef 必须是**宗地唯一 id**，不能写 zoneId：
+                // 同一个方案的 5 块宗地 zoneId 全是 "EU Commercial Low"，
+                // 拿它当归属键会让 E2 跨宗地两两比较局部框（各自的 frame 不同），
+                // 报出一堆根本不存在的重叠。实测 mallPark 报 10 对、shopsPark 报 66 对，全是假的。
+                zoningRef: idPrefix,
+                width: Math.round(w * 10) / 10,
+                depth: Math.round(rowDepth * 10) / 10,
+                // yaw = 建筑局部 +Z 的朝向 = 朝地块内侧的法向（立面与街道平行）
+                yaw: Math.atan2(frame.v[0], frame.v[1]),
+                quad: [ring[0], ring[1], ring[2], ring[3]],
+                row,
+                bay,
+                localBox: [cursor, cursor + w, lo, hi],
+                moduleWidth: widthModule(w),
+                moduleDepth: depthModule,
+                depthFilled,
+            });
+        }
+        cursor += w;
+    }
+    const usedArea = slots.reduce((s, sl) => s + sl.width * sl.depth, 0);
+    const waste = Math.max(0, area(quad) - usedArea);
+    return { slots, waste, zoningArea: area(quad), notes };
+}
+/** 批量：每块宗地按同一个 kind 切。 */
+function cutPlan(zonings, kind, streetDir) {
+    const all = [];
+    const notes = [];
+    let waste = 0;
+    let zoningArea = 0;
+    zonings.forEach((z, i) => {
+        const r = cutZoning(z, kind, streetDir, `z${i}`);
+        all.push(...r.slots);
+        notes.push(...r.notes);
+        waste += r.waste;
+        zoningArea += r.zoningArea;
+    });
+    return { slots: all, waste, zoningArea, notes };
+}
+/** 点是否在四个角围成的四边形内。 */
+function quadContains(quad, p, tol = 0.1) {
+    if (pointInRing(p, quad))
+        return true;
+    // 边界容差：到任一条边的距离 ≤ tol 也算在内
+    for (let i = 0; i < quad.length; i++) {
+        const a = quad[i];
+        const b = quad[(i + 1) % quad.length];
+        const ab = sub(b, a);
+        const t = Math.max(0, Math.min(1, dot(sub(p, a), ab) / Math.max(1e-9, dot(ab, ab))));
+        const q = [a[0] + ab[0] * t, a[1] + ab[1] * t];
+        if (dist(p, q) <= tol)
+            return true;
+    }
+    return false;
+}
+
+__exports["pickFrontEdge"] = pickFrontEdge;
+__exports["cutZoning"] = cutZoning;
+__exports["cutPlan"] = cutPlan;
+__exports["quadContains"] = quadContains;
+__exports["KIND_SPECS"] = KIND_SPECS;
+__exports["CELL"] = CELL;
+};
+__def["editor-app/src/boolean.js"] = function (__exports) {
+// 布尔（并 / 差 / 交）与偏移。
+//
+// 为什么自己写：PCG 用 clipper-lib（npm 包），本机没有 node_modules 也上不了 npm。
+// 但"布尔"是工具栏上一等公民，不能挂个死按钮。
+//
+// 算法：**切边 + 串环**。不用 Greiner-Hormann 那种"交点插入链表"的写法，
+// 因为它对"两个环共边"这类退化情形的处理藏在细节里，调起来像玄学。这里是直白三步：
+//   1. 把 A 的每条边在"与 B 的交点"处切开，B 同理；
+//   2. 每个小段的**中点**做一次内外测试（射线法），按运算规则决定去留；
+//   3. 按端点把留下的段串成环。
+// 代价：**共线重叠**（两条边完全重合）会串出多余的碎环 —— 这是已知限制，
+// 所以在编辑器里，布尔操作后会检查"结果是否自交/是否有悬挂端"，不合法就整体回滚并提示，
+// 而不是把一个坏几何悄悄写进项目。
+//
+// 偏移用逐边法 + 斜接（miter）。凸多边形完全正确；凹多边形可能自交，
+// 同样靠 `isSimple` 兜底 —— 不合法就返回空数组，UI 提示"偏移后自交，已取消"。
+const { cleanRing: cleanRing, cross: cross, ensureCCW: ensureCCW, isSimple: isSimple, pointInPaths: pointInPaths, ringPerimeter: ringPerimeter, signedArea: signedArea } = __req("editor-app/src/polygon.js");
+const { len: len, sub: sub } = __req("editor-app/src/vec.js");
+const EPS = 1e-7;
+/** 端点归并精度：1 µm。串环靠它判断"这两段接得上"。 */
+const KEY_Q = 1e6;
+const keyOf = (p) => `${Math.round(p.x * KEY_Q)},${Math.round(p.y * KEY_Q)}`;
+/** 线段参数交点；平行/共线返回 null（共线是已知不支持的退化情形）。 */
+function intersectAt(p1, p2, p3, p4) {
+    const r = sub(p2, p1);
+    const s = sub(p4, p3);
+    const den = cross(r, s);
+    if (Math.abs(den) < 1e-12)
+        return null;
+    const qp = sub(p3, p1);
+    const t = cross(qp, s) / den;
+    const u = cross(qp, r) / den;
+    if (t < -EPS || t > 1 + EPS || u < -EPS || u > 1 + EPS)
+        return null;
+    return Math.max(0, Math.min(1, t));
+}
+/** 把一条边按另一组环的交点切开。 */
+function splitEdge(a, b, others) {
+    const ts = [0, 1];
+    for (const ring of others) {
+        for (let i = 0; i < ring.length; i++) {
+            const t = intersectAt(a, b, ring[i], ring[(i + 1) % ring.length]);
+            if (t !== null && t > EPS && t < 1 - EPS)
+                ts.push(t);
+        }
+    }
+    ts.sort((x, y) => x - y);
+    const out = [];
+    for (let i = 1; i < ts.length; i++) {
+        const t0 = ts[i - 1];
+        const t1 = ts[i];
+        if (t1 - t0 < 1e-9)
+            continue;
+        out.push({
+            a: { x: a.x + (b.x - a.x) * t0, y: a.y + (b.y - a.y) * t0 },
+            b: { x: a.x + (b.x - a.x) * t1, y: a.y + (b.y - a.y) * t1 },
+        });
+    }
+    return out;
+}
+const midOf = (s) => ({ x: (s.a.x + s.b.x) / 2, y: (s.a.y + s.b.y) / 2 });
+/** 串环：按端点接龙。接不上（悬挂端）就返回 null，调用方回滚。 */
+function chain(segs) {
+    const byStart = new Map();
+    for (const s of segs) {
+        const k = keyOf(s.a);
+        const arr = byStart.get(k);
+        if (arr)
+            arr.push(s);
+        else
+            byStart.set(k, [s]);
+    }
+    const used = new Set();
+    const rings = [];
+    for (const seed of segs) {
+        if (used.has(seed))
+            continue;
+        const ring = [seed.a];
+        used.add(seed);
+        let cur = seed;
+        let guard = 0;
+        while (guard++ < 20000) {
+            ring.push(cur.b);
+            if (keyOf(cur.b) === keyOf(ring[0]))
+                break;
+            const cands = (byStart.get(keyOf(cur.b)) ?? []).filter((s) => !used.has(s));
+            if (!cands.length)
+                return null; // 悬挂端
+            // 多条候选时取"最接近直行"的那条：布尔结果的环在交点处不会突然掉头
+            const dir = sub(cur.b, cur.a);
+            cands.sort((x, y) => cross(dir, sub(x.b, x.a)) - cross(dir, sub(y.b, y.a)));
+            cur = cands[0];
+            used.add(cur);
+        }
+        if (guard >= 20000)
+            return null;
+        const cleaned = cleanRing(ring.slice(0, -1), 1e-6);
+        if (cleaned.length >= 3 && Math.abs(signedArea(cleaned)) > 1e-6)
+            rings.push(cleaned);
+    }
+    return rings;
+}
+/**
+ * 布尔运算。入参是"环组"，只认外环 —— 带洞的输入先按外环处理（编辑器里够用，
+// 洞是生成算法才有的东西，用户画的形状一般没有洞）。
+ */
+function booleanOp(op, a, b) {
+    const ra = a.filter((r) => r.length >= 3);
+    const rb = b.filter((r) => r.length >= 3);
+    if (!ra.length)
+        return op === 'union' ? rb : [];
+    if (!rb.length)
+        return op === 'intersect' ? [] : ra;
+    const segs = [];
+    for (const ring of ra) {
+        for (let i = 0; i < ring.length; i++) {
+            for (const s of splitEdge(ring[i], ring[(i + 1) % ring.length], rb)) {
+                const m = midOf(s);
+                const inB = pointInPaths(rb, m);
+                // 并集留"A 在外面"的段；交集留"A 在里面"的段；差集留"A 在外面"的段
+                const keep = op === 'intersect' ? inB : !inB;
+                if (keep)
+                    segs.push(s);
+            }
+        }
+    }
+    for (const ring of rb) {
+        for (let i = 0; i < ring.length; i++) {
+            for (const s of splitEdge(ring[i], ring[(i + 1) % ring.length], ra)) {
+                const m = midOf(s);
+                const inA = pointInPaths(ra, m);
+                const keep = op === 'union' ? !inA : op === 'intersect' ? inA : inA;
+                if (!keep)
+                    continue;
+                // 并/交：B 的段顺着走；差：B 的段要反向，才能和 A 的段串成一条连续的环
+                segs.push(op === 'subtract' ? { a: s.b, b: s.a } : s);
+            }
+        }
+    }
+    if (!segs.length)
+        return [];
+    const rings = chain(segs);
+    if (!rings)
+        return [];
+    // 结果必须都是简单环：不合法宁可整体失败，也不要把坏几何写进项目
+    for (const r of rings)
+        if (!isSimple(r))
+            return [];
+    return rings.map((r) => cleanRing(r, 1e-6)).filter((r) => r.length >= 3);
+}
+/**
+ * 偏移。delta > 0 外扩，< 0 内缩。
+ *
+ * 逐边推平行线 + 相邻平行线求交（斜接）。凸多边形完全正确；
+ * 凹多边形在 |delta| 超过凹口半径时会自交 —— 那时返回空数组让 UI 提示，不硬改。
+ */
+function offsetRing(ring, delta) {
+    const src = cleanRing(ring, 1e-6);
+    const n = src.length;
+    if (n < 3 || Math.abs(delta) < 1e-9)
+        return [src];
+    // 先统一成 CCW，外法向才是"右手边"；否则内缩外扩会反
+    const ccw = ensureCCW(src);
+    const dir = Math.sign(signedArea(src)) || 1;
+    const lines = [];
+    for (let i = 0; i < ccw.length; i++) {
+        const a = ccw[i];
+        const b = ccw[(i + 1) % ccw.length];
+        const d = sub(b, a);
+        const l = len(d) || 1;
+        // CCW 环的左法向指向**内部**，所以外扩是往 -n 方向推
+        const nx = -d.y / l;
+        const ny = d.x / l;
+        lines.push({ p: { x: a.x - nx * delta, y: a.y - ny * delta }, d });
+    }
+    const out = [];
+    for (let i = 0; i < lines.length; i++) {
+        const l0 = lines[i];
+        const l1 = lines[(i + 1) % lines.length];
+        const den = cross(l0.d, l1.d);
+        if (Math.abs(den) < 1e-9) {
+            // 共线：直接把端点平推
+            out.push(l0.p);
+            continue;
+        }
+        const t = cross(sub(l1.p, l0.p), l1.d) / den;
+        out.push({ x: l0.p.x + l0.d.x * t, y: l0.p.y + l0.d.y * t });
+    }
+    const cleaned = cleanRing(out, 1e-6);
+    if (cleaned.length < 3)
+        return [];
+    if (!isSimple(cleaned))
+        return [];
+    // 两个兜底判据，缺一个就会把坏几何写进项目：
+    //   1) 面积符号不许翻（内缩过头会让环反向）；
+    //   2) **每个顶点到原边界的距离必须 ≈ |delta|**。
+    //      第 2 条才是真正管用的那条：10×10 的方块内缩 6 m 时，四条偏移线都越过了中心，
+    //      交点又拼出一个正向的小方块（面积 4，符号没翻、也还在原环内），前两条判据全过 ——
+    //      但它显然是错的。而"顶点到原边界 4 m ≠ 6 m"当场就露了。
+    if (signedArea(cleaned) * dir <= 0)
+        return [];
+    // 过度内缩的判据：**|delta| 不许超过"平均半宽"**（2·面积 / 周长，正方形 10×10 得 5）。
+    //
+    // 试过更"精确"的判据（每个顶点到原边界距离 ≈ |delta|），在凹角上会误杀：
+    // L 形内缩 1 m 时，凹角那个顶点到原边界的真实距离是 √2 而不是 1，看着像错的其实是对的。
+    // 平均半宽这个量既便宜又不会误杀，代价是 |delta| 接近半宽时会放过一个极瘦的结果 ——
+    // 界面上就是"内缩 4.9 m"这种极端输入，接受它比误杀正常输入强。
+    if (delta < 0) {
+        const inradius = Math.abs((2 * signedArea(src)) / ringPerimeter(src));
+        if (Math.abs(delta) >= inradius)
+            return [];
+    }
+    return [cleaned];
+}
+function unionAll(list) {
+    return list.reduce((acc, p) => (acc.length ? booleanOp('union', acc, p) : p), []);
+}
+
+__exports["booleanOp"] = booleanOp;
+__exports["offsetRing"] = offsetRing;
+__exports["unionAll"] = unionAll;
+};
+__def["plan-ir/src/geom.js"] = function (__exports) {
+// 平面几何基础算子。全部米制，Vec2 = [x, y]，与 Placemaker 的 [x, z] 一一对应。
+// 只放"两边都要用"的东西：环的面积/绕序/自交、线段相交、最近点、贝塞尔。
+//
+// 约定（与 docs/A 一致）：
+//   · 面积为正 = 逆时针（CCW）
+//   · 环隐式闭合，末点不得等于首点
+//   · 所有比较带 EPS，避免 float64/float32 在临界值上的分歧（见台账 D-016）
+const EPS = 1e-9;
+/** 几何量化精度：1 mm，与 PCG boolean.ts 的量化口径一致。 */
+const QUANT = 1e-3;
+const v2 = (x, y) => [x, y];
+const add = (a, b) => [a[0] + b[0], a[1] + b[1]];
+const sub = (a, b) => [a[0] - b[0], a[1] - b[1]];
+const mul = (a, k) => [a[0] * k, a[1] * k];
+const dot = (a, b) => a[0] * b[0] + a[1] * b[1];
+const cross = (a, b) => a[0] * b[1] - a[1] * b[0];
+const len = (a) => Math.hypot(a[0], a[1]);
+const dist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
+function norm(a) {
+    const l = len(a);
+    return l < EPS ? [0, 0] : [a[0] / l, a[1] / l];
+}
+/** 左法向（逆时针旋转 90°）。 */
+const perp = (a) => [-a[1], a[0]];
+const lerp2 = (a, b, t) => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
+/** 逆时针为正的鞋带面积。 */
+function signedArea(ring) {
+    let s = 0;
+    for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+        s += ring[j][0] * ring[i][1] - ring[i][0] * ring[j][1];
+    }
+    return s / 2;
+}
+const area = (ring) => Math.abs(signedArea(ring));
+/** 统一成逆时针（保持首点不变，只反序）。 */
+function ccw(ring) {
+    const copy = ring.map((p) => [p[0], p[1]]);
+    return signedArea(copy) < 0 ? copy.reverse() : copy;
+}
+function isCCW(ring) {
+    return signedArea(ring) > 0;
+}
+function perimeter(ring) {
+    let s = 0;
+    for (let i = 0; i < ring.length; i++)
+        s += dist(ring[i], ring[(i + 1) % ring.length]);
+    return s;
+}
+function centroid(ring) {
+    const a = signedArea(ring);
+    if (Math.abs(a) < EPS) {
+        const n = ring.length || 1;
+        let sx = 0;
+        let sy = 0;
+        for (const p of ring) {
+            sx += p[0];
+            sy += p[1];
+        }
+        return [sx / n, sy / n];
+    }
+    let cx = 0;
+    let cy = 0;
+    for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+        const f = ring[j][0] * ring[i][1] - ring[i][0] * ring[j][1];
+        cx += (ring[j][0] + ring[i][0]) * f;
+        cy += (ring[j][1] + ring[i][1]) * f;
+    }
+    return [cx / (6 * a), cy / (6 * a)];
+}
+function bounds(ring) {
+    let minX = Infinity;
+    let minY = Infinity;
+    let maxX = -Infinity;
+    let maxY = -Infinity;
+    for (const p of ring) {
+        if (p[0] < minX)
+            minX = p[0];
+        if (p[1] < minY)
+            minY = p[1];
+        if (p[0] > maxX)
+            maxX = p[0];
+        if (p[1] > maxY)
+            maxY = p[1];
+    }
+    return { minX, minY, maxX, maxY };
+}
+/** 射线法。边界上的点不保证一致，调用方自己留容差。 */
+function pointInRing(p, ring) {
+    let inside = false;
+    for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+        const a = ring[i];
+        const b = ring[j];
+        if (a[1] > p[1] !== b[1] > p[1]) {
+            const x = ((b[0] - a[0]) * (p[1] - a[1])) / (b[1] - a[1]) + a[0];
+            if (p[0] < x)
+                inside = !inside;
+        }
+    }
+    return inside;
+}
+/** 闭区间投影参数 t（夹到 [0,1]）与距离。 */
+function closestOnSegment(p, a, b) {
+    const ab = sub(b, a);
+    const l2 = dot(ab, ab);
+    const t = l2 < EPS ? 0 : Math.min(1, Math.max(0, dot(sub(p, a), ab) / l2));
+    const point = lerp2(a, b, t);
+    return { t, point, dist: dist(p, point) };
+}
+/** 环上最近点：返回所在边序号、边内参数、最近点、距离。 */
+function closestOnRing(p, ring) {
+    let best = { seg: -1, t: 0, point: ring[0], dist: Infinity };
+    for (let i = 0; i < ring.length; i++) {
+        const r = closestOnSegment(p, ring[i], ring[(i + 1) % ring.length]);
+        if (r.dist < best.dist)
+            best = { seg: i, t: r.t, point: r.point, dist: r.dist };
+    }
+    return best;
+}
+/**
+ * 线段严格相交（端点接触只算一次，s ∈ [0,1)、u ∈ [0,1]）。
+ * 移植自 Core/Tool/AttachmentFinder.cs:SegmentIntersection，行为保持一致。
+ */
+function segmentIntersection(a, b, c, d) {
+    const r = sub(b, a);
+    const q = sub(d, c);
+    const den = cross(r, q);
+    if (Math.abs(den) < 1e-9)
+        return null;
+    const w = sub(c, a);
+    const s = cross(w, q) / den;
+    const u = cross(w, r) / den;
+    if (s >= 0 && s < 1 && u >= 0 && u <= 1)
+        return { s, u };
+    return null;
+}
+/** O(n²) 自交检测。地块点数很少，够用且不会漏。 */
+function isSimple(ring) {
+    const n = ring.length;
+    if (n < 3)
+        return false;
+    for (let i = 0; i < n; i++) {
+        for (let j = i + 1; j < n; j++) {
+            if (j === i || (j + 1) % n === i || (i + 1) % n === j)
+                continue;
+            if (segmentIntersection(ring[i], ring[(i + 1) % n], ring[j], ring[(j + 1) % n]))
+                return false;
+        }
+    }
+    return true;
+}
+/** 三次贝塞尔。t ∈ [0,1]。 */
+function bezier(a, b, c, d, t) {
+    const u = 1 - t;
+    const w0 = u * u * u;
+    const w1 = 3 * u * u * t;
+    const w2 = 3 * u * t * t;
+    const w3 = t * t * t;
+    return [
+        a[0] * w0 + b[0] * w1 + c[0] * w2 + d[0] * w3,
+        a[1] * w0 + b[1] * w1 + c[1] * w2 + d[1] * w3,
+    ];
+}
+/**
+ * 贝塞尔采样。步长与 C# 一致：弧长估 / 4 m，夹到 1..64 段
+ * （Core/Tool/AttachmentFinder.cs:Sample）。采样点必须与 C# 同分布，
+ * 否则"沿边贴合"的判定会在临界地块上分叉。
+ */
+function sampleBezier(a, b, c, d) {
+    if (!isFinitePoint(a) || !isFinitePoint(d))
+        return { pts: [], ts: [] };
+    const approx = dist(a, b) + dist(b, c) + dist(c, d);
+    const steps = Math.min(64, Math.max(1, Math.ceil(approx / 4)));
+    const pts = [];
+    const ts = [];
+    for (let i = 0; i <= steps; i++) {
+        const t = i / steps;
+        ts.push(t);
+        pts.push(bezier(a, b, c, d, t));
+    }
+    return { pts, ts };
+}
+function isFinitePoint(p) {
+    return Number.isFinite(p[0]) && Number.isFinite(p[1]);
+}
+function isFiniteRing(ring) {
+    return ring.length >= 3 && ring.every(isFinitePoint);
+}
+/** 量化到 1 mm（原地返回新值）。 */
+const q = (n) => Math.round(n / QUANT) * QUANT;
+function quantizeRing(ring) {
+    return ring.map((p) => [q(p[0]), q(p[1])]);
+}
+/**
+ * 两个多边形的对称差面积占比（0 = 完全重合，1 = 毫无交集）。
+ *
+ * 用栅格采样而不是布尔求交：对比的是"两个引擎的输出"，形状可能有自交、
+ * 可能有一堆近似重合的边，布尔库在这种输入上会互相打架。采样法对脏数据更稳，
+ * 代价是精度——200×200 网格在 100 m 量级地块上误差约 0.5%，足够判 L2 容差（2%）。
+ */
+function symmetricDiffRatio(a, b, gridN = 200) {
+    const asRings = Array.isArray(a[0][0]) ? a : [a];
+    const bsRings = Array.isArray(b[0][0]) ? b : [b];
+    const all = [...asRings, ...bsRings];
+    let minX = Infinity;
+    let minY = Infinity;
+    let maxX = -Infinity;
+    let maxY = -Infinity;
+    for (const r of all) {
+        const bb = bounds(r);
+        minX = Math.min(minX, bb.minX);
+        minY = Math.min(minY, bb.minY);
+        maxX = Math.max(maxX, bb.maxX);
+        maxY = Math.max(maxY, bb.maxY);
+    }
+    const w = maxX - minX;
+    const h = maxY - minY;
+    if (w <= 0 || h <= 0)
+        return 0;
+    const dx = w / gridN;
+    const dy = h / gridN;
+    let inA = 0;
+    let inB = 0;
+    let both = 0;
+    for (let i = 0; i < gridN; i++) {
+        const x = minX + (i + 0.5) * dx;
+        for (let j = 0; j < gridN; j++) {
+            const y = minY + (j + 0.5) * dy;
+            const p = [x, y];
+            const ra = asRings.some((r) => pointInRing(p, r));
+            const rb = bsRings.some((r) => pointInRing(p, r));
+            if (ra)
+                inA++;
+            if (rb)
+                inB++;
+            if (ra && rb)
+                both++;
+        }
+    }
+    const union = inA + inB - both;
+    if (union === 0)
+        return 0;
+    return (union - both) / union;
+}
+function frameAt(origin, dir) {
+    const u = norm(dir);
+    return { origin, u, v: perp(u) };
+}
+function toLocal(f, p) {
+    const d = sub(p, f.origin);
+    return [dot(d, f.u), dot(d, f.v)];
+}
+function toWorld(f, p) {
+    return [f.origin[0] + f.u[0] * p[0] + f.v[0] * p[1], f.origin[1] + f.u[1] * p[0] + f.v[1] * p[1]];
+}
+/** 矩形环（CCW），从局部坐标构造后转回世界。 */
+function rectRing(f, u0, u1, v0, v1) {
+    return [
+        toWorld(f, [u0, v0]),
+        toWorld(f, [u1, v0]),
+        toWorld(f, [u1, v1]),
+        toWorld(f, [u0, v1]),
+    ];
+}
+
+__exports["norm"] = norm;
+__exports["signedArea"] = signedArea;
+__exports["ccw"] = ccw;
+__exports["isCCW"] = isCCW;
+__exports["perimeter"] = perimeter;
+__exports["centroid"] = centroid;
+__exports["bounds"] = bounds;
+__exports["pointInRing"] = pointInRing;
+__exports["closestOnSegment"] = closestOnSegment;
+__exports["closestOnRing"] = closestOnRing;
+__exports["segmentIntersection"] = segmentIntersection;
+__exports["isSimple"] = isSimple;
+__exports["bezier"] = bezier;
+__exports["sampleBezier"] = sampleBezier;
+__exports["isFinitePoint"] = isFinitePoint;
+__exports["isFiniteRing"] = isFiniteRing;
+__exports["quantizeRing"] = quantizeRing;
+__exports["symmetricDiffRatio"] = symmetricDiffRatio;
+__exports["frameAt"] = frameAt;
+__exports["toLocal"] = toLocal;
+__exports["toWorld"] = toWorld;
+__exports["rectRing"] = rectRing;
+__exports["EPS"] = EPS;
+__exports["QUANT"] = QUANT;
+__exports["v2"] = v2;
+__exports["add"] = add;
+__exports["sub"] = sub;
+__exports["mul"] = mul;
+__exports["dot"] = dot;
+__exports["cross"] = cross;
+__exports["len"] = len;
+__exports["dist"] = dist;
+__exports["perp"] = perp;
+__exports["lerp2"] = lerp2;
+__exports["area"] = area;
+__exports["q"] = q;
+};
+__req("editor-app/src/main.js");
+</script>
+</body>
+</html>

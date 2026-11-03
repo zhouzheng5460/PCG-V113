@@ -1,0 +1,2678 @@
+{
+ "protocol": "placemaker-plan/1",
+ "generator": "pitch",
+ "units": "meters",
+ "seed": 1234,
+ "area": 15447.7286,
+ "ready": true,
+ "markers": {
+  "given": 0,
+  "auto": 0
+ },
+ "settings": {
+  "code": "soccer",
+  "format": "auto",
+  "turf": true,
+  "turfAsset": "",
+  "goalAsset": "",
+  "lines": true,
+  "lineSpacing": 1.5,
+  "stands": "one",
+  "standAsset": "",
+  "teamBenches": true,
+  "benchAsset": "",
+  "floodlights": "four",
+  "lightAsset": "",
+  "ballStops": true,
+  "rail": false,
+  "fenceAsset": "",
+  "level": true,
+  "at": "edge",
+  "orientation": "auto",
+  "pathTo": true
+ },
+ "surfaces": [
+  {
+   "role": "grass",
+   "y": 0,
+   "ring": [
+    [
+     150.757,
+     71.268
+    ],
+    [
+     76.956,
+     89.416
+    ],
+    [
+     65.255,
+     41.834
+    ],
+    [
+     139.056,
+     23.685
+    ]
+   ],
+   "category": "surface.grass"
+  }
+ ],
+ "nets": [
+  {
+   "role": "fence",
+   "a": [
+    150.84,
+    59.044
+   ],
+   "b": [
+    148.827,
+    50.855
+   ],
+   "c": [
+    146.813,
+    42.665
+   ],
+   "d": [
+    144.799,
+    34.476
+   ],
+   "startAttach": -1,
+   "endAttach": -1
+  },
+  {
+   "role": "fence",
+   "a": [
+    71.213,
+    78.625
+   ],
+   "b": [
+    69.199,
+    70.436
+   ],
+   "c": [
+    67.185,
+    62.246
+   ],
+   "d": [
+    65.171,
+    54.057
+   ],
+   "startAttach": -1,
+   "endAttach": -1
+  }
+ ],
+ "objects": [
+  {
+   "role": "furniture",
+   "x": 143.45,
+   "z": 47.835,
+   "yaw": 1.8119,
+   "category": "sports.goal"
+  },
+  {
+   "role": "furniture",
+   "x": 72.562,
+   "z": 65.267,
+   "yaw": -1.3297,
+   "category": "sports.goal"
+  },
+  {
+   "role": "furniture",
+   "x": 148.942,
+   "z": 70.169,
+   "yaw": -2.9005,
+   "category": "sports.stand"
+  },
+  {
+   "role": "furniture",
+   "x": 137.958,
+   "z": 25.5,
+   "yaw": -2.9005,
+   "category": "sports.stand"
+  },
+  {
+   "role": "furniture",
+   "x": 78.054,
+   "z": 87.601,
+   "yaw": -2.9005,
+   "category": "sports.stand"
+  },
+  {
+   "role": "furniture",
+   "x": 67.07,
+   "z": 42.932,
+   "yaw": -2.9005,
+   "category": "sports.stand"
+  },
+  {
+   "role": "furniture",
+   "x": 146.061,
+   "z": 34.166,
+   "yaw": -1.3297,
+   "category": "sports.stand"
+  },
+  {
+   "role": "bench",
+   "x": 108.738,
+   "z": 30.214,
+   "yaw": 0.2411
+  },
+  {
+   "role": "bench",
+   "x": 95.143,
+   "z": 33.557,
+   "yaw": 0.2411
+  },
+  {
+   "role": "furniture",
+   "x": 138.667,
+   "z": 74.241,
+   "yaw": -2.9005,
+   "category": "sports.stand"
+  },
+  {
+   "role": "furniture",
+   "x": 130.397,
+   "z": 76.274,
+   "yaw": -2.9005,
+   "category": "sports.stand"
+  },
+  {
+   "role": "furniture",
+   "x": 122.127,
+   "z": 78.308,
+   "yaw": -2.9005,
+   "category": "sports.stand"
+  },
+  {
+   "role": "furniture",
+   "x": 113.856,
+   "z": 80.342,
+   "yaw": -2.9005,
+   "category": "sports.stand"
+  },
+  {
+   "role": "furniture",
+   "x": 105.586,
+   "z": 82.376,
+   "yaw": -2.9005,
+   "category": "sports.stand"
+  },
+  {
+   "role": "furniture",
+   "x": 97.316,
+   "z": 84.409,
+   "yaw": -2.9005,
+   "category": "sports.stand"
+  },
+  {
+   "role": "furniture",
+   "x": 89.045,
+   "z": 86.443,
+   "yaw": -2.9005,
+   "category": "sports.stand"
+  },
+  {
+   "role": "lamp",
+   "x": 151.847,
+   "z": 71.515,
+   "yaw": -1.8997,
+   "category": "lamp.flood"
+  },
+  {
+   "role": "lamp",
+   "x": 76.104,
+   "z": 90.14,
+   "yaw": 2.382,
+   "category": "lamp.flood"
+  },
+  {
+   "role": "lamp",
+   "x": 64.164,
+   "z": 41.587,
+   "yaw": 1.2419,
+   "category": "lamp.flood"
+  },
+  {
+   "role": "lamp",
+   "x": 139.908,
+   "z": 22.961,
+   "yaw": -0.7596,
+   "category": "lamp.flood"
+  },
+  {
+   "role": "decal",
+   "x": 148.942,
+   "z": 70.169,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 147.486,
+   "z": 70.528,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 146.029,
+   "z": 70.886,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 144.572,
+   "z": 71.244,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 143.116,
+   "z": 71.602,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 141.659,
+   "z": 71.96,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 140.203,
+   "z": 72.318,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 138.746,
+   "z": 72.677,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 137.289,
+   "z": 73.035,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 135.833,
+   "z": 73.393,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 134.376,
+   "z": 73.751,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 132.919,
+   "z": 74.109,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 131.463,
+   "z": 74.468,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 130.006,
+   "z": 74.826,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 128.55,
+   "z": 75.184,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 127.093,
+   "z": 75.542,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 125.636,
+   "z": 75.9,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 124.18,
+   "z": 76.259,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 122.723,
+   "z": 76.617,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 121.267,
+   "z": 76.975,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 119.81,
+   "z": 77.333,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 118.353,
+   "z": 77.691,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 116.897,
+   "z": 78.05,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 115.44,
+   "z": 78.408,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 113.984,
+   "z": 78.766,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 112.527,
+   "z": 79.124,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 111.07,
+   "z": 79.482,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 109.614,
+   "z": 79.84,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 108.157,
+   "z": 80.199,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 106.701,
+   "z": 80.557,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 105.244,
+   "z": 80.915,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 103.787,
+   "z": 81.273,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 102.331,
+   "z": 81.631,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 100.874,
+   "z": 81.99,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 99.418,
+   "z": 82.348,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 97.961,
+   "z": 82.706,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 96.504,
+   "z": 83.064,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 95.048,
+   "z": 83.422,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 93.591,
+   "z": 83.781,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 92.135,
+   "z": 84.139,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 90.678,
+   "z": 84.497,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 89.221,
+   "z": 84.855,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 87.765,
+   "z": 85.213,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 86.308,
+   "z": 85.571,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 84.851,
+   "z": 85.93,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 83.395,
+   "z": 86.288,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 81.938,
+   "z": 86.646,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 80.482,
+   "z": 87.004,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 79.025,
+   "z": 87.362,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 77.935,
+   "z": 87.116,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 77.576,
+   "z": 85.659,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 77.218,
+   "z": 84.202,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 76.86,
+   "z": 82.746,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 76.502,
+   "z": 81.289,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 76.144,
+   "z": 79.833,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 75.785,
+   "z": 78.376,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 75.427,
+   "z": 76.919,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 75.069,
+   "z": 75.463,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 74.711,
+   "z": 74.006,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 74.353,
+   "z": 72.55,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 73.995,
+   "z": 71.093,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 73.636,
+   "z": 69.636,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 73.278,
+   "z": 68.18,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 72.92,
+   "z": 66.723,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 72.562,
+   "z": 65.267,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 72.204,
+   "z": 63.81,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 71.845,
+   "z": 62.353,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 71.487,
+   "z": 60.897,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 71.129,
+   "z": 59.44,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 70.771,
+   "z": 57.984,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 70.413,
+   "z": 56.527,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 70.054,
+   "z": 55.07,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 69.696,
+   "z": 53.614,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 69.338,
+   "z": 52.157,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 68.98,
+   "z": 50.701,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 68.622,
+   "z": 49.244,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 68.263,
+   "z": 47.787,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 67.905,
+   "z": 46.331,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 67.547,
+   "z": 44.874,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 67.189,
+   "z": 43.418,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 68.041,
+   "z": 42.693,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 69.497,
+   "z": 42.335,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 70.954,
+   "z": 41.977,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 72.41,
+   "z": 41.619,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 73.867,
+   "z": 41.26,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 75.324,
+   "z": 40.902,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 76.78,
+   "z": 40.544,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 78.237,
+   "z": 40.186,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 79.693,
+   "z": 39.828,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 81.15,
+   "z": 39.469,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 82.607,
+   "z": 39.111,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 84.063,
+   "z": 38.753,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 85.52,
+   "z": 38.395,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 86.976,
+   "z": 38.037,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 88.433,
+   "z": 37.679,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 89.89,
+   "z": 37.32,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 91.346,
+   "z": 36.962,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 92.803,
+   "z": 36.604,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 94.259,
+   "z": 36.246,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 95.716,
+   "z": 35.888,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 97.173,
+   "z": 35.529,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 98.629,
+   "z": 35.171,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 100.086,
+   "z": 34.813,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 101.543,
+   "z": 34.455,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 102.999,
+   "z": 34.097,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 104.456,
+   "z": 33.738,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 105.912,
+   "z": 33.38,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 107.369,
+   "z": 33.022,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 108.826,
+   "z": 32.664,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 110.282,
+   "z": 32.306,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 111.739,
+   "z": 31.948,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 113.195,
+   "z": 31.589,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 114.652,
+   "z": 31.231,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 116.109,
+   "z": 30.873,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 117.565,
+   "z": 30.515,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 119.022,
+   "z": 30.157,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 120.478,
+   "z": 29.798,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 121.935,
+   "z": 29.44,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 123.392,
+   "z": 29.082,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 124.848,
+   "z": 28.724,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 126.305,
+   "z": 28.366,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 127.761,
+   "z": 28.007,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 129.218,
+   "z": 27.649,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 130.675,
+   "z": 27.291,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 132.131,
+   "z": 26.933,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 133.588,
+   "z": 26.575,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 135.044,
+   "z": 26.216,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 136.501,
+   "z": 25.858,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 137.958,
+   "z": 25.5,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 138.316,
+   "z": 26.957,
+   "yaw": 0.2411,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 138.674,
+   "z": 28.413,
+   "yaw": 0.2411,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 139.032,
+   "z": 29.87,
+   "yaw": 0.2411,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 139.39,
+   "z": 31.327,
+   "yaw": 0.2411,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 139.749,
+   "z": 32.783,
+   "yaw": 0.2411,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 140.107,
+   "z": 34.24,
+   "yaw": 0.2411,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 140.465,
+   "z": 35.696,
+   "yaw": 0.2411,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 140.823,
+   "z": 37.153,
+   "yaw": 0.2411,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 141.181,
+   "z": 38.61,
+   "yaw": 0.2411,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 141.54,
+   "z": 40.066,
+   "yaw": 0.2411,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 141.898,
+   "z": 41.523,
+   "yaw": 0.2411,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 142.256,
+   "z": 42.979,
+   "yaw": 0.2411,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 142.614,
+   "z": 44.436,
+   "yaw": 0.2411,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 142.972,
+   "z": 45.893,
+   "yaw": 0.2411,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 143.331,
+   "z": 47.349,
+   "yaw": 0.2411,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 143.689,
+   "z": 48.806,
+   "yaw": 0.2411,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 144.047,
+   "z": 50.262,
+   "yaw": 0.2411,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 144.405,
+   "z": 51.719,
+   "yaw": 0.2411,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 144.763,
+   "z": 53.176,
+   "yaw": 0.2411,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 145.121,
+   "z": 54.632,
+   "yaw": 0.2411,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 145.48,
+   "z": 56.089,
+   "yaw": 0.2411,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 145.838,
+   "z": 57.545,
+   "yaw": 0.2411,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 146.196,
+   "z": 59.002,
+   "yaw": 0.2411,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 146.554,
+   "z": 60.459,
+   "yaw": 0.2411,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 146.912,
+   "z": 61.915,
+   "yaw": 0.2411,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 147.271,
+   "z": 63.372,
+   "yaw": 0.2411,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 147.629,
+   "z": 64.828,
+   "yaw": 0.2411,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 147.987,
+   "z": 66.285,
+   "yaw": 0.2411,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 148.345,
+   "z": 67.742,
+   "yaw": 0.2411,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 148.703,
+   "z": 69.198,
+   "yaw": 0.2411,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 113.498,
+   "z": 78.885,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 113.14,
+   "z": 77.429,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 112.782,
+   "z": 75.972,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 112.424,
+   "z": 74.515,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 112.065,
+   "z": 73.059,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 111.707,
+   "z": 71.602,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 111.349,
+   "z": 70.146,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 110.991,
+   "z": 68.689,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 110.633,
+   "z": 67.232,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 110.274,
+   "z": 65.776,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 109.916,
+   "z": 64.319,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 109.558,
+   "z": 62.863,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 109.2,
+   "z": 61.406,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 108.842,
+   "z": 59.949,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 108.483,
+   "z": 58.493,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 108.125,
+   "z": 57.036,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 107.767,
+   "z": 55.58,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 107.409,
+   "z": 54.123,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 107.051,
+   "z": 52.666,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 106.692,
+   "z": 51.21,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 106.334,
+   "z": 49.753,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 105.976,
+   "z": 48.297,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 105.618,
+   "z": 46.84,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 105.26,
+   "z": 45.383,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 104.902,
+   "z": 43.927,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 104.543,
+   "z": 42.47,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 104.185,
+   "z": 41.014,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 103.827,
+   "z": 39.557,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 103.469,
+   "z": 38.1,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 103.111,
+   "z": 36.644,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 102.752,
+   "z": 35.187,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 101.828,
+   "z": 58.07,
+   "yaw": -2.9929,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 101.666,
+   "z": 56.583,
+   "yaw": 3.1055,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 101.84,
+   "z": 55.099,
+   "yaw": 2.9207,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 102.34,
+   "z": 53.691,
+   "yaw": 2.7359,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 103.162,
+   "z": 52.443,
+   "yaw": 2.3663,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 104.267,
+   "z": 51.436,
+   "yaw": 2.1815,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 105.567,
+   "z": 50.701,
+   "yaw": 1.9967,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 107,
+   "z": 50.275,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 108.494,
+   "z": 50.227,
+   "yaw": 1.4423,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 109.958,
+   "z": 50.525,
+   "yaw": 1.2575,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 111.318,
+   "z": 51.142,
+   "yaw": 1.0727,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 112.5,
+   "z": 52.057,
+   "yaw": 0.7031,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 113.411,
+   "z": 53.243,
+   "yaw": 0.5183,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 114.034,
+   "z": 54.6,
+   "yaw": 0.3335,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 114.338,
+   "z": 56.063,
+   "yaw": 0.1487,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 114.272,
+   "z": 57.557,
+   "yaw": -0.2209,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 113.852,
+   "z": 58.99,
+   "yaw": -0.4057,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 113.122,
+   "z": 60.294,
+   "yaw": -0.5905,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 112.119,
+   "z": 61.403,
+   "yaw": -0.7753,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 110.861,
+   "z": 62.211,
+   "yaw": -1.1449,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 109.455,
+   "z": 62.717,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 107.972,
+   "z": 62.897,
+   "yaw": -1.5145,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 106.488,
+   "z": 62.717,
+   "yaw": -1.8841,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 105.094,
+   "z": 62.178,
+   "yaw": -2.0689,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 103.857,
+   "z": 61.341,
+   "yaw": -2.2537,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 102.837,
+   "z": 60.249,
+   "yaw": -2.4385,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 102.127,
+   "z": 58.933,
+   "yaw": -2.8081,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 146.797,
+   "z": 61.445,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 145.34,
+   "z": 61.803,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 143.884,
+   "z": 62.162,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 142.427,
+   "z": 62.52,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 140.97,
+   "z": 62.878,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 139.514,
+   "z": 63.236,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 138.057,
+   "z": 63.594,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 136.601,
+   "z": 63.953,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 135.657,
+   "z": 64.185,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 135.299,
+   "z": 62.728,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 134.941,
+   "z": 61.271,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 134.583,
+   "z": 59.815,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 134.225,
+   "z": 58.358,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 133.866,
+   "z": 56.902,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 133.508,
+   "z": 55.445,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 133.15,
+   "z": 53.988,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 132.792,
+   "z": 52.532,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 132.434,
+   "z": 51.075,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 132.075,
+   "z": 49.618,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 131.717,
+   "z": 48.162,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 131.359,
+   "z": 46.705,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 131.001,
+   "z": 45.249,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 130.643,
+   "z": 43.792,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 130.284,
+   "z": 42.335,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 129.926,
+   "z": 40.879,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 129.568,
+   "z": 39.422,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 129.21,
+   "z": 37.966,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 128.963,
+   "z": 36.964,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 130.42,
+   "z": 36.605,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 131.877,
+   "z": 36.247,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 133.333,
+   "z": 35.889,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 134.79,
+   "z": 35.531,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 136.246,
+   "z": 35.173,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 137.703,
+   "z": 34.814,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 139.16,
+   "z": 34.456,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 144.971,
+   "z": 54.019,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 143.514,
+   "z": 54.377,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 142.057,
+   "z": 54.735,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 141.257,
+   "z": 54.932,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 140.899,
+   "z": 53.475,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 140.541,
+   "z": 52.019,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 140.183,
+   "z": 50.562,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 139.825,
+   "z": 49.106,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 139.467,
+   "z": 47.649,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 139.108,
+   "z": 46.192,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 138.75,
+   "z": 44.736,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 138.392,
+   "z": 43.279,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 138.216,
+   "z": 42.564,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 139.673,
+   "z": 42.205,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 141.129,
+   "z": 41.847,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 133.524,
+   "z": 55.511,
+   "yaw": -2.0671,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 132.239,
+   "z": 54.747,
+   "yaw": -2.2523,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 131.157,
+   "z": 53.716,
+   "yaw": -2.4375,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 130.333,
+   "z": 52.47,
+   "yaw": -2.6227,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 129.829,
+   "z": 51.063,
+   "yaw": -2.9931,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 129.688,
+   "z": 49.575,
+   "yaw": 3.1049,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 129.884,
+   "z": 48.094,
+   "yaw": 2.9198,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 130.405,
+   "z": 46.693,
+   "yaw": 2.7346,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 148.267,
+   "z": 70.335,
+   "yaw": 2.99,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 138.124,
+   "z": 26.175,
+   "yaw": -1.7224,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 75.909,
+   "z": 78.877,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 77.365,
+   "z": 78.519,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 78.822,
+   "z": 78.161,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 80.278,
+   "z": 77.803,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 81.735,
+   "z": 77.444,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 83.192,
+   "z": 77.086,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 84.648,
+   "z": 76.728,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 86.105,
+   "z": 76.37,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 87.048,
+   "z": 76.138,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 86.69,
+   "z": 74.681,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 86.332,
+   "z": 73.225,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 85.974,
+   "z": 71.768,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 85.615,
+   "z": 70.311,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 85.257,
+   "z": 68.855,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 84.899,
+   "z": 67.398,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 84.541,
+   "z": 65.942,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 84.183,
+   "z": 64.485,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 83.825,
+   "z": 63.028,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 83.466,
+   "z": 61.572,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 83.108,
+   "z": 60.115,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 82.75,
+   "z": 58.659,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 82.392,
+   "z": 57.202,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 82.034,
+   "z": 55.745,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 81.675,
+   "z": 54.289,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 81.317,
+   "z": 52.832,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 80.959,
+   "z": 51.376,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 80.601,
+   "z": 49.919,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 80.354,
+   "z": 48.917,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 78.898,
+   "z": 49.275,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 77.441,
+   "z": 49.633,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 75.985,
+   "z": 49.991,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 74.528,
+   "z": 50.35,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 73.071,
+   "z": 50.708,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 71.615,
+   "z": 51.066,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 70.158,
+   "z": 51.424,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 74.082,
+   "z": 71.451,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 75.539,
+   "z": 71.093,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 76.996,
+   "z": 70.734,
+   "yaw": 1.8119,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 77.796,
+   "z": 70.538,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 77.437,
+   "z": 69.081,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 77.079,
+   "z": 67.624,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 76.721,
+   "z": 66.168,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 76.363,
+   "z": 64.711,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 76.005,
+   "z": 63.255,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 75.647,
+   "z": 61.798,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 75.288,
+   "z": 60.341,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 74.93,
+   "z": 58.885,
+   "yaw": -2.9005,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 74.754,
+   "z": 58.169,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 73.298,
+   "z": 58.528,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 71.841,
+   "z": 58.886,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 82.487,
+   "z": 57.59,
+   "yaw": 1.0745,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 83.773,
+   "z": 58.355,
+   "yaw": 0.8893,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 84.854,
+   "z": 59.385,
+   "yaw": 0.7041,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 85.678,
+   "z": 60.631,
+   "yaw": 0.5189,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 86.183,
+   "z": 62.038,
+   "yaw": 0.1485,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 86.323,
+   "z": 63.526,
+   "yaw": -0.0367,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 86.128,
+   "z": 65.007,
+   "yaw": -0.2218,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 85.607,
+   "z": 66.408,
+   "yaw": -0.407,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 77.888,
+   "z": 86.926,
+   "yaw": 1.4192,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 67.745,
+   "z": 42.766,
+   "yaw": -0.1516,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 108.006,
+   "z": 56.551,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 136.024,
+   "z": 49.661,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  },
+  {
+   "role": "decal",
+   "x": 79.988,
+   "z": 63.44,
+   "yaw": -1.3297,
+   "category": "decal.fieldline"
+  }
+ ],
+ "areas": [],
+ "regions": [],
+ "zoning": [],
+ "paint": [],
+ "terraform": [],
+ "unknownRoles": {
+  "surfaces": 0,
+  "nets": 0,
+  "objects": 0,
+  "areas": 0
+ },
+ "stats": [
+  {
+   "key": "Fields",
+   "value": 1,
+   "unit": "count"
+  },
+  {
+   "key": "Equipment",
+   "value": 2,
+   "unit": "count"
+  },
+  {
+   "key": "Lamps",
+   "value": 4,
+   "unit": "count"
+  },
+  {
+   "key": "Seats",
+   "value": 9,
+   "unit": "count"
+  },
+  {
+   "key": "Decals",
+   "value": 340,
+   "unit": "count"
+  }
+ ],
+ "facts": {
+  "pitchLength": 73,
+  "pitchWidth": 46,
+  "fieldFormat": 1,
+  "fieldLength": 87,
+  "fieldWidth": 62,
+  "fieldAxisX": -0.9711,
+  "fieldAxisZ": 0.2388,
+  "lineDecals": 340,
+  "levelPieces": 0,
+  "equipment": 2,
+  "floodlights": 4,
+  "stands": 7,
+  "amenityLength": 87,
+  "amenityWidth": 62
+ },
+ "issues": []
+}

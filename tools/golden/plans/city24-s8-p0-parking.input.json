@@ -1,0 +1,709 @@
+{
+ "protocol": "placemaker-input/1",
+ "generator": "parking",
+ "seed": 1234,
+ "shape": {
+  "ring": [
+   [
+    149.242,
+    24.263
+   ],
+   [
+    127.408,
+    59.822
+   ],
+   [
+    126.32,
+    67.823
+   ],
+   [
+    135.656,
+    100.229
+   ],
+   [
+    135.754,
+    100.549
+   ],
+   [
+    140.116,
+    113.982
+   ],
+   [
+    123.553,
+    119.658
+   ],
+   [
+    123.368,
+    119.725
+   ],
+   [
+    91.898,
+    131.85
+   ],
+   [
+    91.722,
+    131.921
+   ],
+   [
+    60.712,
+    145.179
+   ],
+   [
+    60.619,
+    145.22
+   ],
+   [
+    45.043,
+    152.237
+   ],
+   [
+    37.663,
+    136.011
+   ],
+   [
+    24.627,
+    105.126
+   ],
+   [
+    13.144,
+    73.672
+   ],
+   [
+    2.961,
+    41.822
+   ],
+   [
+    0,
+    29.806
+   ],
+   [
+    3.612,
+    29.025
+   ],
+   [
+    3.733,
+    28.998
+   ],
+   [
+    36.516,
+    21.491
+   ],
+   [
+    69.414,
+    14.605
+   ],
+   [
+    70.624,
+    14.357
+   ],
+   [
+    70.629,
+    14.356
+   ],
+   [
+    102.361,
+    7.832
+   ],
+   [
+    135.318,
+    1.564
+   ],
+   [
+    144.586,
+    0
+   ]
+  ]
+ },
+ "layoutScale": 1,
+ "edgeMargin": 2,
+ "nearbyNets": [
+  {
+   "externalId": 1000,
+   "a": [
+    159.794,
+    26.189
+   ],
+   "b": [
+    151.839,
+    39.144
+   ],
+   "c": [
+    143.884,
+    52.1
+   ],
+   "d": [
+    135.929,
+    65.055
+   ],
+   "width": 20,
+   "category": "road",
+   "hasSidewalk": true,
+   "isOneWay": false,
+   "isHighway": false,
+   "speedLimit": 50
+  },
+  {
+   "externalId": 1001,
+   "a": [
+    135.929,
+    65.055
+   ],
+   "b": [
+    139.041,
+    75.857
+   ],
+   "c": [
+    142.154,
+    86.659
+   ],
+   "d": [
+    145.266,
+    97.461
+   ],
+   "width": 20,
+   "category": "road",
+   "hasSidewalk": true,
+   "isOneWay": false,
+   "isHighway": false,
+   "speedLimit": 50
+  },
+  {
+   "externalId": 1002,
+   "a": [
+    145.266,
+    97.461
+   ],
+   "b": [
+    147.244,
+    103.552
+   ],
+   "c": [
+    149.221,
+    109.642
+   ],
+   "d": [
+    151.199,
+    115.733
+   ],
+   "width": 20,
+   "category": "road",
+   "hasSidewalk": true,
+   "isOneWay": false,
+   "isHighway": false,
+   "speedLimit": 50
+  },
+  {
+   "externalId": 1003,
+   "a": [
+    151.199,
+    115.733
+   ],
+   "b": [
+    142.551,
+    118.697
+   ],
+   "c": [
+    133.903,
+    121.66
+   ],
+   "d": [
+    125.255,
+    124.624
+   ],
+   "width": 10.5,
+   "category": "road",
+   "hasSidewalk": true,
+   "isOneWay": false,
+   "isHighway": false,
+   "speedLimit": 50
+  },
+  {
+   "externalId": 1004,
+   "a": [
+    125.255,
+    124.624
+   ],
+   "b": [
+    114.765,
+    128.666
+   ],
+   "c": [
+    104.276,
+    132.707
+   ],
+   "d": [
+    93.786,
+    136.749
+   ],
+   "width": 10.5,
+   "category": "road",
+   "hasSidewalk": true,
+   "isOneWay": false,
+   "isHighway": false,
+   "speedLimit": 50
+  },
+  {
+   "externalId": 1005,
+   "a": [
+    93.786,
+    136.749
+   ],
+   "b": [
+    83.449,
+    141.168
+   ],
+   "c": [
+    73.113,
+    145.587
+   ],
+   "d": [
+    62.776,
+    150.006
+   ],
+   "width": 10.5,
+   "category": "road",
+   "hasSidewalk": true,
+   "isOneWay": false,
+   "isHighway": false,
+   "speedLimit": 50
+  },
+  {
+   "externalId": 1006,
+   "a": [
+    62.776,
+    150.006
+   ],
+   "b": [
+    55.994,
+    153.062
+   ],
+   "c": [
+    49.212,
+    156.117
+   ],
+   "d": [
+    42.43,
+    159.173
+   ],
+   "width": 10.5,
+   "category": "road",
+   "hasSidewalk": true,
+   "isOneWay": false,
+   "isHighway": false,
+   "speedLimit": 50
+  },
+  {
+   "externalId": 1007,
+   "a": [
+    42.43,
+    159.173
+   ],
+   "b": [
+    39.238,
+    152.155
+   ],
+   "c": [
+    36.046,
+    145.137
+   ],
+   "d": [
+    32.854,
+    138.119
+   ],
+   "width": 10.5,
+   "category": "road",
+   "hasSidewalk": true,
+   "isOneWay": false,
+   "isHighway": false,
+   "speedLimit": 50
+  },
+  {
+   "externalId": 1008,
+   "a": [
+    32.854,
+    138.119
+   ],
+   "b": [
+    28.483,
+    127.762
+   ],
+   "c": [
+    24.111,
+    117.405
+   ],
+   "d": [
+    19.74,
+    107.048
+   ],
+   "width": 10.5,
+   "category": "road",
+   "hasSidewalk": true,
+   "isOneWay": false,
+   "isHighway": false,
+   "speedLimit": 50
+  },
+  {
+   "externalId": 1009,
+   "a": [
+    19.74,
+    107.048
+   ],
+   "b": [
+    15.885,
+    96.489
+   ],
+   "c": [
+    12.03,
+    85.931
+   ],
+   "d": [
+    8.175,
+    75.372
+   ],
+   "width": 10.5,
+   "category": "road",
+   "hasSidewalk": true,
+   "isOneWay": false,
+   "isHighway": false,
+   "speedLimit": 50
+  },
+  {
+   "externalId": 1010,
+   "a": [
+    8.175,
+    75.372
+   ],
+   "b": [
+    4.752,
+    64.665
+   ],
+   "c": [
+    1.329,
+    53.958
+   ],
+   "d": [
+    -2.094,
+    43.251
+   ],
+   "width": 10.5,
+   "category": "road",
+   "hasSidewalk": true,
+   "isOneWay": false,
+   "isHighway": false,
+   "speedLimit": 50
+  },
+  {
+   "externalId": 1011,
+   "a": [
+    -2.094,
+    43.251
+   ],
+   "b": [
+    -3.905,
+    35.901
+   ],
+   "c": [
+    -5.717,
+    28.551
+   ],
+   "d": [
+    -7.528,
+    21.201
+   ],
+   "width": 10.5,
+   "category": "road",
+   "hasSidewalk": true,
+   "isOneWay": false,
+   "isHighway": false,
+   "speedLimit": 50
+  },
+  {
+   "externalId": 1012,
+   "a": [
+    -7.528,
+    21.201
+   ],
+   "b": [
+    -4.518,
+    20.551
+   ],
+   "c": [
+    -1.509,
+    19.901
+   ],
+   "d": [
+    1.501,
+    19.251
+   ],
+   "width": 20,
+   "category": "road",
+   "hasSidewalk": true,
+   "isOneWay": false,
+   "isHighway": false,
+   "speedLimit": 50
+  },
+  {
+   "externalId": 1013,
+   "a": [
+    1.501,
+    19.251
+   ],
+   "b": [
+    12.459,
+    16.741
+   ],
+   "c": [
+    23.417,
+    14.232
+   ],
+   "d": [
+    34.375,
+    11.722
+   ],
+   "width": 20,
+   "category": "road",
+   "hasSidewalk": true,
+   "isOneWay": false,
+   "isHighway": false,
+   "speedLimit": 50
+  },
+  {
+   "externalId": 1014,
+   "a": [
+    34.375,
+    11.722
+   ],
+   "b": [
+    45.378,
+    9.419
+   ],
+   "c": [
+    56.382,
+    7.116
+   ],
+   "d": [
+    67.385,
+    4.813
+   ],
+   "width": 20,
+   "category": "road",
+   "hasSidewalk": true,
+   "isOneWay": false,
+   "isHighway": false,
+   "speedLimit": 50
+  },
+  {
+   "externalId": 1015,
+   "a": [
+    67.385,
+    4.813
+   ],
+   "b": [
+    67.795,
+    4.729
+   ],
+   "c": [
+    68.205,
+    4.645
+   ],
+   "d": [
+    68.615,
+    4.561
+   ],
+   "width": 20,
+   "category": "road",
+   "hasSidewalk": true,
+   "isOneWay": false,
+   "isHighway": false,
+   "speedLimit": 50
+  },
+  {
+   "externalId": 1016,
+   "a": [
+    68.615,
+    4.561
+   ],
+   "b": [
+    79.217,
+    2.381
+   ],
+   "c": [
+    89.818,
+    0.202
+   ],
+   "d": [
+    100.42,
+    -1.978
+   ],
+   "width": 20,
+   "category": "road",
+   "hasSidewalk": true,
+   "isOneWay": false,
+   "isHighway": false,
+   "speedLimit": 50
+  },
+  {
+   "externalId": 1017,
+   "a": [
+    100.42,
+    -1.978
+   ],
+   "b": [
+    111.464,
+    -4.079
+   ],
+   "c": [
+    122.507,
+    -6.179
+   ],
+   "d": [
+    133.551,
+    -8.28
+   ],
+   "width": 20,
+   "category": "road",
+   "hasSidewalk": true,
+   "isOneWay": false,
+   "isHighway": false,
+   "speedLimit": 50
+  },
+  {
+   "externalId": 1018,
+   "a": [
+    133.551,
+    -8.28
+   ],
+   "b": [
+    139.98,
+    -9.364
+   ],
+   "c": [
+    146.41,
+    -10.449
+   ],
+   "d": [
+    152.839,
+    -11.533
+   ],
+   "width": 20,
+   "category": "road",
+   "hasSidewalk": true,
+   "isOneWay": false,
+   "isHighway": false,
+   "speedLimit": 50
+  },
+  {
+   "externalId": 1019,
+   "a": [
+    152.839,
+    -11.533
+   ],
+   "b": [
+    153.349,
+    -8.384
+   ],
+   "c": [
+    153.859,
+    -5.235
+   ],
+   "d": [
+    154.369,
+    -2.086
+   ],
+   "width": 20,
+   "category": "road",
+   "hasSidewalk": true,
+   "isOneWay": false,
+   "isHighway": false,
+   "speedLimit": 50
+  },
+  {
+   "externalId": 1020,
+   "a": [
+    154.369,
+    -2.086
+   ],
+   "b": [
+    156.177,
+    7.339
+   ],
+   "c": [
+    157.986,
+    16.764
+   ],
+   "d": [
+    159.794,
+    26.189
+   ],
+   "width": 20,
+   "category": "road",
+   "hasSidewalk": true,
+   "isOneWay": false,
+   "isHighway": false,
+   "speedLimit": 50
+  }
+ ],
+ "zoneGrids": [],
+ "obstacles": [],
+ "settings": {
+  "stallAngle": "90",
+  "rowAngleMode": "edge",
+  "rowAngle": 0,
+  "perimeterRoad": true,
+  "crossEvery": 9,
+  "aisleWidth": 7,
+  "setback": 1,
+  "grading": true,
+  "stallWidth": 3,
+  "stallLength": 5.9,
+  "accessibleShare": 2,
+  "evShare": 4,
+  "chargerAsset": "",
+  "greenery": "medians",
+  "medianDepth": 2.5,
+  "rowEndPlanting": true,
+  "plantingDensity": 50,
+  "trees": [],
+  "bushes": [],
+  "lanterns": true,
+  "lanternAsset": "",
+  "lanternSpacing": 30,
+  "asphaltSurface": "",
+  "greenSurface": "",
+  "edgeZoning": "none",
+  "zoneType": "",
+  "zoningDepth": 3,
+  "fee": 10,
+  "dressStyle": "livedIn",
+  "dressPaintWear": 100,
+  "dressDesirePaths": true,
+  "dressMulch": true,
+  "dressPaintClear": false
+ },
+ "markers": [
+  {
+   "kind": "entrance",
+   "ringSegment": 0,
+   "ringT": 0.515,
+   "position": [
+    137.992,
+    42.585
+   ],
+   "crosswalk": false
+  },
+  {
+   "kind": "entrance",
+   "ringSegment": 7,
+   "ringT": 0.519,
+   "position": [
+    107.038,
+    126.017
+   ],
+   "crosswalk": false
+  }
+ ],
+ "regionTags": [
+  "root"
+ ],
+ "water": null
+}

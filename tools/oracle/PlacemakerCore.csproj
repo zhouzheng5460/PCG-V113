@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Placemaker 内核（只读派生源）：用 glob 直接编译 vendor 里的原始 Core，不复制文件。
+       改 Core 即时生效，不会出现两份代码漂移（见 docs/D 台账 Q-003）。 -->
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <AssemblyName>PlacemakerCore</AssemblyName>
+    <RootNamespace>Placemaker</RootNamespace>
+    <NoWarn>CS0612;CS0618;CS0169;CS0649;CS0414;CS1998;CS0162;CS0108;CS0114;CS0219;CS0168;CS0660;CS0661;CS8632;CS1591</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\vendor\placemaker\Core\**\*.cs" LinkBase="Core" />
+    <Compile Include="Compatibility\UnityMathematics.cs" />
+  </ItemGroup>
+
+</Project>

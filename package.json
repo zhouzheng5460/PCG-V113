@@ -1,0 +1,26 @@
+{
+  "name": "pcg-cityskyline-merge",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "PCG 编辑器 × Placemaker 内核：契约层 + 街道验收 + 楼位切分",
+  "scripts": {
+    "oracle:build": "dotnet build tools/oracle/driver/Driver.csproj -c Release -v q --nologo",
+    "oracle:emit": "node tools/oracle/emit.mjs",
+    "demo": "node packages/demo/src/run.ts",
+    "batch": "node packages/demo/src/batch.ts",
+    "batch:fast": "node packages/demo/src/batch.ts --no-csharp",
+    "reverse": "node packages/demo/src/reverse.ts",
+    "web": "node packages/editor-web/build.mjs",
+    "web:serve": "node packages/editor-web/serve.mjs",
+    "check": "node node_modules_or_global_tsc_not_required",
+    "golden:emit": "node tools/golden/emit.mjs",
+    "golden:check": "node tools/golden/emit.mjs --check",
+    "sgen:compare": "node packages/site-gen/src/cli/compare.ts",
+    "sgen:selfcheck": "node packages/site-gen/src/cli/compare.ts --selfcheck",
+    "sgen:check": "node packages/site-gen/verify.mjs"
+  },
+  "engines": {
+    "node": ">=22.18"
+  }
+}

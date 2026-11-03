@@ -1,0 +1,73 @@
+{
+ "protocol": "placemaker-plan/1",
+ "generator": "parking",
+ "units": "meters",
+ "seed": 1234,
+ "area": 324.7636,
+ "ready": true,
+ "markers": {
+  "given": 0,
+  "auto": 1
+ },
+ "settings": {
+  "stallAngle": "90",
+  "rowAngleMode": "edge",
+  "rowAngle": 0,
+  "perimeterRoad": true,
+  "crossEvery": 9,
+  "aisleWidth": 7,
+  "setback": 1,
+  "grading": true,
+  "stallWidth": 3,
+  "stallLength": 5.9,
+  "accessibleShare": 2,
+  "evShare": 4,
+  "chargerAsset": "",
+  "greenery": "medians",
+  "medianDepth": 2.5,
+  "rowEndPlanting": true,
+  "plantingDensity": 50,
+  "trees": [],
+  "bushes": [],
+  "lanterns": true,
+  "lanternAsset": "",
+  "lanternSpacing": 30,
+  "asphaltSurface": "",
+  "greenSurface": "",
+  "edgeZoning": "none",
+  "zoneType": "",
+  "zoningDepth": 3,
+  "fee": 10,
+  "dressStyle": "livedIn",
+  "dressPaintWear": 100,
+  "dressDesirePaths": true,
+  "dressMulch": true,
+  "dressPaintClear": false
+ },
+ "surfaces": [],
+ "nets": [],
+ "objects": [],
+ "areas": [],
+ "regions": [],
+ "zoning": [],
+ "paint": [],
+ "terraform": [],
+ "unknownRoles": {
+  "surfaces": 0,
+  "nets": 0,
+  "objects": 0,
+  "areas": 0
+ },
+ "stats": [],
+ "facts": {},
+ "issues": [
+  {
+   "severity": "error",
+   "key": "Issue.TooSmall",
+   "args": [
+    325,
+    400
+   ]
+  }
+ ]
+}

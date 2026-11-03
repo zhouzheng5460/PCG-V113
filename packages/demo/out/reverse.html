@@ -1,0 +1,902 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8">
+<title>反向验证 · 能否预测引擎的 ready</title><style>
+:root{--bg:#f6f5f1;--fg:#1d1c1a;--mut:#6b6862;--line:#dcd8ce;--card:#fff;
+--ok:#2f7d54;--bad:#b3402f;--warn:#a5762a;--acc:#3f5f86}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.7 "Microsoft YaHei","PingFang SC",system-ui,sans-serif;padding:28px 32px 80px}
+h1{font-size:22px;margin:0 0 4px}
+h2{font-size:17px;margin:32px 0 10px;padding-bottom:6px;border-bottom:2px solid var(--line)}
+.sub{color:var(--mut);font-size:13px;margin-bottom:20px}
+.cards{display:flex;gap:12px;flex-wrap:wrap;margin:14px 0 6px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:12px 16px;min-width:130px}
+.card .v{font-size:24px;font-weight:700;line-height:1.2}
+.card .k{color:var(--mut);font-size:12px}
+table{border-collapse:collapse;width:100%;background:var(--card);font-size:13px;margin-top:8px}
+table.auto{width:auto}
+th,td{border:1px solid var(--line);padding:5px 8px;text-align:left;vertical-align:top}
+th{background:#eceae3;font-weight:600;white-space:nowrap}
+td.n{text-align:right;font-variant-numeric:tabular-nums}
+tr.fail td{background:#fdf3f1}
+.ok{color:var(--ok);font-weight:600}
+.bad{color:var(--bad);font-weight:600}
+.warn{color:var(--warn)}
+.mut{color:var(--mut)}
+code{background:#eceae3;padding:0 3px;border-radius:3px;font-size:12px}
+.matrix{border-collapse:separate;border-spacing:4px;width:auto}
+.matrix td{border:1px solid var(--line);border-radius:6px;padding:14px 20px;text-align:center;background:var(--card)}
+.matrix td.h{background:#eceae3;font-weight:600;text-align:center;border:none}
+.matrix .big{font-size:22px;font-weight:700;display:block}
+.matrix .good{background:#eef6f0}
+.matrix .badc{background:#fbeeeb}
+</style>
+<h1>反向验证 · 我们能不能提前说出引擎会怎么判 <code>ready</code></h1>
+<div class="sub">对 54 份真实烘焙输入各自真跑一遍 <code>dotnet --emit</code>，把引擎自己的 <code>ready / readyKey</code>
+与我们的预测逐份对照。<br>
+这一关和前几关的区别：前面验的是"我们算得像不像"，这里验的是"<b>我们能不能提前说出引擎会怎么判</b>"。</div>
+
+<div class="cards">
+  <div class="card"><div class="v">54</div><div class="k">真跑成功</div></div>
+  <div class="card"><div class="v ok">53</div><div class="k">引擎 ready=yes</div></div>
+  <div class="card"><div class="v bad">1</div><div class="k">引擎 ready=no</div></div>
+  <div class="card"><div class="v ok">54/54</div><div class="k">预测一致</div></div>
+</div>
+
+<h2>一 · <code>ready</code> 到底由什么决定</h2>
+<p>这一节是整个验证的地基。<b>前一轮在这里搞错了</b>：把「出入口可达」当成 ready 的判据去套所有生成器，
+结果在商场/市场族上全线假阳。逐行核对 <code>Emit.cs:95-111</code> 后，真实的因果链只有三步：</p>
+<pre style="background:#eceae3;padding:10px 14px;border-radius:6px;overflow-x:auto;font-size:12.5px">given  = input.Markers.Count                  // 烘焙工具塞的 / 玩家点的
+sug    = gen.SuggestMarkers(input)            // ① 建议 —— 只有这一步碰街道
+if (sug非空 &amp;&amp; given==0) input.Markers += sug // ② 建议被写回成真 marker
+ready  = gen.CheckReady(input)                // ③ 只数 marker，从不看街道</pre>
+<p>所以 <code>ready ⇔ CheckReady(given&gt;0 ? given : suggest)</code>。而 <code>suggest</code> 是否为空，
+由<b>两个互相独立的开关</b>决定（<code>SuggestMarkers</code> 与 <code>CheckReady</code> 是两套平行分家，互不通用）：</p>
+
+<table><tr><th>家族</th><th>建议器</th><th>是否碰街道</th><th>CheckReady 判据</th></tr>
+<tr><td><code>shop</code></td><td>恒空 <span class="mut">CommercialLayer.cs:41</span></td>
+  <td><span class="bad">不会</span></td><td>车行口：two&gt;0 或 in&gt;0∧out&gt;0 <span class="mut">MallEntrances.cs:54</span></td></tr>
+<tr><td><code>market</code></td><td>恒空 <span class="mut">MarketSquareLayer.cs:49</span></td>
+  <td><span class="bad">不会</span></td><td>任意一个口即可 <span class="mut">MarketEntrances.cs:55</span></td></tr>
+<tr><td><code>parking</code></td><td><b>EntranceSuggest</b>：40 m 外射线</td>
+  <td><span class="ok">会</span></td><td>车行口 <span class="mut">ParkingLayer.cs:235</span></td></tr>
+<tr><td><code>typed</code></td><td>Entrances.Suggest：FrontageReach 前沿</td>
+  <td><span class="ok">会</span>（另一套判据）</td><td>任一 typed kind <span class="mut">Entrances.cs:340</span></td></tr>
+<tr><td><code>none</code></td><td>空，或非空但不影响</td>
+  <td>不适用</td><td>恒 true <span class="mut">LayerBase.cs:428</span></td></tr>
+</table>
+
+<h3 style="font-size:14px;margin:20px 0 4px">这 54 份夹具落在哪些家族</h3>
+<table><tr><th>家族</th><th>份数</th><th>ready=yes</th><th>街道能影响 ready？</th><th>生成器</th></tr><tr><td><code>none</code></td><td class="n">21</td><td class="n">21</td>
+<td><span class="bad">不会</span></td>
+<td class="mut">pitch、abandonedLot、carYard、junkYard、outdoorMall、polishCoastal 等 18 个</td></tr><tr><td><code>parking</code></td><td class="n">19</td><td class="n">18</td>
+<td><span class="ok">会</span></td>
+<td class="mut">parking</td></tr><tr><td><code>typed</code></td><td class="n">11</td><td class="n">11</td>
+<td><span class="ok">会</span></td>
+<td class="mut">botanicalGarden、campground、communityGarden、dogPark、formalGarden、greenwayPark 等 10 个</td></tr><tr><td><code>shop</code></td><td class="n">2</td><td class="n">2</td>
+<td><span class="bad">不会</span></td>
+<td class="mut">mallPark、stripMall</td></tr><tr><td><code>market</code></td><td class="n">1</td><td class="n">1</td>
+<td><span class="bad">不会</span></td>
+<td class="mut">marketSquare</td></tr></table>
+<p class="mut"><b>结论（docs/D 的 D-022）：街道契约能影响 <code>ready</code> 的只有 parking 一个家族。</b>
+商场（stripMall/mallPark/mallDistrict）和市集（marketSquare）的 ready 与街道零因果——
+街道摆得再好也抬不成 ready，删光了也不会更差。它们只认玩家或烘焙工具给的口。</p>
+
+<h2>二 · 预测 vs 引擎（四格表）</h2>
+
+<table class="matrix">
+<tr><td class="h"></td><td class="h">引擎 <span class="ok">收下</span></td><td class="h">引擎 <span class="bad">拒收</span></td></tr>
+<tr><td class="h">我们预测<br><span class="ok">ready</span></td>
+  <td class="good"><span class="big ok">53</span>一致</td>
+  <td class="badc"><span class="big bad">0</span>错报</td></tr>
+<tr><td class="h">我们预测<br><span class="bad">not ready</span></td>
+  <td class="badc"><span class="big bad">0</span>错报</td>
+  <td class="good"><span class="big ok">1</span>一致</td></tr>
+</table>
+<p class="mut">零错报。
+判据完全来自上表：有给定口就 ready；没有就看该家族的建议器能不能给出一个。
+不掺面积下限、'放不下'这类引擎侧原因——那些是"建议器给不出口"的后果，不是独立判据。</p>
+
+<h2>三 · 引擎的拒收原因分布</h2>
+<table class="auto"><tr><th>readyKey 的 Reason</th><th>中文</th><th>份数</th></tr><tr><td><code>Reason.NeedsEntrance</code></td><td>需要一个出入口</td><td class="n">1</td></tr></table>
+
+<h2>四 · 街道真正的作用点不是 <code>ready</code></h2>
+<p>既然 ready 只数 marker，那街道规则到底管什么？在 <code>LayerBase.cs:521-531</code>：</p>
+<pre style="background:#eceae3;padding:10px 14px;border-radius:6px;overflow-x:auto;font-size:12.5px">if (!CheckReady(input).Ready) TrimOutlineEnds(plan, region, unplacedInset);
+else if (!CheckReady(带空markers).Ready) { /* 只保留 marker 附近 5 m 内的接轮廓 */ }</pre>
+<p><b><code>ready=no</code> 不是失败，是「路径不许接到街上」的降级开关。</b>布局照样生成，只是内部路网封在轮廓内。
+这就是之前观察到的"静默降级"的精确机制。量出来的结果：</p>
+<div class="cards">
+  <div class="card"><div class="v ok">0</div><div class="k">ready=no 的 1 份，接到街的路径条数</div></div>
+  <div class="card"><div class="v">16</div><div class="k">ready=yes 的 53 份，接到街的路径条数</div></div>
+</div>
+<p class="mut">左卡片恒为 0，那正是 <code>TrimOutlineEnds</code> 在起作用。但别把它当成"我们算对了"的证据——
+这里数的是<b>已有 <code>startAttach/endAttach</code> 的路径条数</b>，与 <code>ready</code> 是两条独立的线：
+右卡片的 16 条远小于 53 份，正因为<b>建议出来的口 <code>AttachId</code> 恒为 -1</b>
+（<code>Entrances.cs:371</code> 的 <code>Suggested = true</code>），只有玩家或烘焙工具给的口才真接街。</p>
+
+<h2>五 · 扰动实验（看断言本身成不成立）</h2>
+<p class="mut">54 份真实数据是 <b>53 收 1 拒</b>，样本极度不平衡，一致率高说明不了区分力。
+但这里扰动实验的目的已经变了：不是"证明判据对"，而是检验<b>断言本身</b>——
+每一族都有一条<b>可被否证</b>的断言：</p>
+<table class="auto"><tr><th>家族</th><th>断言</th></tr>
+<tr><td><code>shop</code> / <code>market</code></td><td>ready 次数应<b>正好等于</b>有给定口的次数 —— 街道怎么改都不动</td></tr>
+<tr><td><code>parking</code></td><td>ready 次数应<b>介于 0 与总数之间</b> —— 街道既抬得起也打得到</td></tr>
+<tr><td><code>typed</code> / <code>none</code></td><td>ready 次数应<b>等于总数</b> —— 恒 ready</td></tr>
+</table>
+<p class="mut">最后一个变体「无街·无给定口」是最狠的一刀：把街道<b>全删光</b>。公园族应当照旧 ready，
+因为 <code>Entrances.Suggest</code> 在候选为空时会兜底"最长边的中点"（<code>Entrances.cs:239-259</code>）——
+这正是 <code>ready.ts</code> 里 <code>typed</code> 族那条结论的结构性依据，而不是经验。</p>
+<h3 style="font-size:14px;margin:18px 0 4px">city24-s8-p42-parking <code>parking</code></h3><table><tr><th>变体</th><th>改了什么</th><th>给定口</th><th>预测</th><th>引擎</th><th>接街</th><th>面/物</th><th></th></tr><tr class="">
+<td>原样·带给定口</td><td class="mut">烘焙时的原样（含工具塞的出入口）</td>
+<td class="n">0</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">0/45</td>
+<td class="n">36/593</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>原样·无给定口</td><td class="mut">去掉给定出入口，让引擎自己建议</td>
+<td class="n">0</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">0/45</td>
+<td class="n">36/593</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>外移·无给定口</td><td class="mut">全部街外移 11.3 m（gap ≈ 11.3 ≤ 15，理论上仍可出入口）</td>
+<td class="n">0</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">0/44</td>
+<td class="n">31/590</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>园路·无给定口</td><td class="mut">街在原位但全改成园路（没有车行道可打射线）</td>
+<td class="n">0</td>
+<td><span class="bad">no</span></td>
+<td><span class="bad">Reason.NeedsEntrance</span></td>
+<td class="n">0/0</td>
+<td class="n">0/0</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>删最长街·无给定口</td><td class="mut">去掉最长的一条街（通常正对主立面）</td>
+<td class="n">0</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">0/45</td>
+<td class="n">36/593</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>无街·无给定口</td><td class="mut">删光所有街 —— 连建议的原料都不给</td>
+<td class="n">0</td>
+<td><span class="bad">no</span></td>
+<td><span class="bad">Reason.NeedsEntrance</span></td>
+<td class="n">0/0</td>
+<td class="n">0/0</td>
+<td><span class="ok">✓</span></td></tr></table><h3 style="font-size:14px;margin:18px 0 4px">city24-s8-p42-stripMall <code>shop</code></h3><table><tr><th>变体</th><th>改了什么</th><th>给定口</th><th>预测</th><th>引擎</th><th>接街</th><th>面/物</th><th></th></tr><tr class="">
+<td>原样·带给定口</td><td class="mut">烘焙时的原样（含工具塞的出入口）</td>
+<td class="n">1</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">0/14</td>
+<td class="n">41/265</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>原样·无给定口</td><td class="mut">去掉给定出入口，让引擎自己建议</td>
+<td class="n">0</td>
+<td><span class="bad">no</span></td>
+<td><span class="bad">Reason.NeedsEntrance</span></td>
+<td class="n">0/0</td>
+<td class="n">0/0</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>外移·无给定口</td><td class="mut">全部街外移 11.3 m（gap ≈ 11.3 ≤ 15，理论上仍可出入口）</td>
+<td class="n">0</td>
+<td><span class="bad">no</span></td>
+<td><span class="bad">Reason.NeedsEntrance</span></td>
+<td class="n">0/0</td>
+<td class="n">0/0</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>园路·无给定口</td><td class="mut">街在原位但全改成园路（没有车行道可打射线）</td>
+<td class="n">0</td>
+<td><span class="bad">no</span></td>
+<td><span class="bad">Reason.NeedsEntrance</span></td>
+<td class="n">0/0</td>
+<td class="n">0/0</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>删最长街·无给定口</td><td class="mut">去掉最长的一条街（通常正对主立面）</td>
+<td class="n">0</td>
+<td><span class="bad">no</span></td>
+<td><span class="bad">Reason.NeedsEntrance</span></td>
+<td class="n">0/0</td>
+<td class="n">0/0</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>无街·无给定口</td><td class="mut">删光所有街 —— 连建议的原料都不给</td>
+<td class="n">0</td>
+<td><span class="bad">no</span></td>
+<td><span class="bad">Reason.NeedsEntrance</span></td>
+<td class="n">0/0</td>
+<td class="n">0/0</td>
+<td><span class="ok">✓</span></td></tr></table><h3 style="font-size:14px;margin:18px 0 4px">city24-s8-p42-mallPark <code>shop</code></h3><table><tr><th>变体</th><th>改了什么</th><th>给定口</th><th>预测</th><th>引擎</th><th>接街</th><th>面/物</th><th></th></tr><tr class="">
+<td>原样·带给定口</td><td class="mut">烘焙时的原样（含工具塞的出入口）</td>
+<td class="n">1</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">0/37</td>
+<td class="n">22/300</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>原样·无给定口</td><td class="mut">去掉给定出入口，让引擎自己建议</td>
+<td class="n">0</td>
+<td><span class="bad">no</span></td>
+<td><span class="bad">Reason.NeedsEntrance</span></td>
+<td class="n">0/0</td>
+<td class="n">0/0</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>外移·无给定口</td><td class="mut">全部街外移 11.3 m（gap ≈ 11.3 ≤ 15，理论上仍可出入口）</td>
+<td class="n">0</td>
+<td><span class="bad">no</span></td>
+<td><span class="bad">Reason.NeedsEntrance</span></td>
+<td class="n">0/0</td>
+<td class="n">0/0</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>园路·无给定口</td><td class="mut">街在原位但全改成园路（没有车行道可打射线）</td>
+<td class="n">0</td>
+<td><span class="bad">no</span></td>
+<td><span class="bad">Reason.NeedsEntrance</span></td>
+<td class="n">0/0</td>
+<td class="n">0/0</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>删最长街·无给定口</td><td class="mut">去掉最长的一条街（通常正对主立面）</td>
+<td class="n">0</td>
+<td><span class="bad">no</span></td>
+<td><span class="bad">Reason.NeedsEntrance</span></td>
+<td class="n">0/0</td>
+<td class="n">0/0</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>无街·无给定口</td><td class="mut">删光所有街 —— 连建议的原料都不给</td>
+<td class="n">0</td>
+<td><span class="bad">no</span></td>
+<td><span class="bad">Reason.NeedsEntrance</span></td>
+<td class="n">0/0</td>
+<td class="n">0/0</td>
+<td><span class="ok">✓</span></td></tr></table><h3 style="font-size:14px;margin:18px 0 4px">city24-s8-p42-marketSquare <code>market</code></h3><table><tr><th>变体</th><th>改了什么</th><th>给定口</th><th>预测</th><th>引擎</th><th>接街</th><th>面/物</th><th></th></tr><tr class="">
+<td>原样·带给定口</td><td class="mut">烘焙时的原样（含工具塞的出入口）</td>
+<td class="n">1</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">0/3</td>
+<td class="n">133/356</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>原样·无给定口</td><td class="mut">去掉给定出入口，让引擎自己建议</td>
+<td class="n">0</td>
+<td><span class="bad">no</span></td>
+<td><span class="bad">Reason.NeedsEntrance</span></td>
+<td class="n">0/0</td>
+<td class="n">0/0</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>外移·无给定口</td><td class="mut">全部街外移 11.3 m（gap ≈ 11.3 ≤ 15，理论上仍可出入口）</td>
+<td class="n">0</td>
+<td><span class="bad">no</span></td>
+<td><span class="bad">Reason.NeedsEntrance</span></td>
+<td class="n">0/0</td>
+<td class="n">0/0</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>园路·无给定口</td><td class="mut">街在原位但全改成园路（没有车行道可打射线）</td>
+<td class="n">0</td>
+<td><span class="bad">no</span></td>
+<td><span class="bad">Reason.NeedsEntrance</span></td>
+<td class="n">0/0</td>
+<td class="n">0/0</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>删最长街·无给定口</td><td class="mut">去掉最长的一条街（通常正对主立面）</td>
+<td class="n">0</td>
+<td><span class="bad">no</span></td>
+<td><span class="bad">Reason.NeedsEntrance</span></td>
+<td class="n">0/0</td>
+<td class="n">0/0</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>无街·无给定口</td><td class="mut">删光所有街 —— 连建议的原料都不给</td>
+<td class="n">0</td>
+<td><span class="bad">no</span></td>
+<td><span class="bad">Reason.NeedsEntrance</span></td>
+<td class="n">0/0</td>
+<td class="n">0/0</td>
+<td><span class="ok">✓</span></td></tr></table><h3 style="font-size:14px;margin:18px 0 4px">city24-s8-p42-shopsPark <code>none</code></h3><table><tr><th>变体</th><th>改了什么</th><th>给定口</th><th>预测</th><th>引擎</th><th>接街</th><th>面/物</th><th></th></tr><tr class="">
+<td>原样·带给定口</td><td class="mut">烘焙时的原样（含工具塞的出入口）</td>
+<td class="n">0</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">0/10</td>
+<td class="n">17/113</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>原样·无给定口</td><td class="mut">去掉给定出入口，让引擎自己建议</td>
+<td class="n">0</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">0/10</td>
+<td class="n">17/113</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>外移·无给定口</td><td class="mut">全部街外移 11.3 m（gap ≈ 11.3 ≤ 15，理论上仍可出入口）</td>
+<td class="n">0</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">0/6</td>
+<td class="n">0/139</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>园路·无给定口</td><td class="mut">街在原位但全改成园路（没有车行道可打射线）</td>
+<td class="n">0</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">2/6</td>
+<td class="n">0/143</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>删最长街·无给定口</td><td class="mut">去掉最长的一条街（通常正对主立面）</td>
+<td class="n">0</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">0/34</td>
+<td class="n">14/158</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>无街·无给定口</td><td class="mut">删光所有街 —— 连建议的原料都不给</td>
+<td class="n">0</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">0/6</td>
+<td class="n">0/139</td>
+<td><span class="ok">✓</span></td></tr></table><h3 style="font-size:14px;margin:18px 0 4px">city24-s8-p42-park <code>typed</code></h3><table><tr><th>变体</th><th>改了什么</th><th>给定口</th><th>预测</th><th>引擎</th><th>接街</th><th>面/物</th><th></th></tr><tr class="">
+<td>原样·带给定口</td><td class="mut">烘焙时的原样（含工具塞的出入口）</td>
+<td class="n">0</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">2/15</td>
+<td class="n">0/129</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>原样·无给定口</td><td class="mut">去掉给定出入口，让引擎自己建议</td>
+<td class="n">0</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">2/15</td>
+<td class="n">0/129</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>外移·无给定口</td><td class="mut">全部街外移 11.3 m（gap ≈ 11.3 ≤ 15，理论上仍可出入口）</td>
+<td class="n">0</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">0/12</td>
+<td class="n">0/124</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>园路·无给定口</td><td class="mut">街在原位但全改成园路（没有车行道可打射线）</td>
+<td class="n">0</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">2/13</td>
+<td class="n">0/135</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>删最长街·无给定口</td><td class="mut">去掉最长的一条街（通常正对主立面）</td>
+<td class="n">0</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">3/16</td>
+<td class="n">0/133</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>无街·无给定口</td><td class="mut">删光所有街 —— 连建议的原料都不给</td>
+<td class="n">0</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">0/12</td>
+<td class="n">0/124</td>
+<td><span class="ok">✓</span></td></tr></table><h3 style="font-size:14px;margin:18px 0 4px">city24-s8-p42-campground <code>typed</code></h3><table><tr><th>变体</th><th>改了什么</th><th>给定口</th><th>预测</th><th>引擎</th><th>接街</th><th>面/物</th><th></th></tr><tr class="">
+<td>原样·带给定口</td><td class="mut">烘焙时的原样（含工具塞的出入口）</td>
+<td class="n">0</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">1/11</td>
+<td class="n">16/122</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>原样·无给定口</td><td class="mut">去掉给定出入口，让引擎自己建议</td>
+<td class="n">0</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">1/11</td>
+<td class="n">16/122</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>外移·无给定口</td><td class="mut">全部街外移 11.3 m（gap ≈ 11.3 ≤ 15，理论上仍可出入口）</td>
+<td class="n">0</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">0/11</td>
+<td class="n">16/122</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>园路·无给定口</td><td class="mut">街在原位但全改成园路（没有车行道可打射线）</td>
+<td class="n">0</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">1/12</td>
+<td class="n">16/116</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>删最长街·无给定口</td><td class="mut">去掉最长的一条街（通常正对主立面）</td>
+<td class="n">0</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">1/13</td>
+<td class="n">18/116</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>无街·无给定口</td><td class="mut">删光所有街 —— 连建议的原料都不给</td>
+<td class="n">0</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">0/11</td>
+<td class="n">16/122</td>
+<td><span class="ok">✓</span></td></tr></table><h3 style="font-size:14px;margin:18px 0 4px">city24-s8-p42-dogPark <code>typed</code></h3><table><tr><th>变体</th><th>改了什么</th><th>给定口</th><th>预测</th><th>引擎</th><th>接街</th><th>面/物</th><th></th></tr><tr class="">
+<td>原样·带给定口</td><td class="mut">烘焙时的原样（含工具塞的出入口）</td>
+<td class="n">0</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">0/22</td>
+<td class="n">3/124</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>原样·无给定口</td><td class="mut">去掉给定出入口，让引擎自己建议</td>
+<td class="n">0</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">0/22</td>
+<td class="n">3/124</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>外移·无给定口</td><td class="mut">全部街外移 11.3 m（gap ≈ 11.3 ≤ 15，理论上仍可出入口）</td>
+<td class="n">0</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">0/22</td>
+<td class="n">3/123</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>园路·无给定口</td><td class="mut">街在原位但全改成园路（没有车行道可打射线）</td>
+<td class="n">0</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">0/22</td>
+<td class="n">3/124</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>删最长街·无给定口</td><td class="mut">去掉最长的一条街（通常正对主立面）</td>
+<td class="n">0</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">0/25</td>
+<td class="n">3/124</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>无街·无给定口</td><td class="mut">删光所有街 —— 连建议的原料都不给</td>
+<td class="n">0</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">0/22</td>
+<td class="n">3/123</td>
+<td><span class="ok">✓</span></td></tr></table>
+
+<h2>六 · 逐份对照</h2>
+<table><tr><th>地块</th><th>生成器</th><th>家族</th><th>面积 m²</th><th>给/补口</th><th>预测</th><th>引擎判定</th><th>面/渠/物</th><th>接街</th><th></th></tr><tr class="">
+<td>city24-s8-p0-parking</td><td>parking</td><td><code>parking</code></td>
+<td class="n">14527</td>
+<td class="n">0/2</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">44/62/649</td>
+<td class="n">0/62</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>city24-s8-p0-pitch</td><td>pitch</td><td><code>none</code></td>
+<td class="n">15448</td>
+<td class="n">0/0</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">1/2/360</td>
+<td class="n">0/2</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>city24-s8-p1-parking</td><td>parking</td><td><code>parking</code></td>
+<td class="n">16614</td>
+<td class="n">0/2</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">12/34/896</td>
+<td class="n">0/34</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>city24-s8-p42-abandonedLot-demolished</td><td>abandonedLot</td><td><code>none</code></td>
+<td class="n">12491</td>
+<td class="n">0/2</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">1/39/258</td>
+<td class="n">0/39</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>city24-s8-p42-abandonedLot</td><td>abandonedLot</td><td><code>none</code></td>
+<td class="n">12491</td>
+<td class="n">0/2</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">1/39/258</td>
+<td class="n">0/39</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>city24-s8-p42-botanicalGarden</td><td>botanicalGarden</td><td><code>typed</code></td>
+<td class="n">12491</td>
+<td class="n">0/2</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">2/50/197</td>
+<td class="n">2/50</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>city24-s8-p42-campground</td><td>campground</td><td><code>typed</code></td>
+<td class="n">12491</td>
+<td class="n">0/1</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">16/11/122</td>
+<td class="n">1/11</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>city24-s8-p42-carYard</td><td>carYard</td><td><code>none</code></td>
+<td class="n">12491</td>
+<td class="n">0/1</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">16/18/809</td>
+<td class="n">0/18</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>city24-s8-p42-communityGarden</td><td>communityGarden</td><td><code>typed</code></td>
+<td class="n">12491</td>
+<td class="n">0/2</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">48/25/203</td>
+<td class="n">0/25</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>city24-s8-p42-dogPark</td><td>dogPark</td><td><code>typed</code></td>
+<td class="n">12491</td>
+<td class="n">0/2</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">3/22/124</td>
+<td class="n">0/22</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>city24-s8-p42-formalGarden</td><td>formalGarden</td><td><code>typed</code></td>
+<td class="n">12491</td>
+<td class="n">0/2</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">50/35/304</td>
+<td class="n">2/35</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>city24-s8-p42-greenwayPark</td><td>greenwayPark</td><td><code>typed</code></td>
+<td class="n">12491</td>
+<td class="n">0/2</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">0/12/209</td>
+<td class="n">2/12</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>city24-s8-p42-junkYard</td><td>junkYard</td><td><code>none</code></td>
+<td class="n">12491</td>
+<td class="n">0/1</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">17/18/717</td>
+<td class="n">0/18</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>city24-s8-p42-mallPark</td><td>mallPark</td><td><code>shop</code></td>
+<td class="n">12491</td>
+<td class="n">1/0</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">22/37/300</td>
+<td class="n">0/37</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>city24-s8-p42-marketSquare</td><td>marketSquare</td><td><code>market</code></td>
+<td class="n">12491</td>
+<td class="n">1/0</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">133/3/356</td>
+<td class="n">0/3</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>city24-s8-p42-natureReserve</td><td>natureReserve</td><td><code>typed</code></td>
+<td class="n">12491</td>
+<td class="n">0/2</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">0/24/366</td>
+<td class="n">2/24</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>city24-s8-p42-outdoorMall</td><td>outdoorMall</td><td><code>none</code></td>
+<td class="n">12491</td>
+<td class="n">0/2</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">47/7/162</td>
+<td class="n">1/7</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>city24-s8-p42-park</td><td>park</td><td><code>typed</code></td>
+<td class="n">12491</td>
+<td class="n">0/2</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">0/15/129</td>
+<td class="n">2/15</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>city24-s8-p42-parking</td><td>parking</td><td><code>parking</code></td>
+<td class="n">12491</td>
+<td class="n">0/2</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">36/45/593</td>
+<td class="n">0/45</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>city24-s8-p42-picnicGrounds</td><td>picnicGrounds</td><td><code>typed</code></td>
+<td class="n">12491</td>
+<td class="n">0/2</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">0/21/64</td>
+<td class="n">2/21</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>city24-s8-p42-pitch</td><td>pitch</td><td><code>none</code></td>
+<td class="n">12491</td>
+<td class="n">0/0</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">1/2/360</td>
+<td class="n">0/2</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>city24-s8-p42-polishCoastal</td><td>polishCoastal</td><td><code>none</code></td>
+<td class="n">12491</td>
+<td class="n">0/0</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">0/0/0</td>
+<td class="n">0/0</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>city24-s8-p42-polishGarden</td><td>polishGarden</td><td><code>none</code></td>
+<td class="n">12491</td>
+<td class="n">0/0</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">0/0/0</td>
+<td class="n">0/0</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>city24-s8-p42-polishManicured</td><td>polishManicured</td><td><code>none</code></td>
+<td class="n">12491</td>
+<td class="n">0/0</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">0/0/0</td>
+<td class="n">0/0</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>city24-s8-p42-polishMeadow</td><td>polishMeadow</td><td><code>none</code></td>
+<td class="n">12491</td>
+<td class="n">0/0</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">0/0/0</td>
+<td class="n">0/0</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>city24-s8-p42-polishNatural</td><td>polishNatural</td><td><code>none</code></td>
+<td class="n">12491</td>
+<td class="n">0/0</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">0/0/0</td>
+<td class="n">0/0</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>city24-s8-p42-polishRustic</td><td>polishRustic</td><td><code>none</code></td>
+<td class="n">12491</td>
+<td class="n">0/0</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">0/0/0</td>
+<td class="n">0/0</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>city24-s8-p42-polishTidy</td><td>polishTidy</td><td><code>none</code></td>
+<td class="n">12491</td>
+<td class="n">0/0</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">0/0/0</td>
+<td class="n">0/0</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>city24-s8-p42-polishYard</td><td>polishYard</td><td><code>none</code></td>
+<td class="n">12491</td>
+<td class="n">0/0</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">0/0/0</td>
+<td class="n">0/0</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>city24-s8-p42-pond</td><td>pond</td><td><code>none</code></td>
+<td class="n">12491</td>
+<td class="n">0/0</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">2/16/7</td>
+<td class="n">0/16</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>city24-s8-p42-runningTrack</td><td>runningTrack</td><td><code>none</code></td>
+<td class="n">12491</td>
+<td class="n">0/0</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">3/0/651</td>
+<td class="n">0/0</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>city24-s8-p42-scrapyard</td><td>scrapyard</td><td><code>none</code></td>
+<td class="n">12491</td>
+<td class="n">0/1</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">3/18/509</td>
+<td class="n">0/18</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>city24-s8-p42-shopsPark</td><td>shopsPark</td><td><code>none</code></td>
+<td class="n">12491</td>
+<td class="n">0/2</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">17/10/113</td>
+<td class="n">0/10</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>city24-s8-p42-sportsPark</td><td>sportsPark</td><td><code>typed</code></td>
+<td class="n">12491</td>
+<td class="n">0/2</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">3/16/66</td>
+<td class="n">0/16</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>city24-s8-p42-stripMall</td><td>stripMall</td><td><code>shop</code></td>
+<td class="n">12491</td>
+<td class="n">1/0</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">41/14/265</td>
+<td class="n">0/14</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>city24-s8-p90-carYard</td><td>carYard</td><td><code>none</code></td>
+<td class="n">13123</td>
+<td class="n">0/1</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">16/22/853</td>
+<td class="n">0/22</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>city24-s8-p90-park</td><td>park</td><td><code>typed</code></td>
+<td class="n">13123</td>
+<td class="n">0/2</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">0/14/132</td>
+<td class="n">2/14</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>city24-s8-p90-parking</td><td>parking</td><td><code>parking</code></td>
+<td class="n">13123</td>
+<td class="n">0/2</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">34/53/603</td>
+<td class="n">0/53</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>city24-s8-p90-parking.part0</td><td>parking</td><td><code>parking</code></td>
+<td class="n">1677</td>
+<td class="n">0/1</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">3/1/51</td>
+<td class="n">0/1</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>city24-s8-p90-parking.part1</td><td>parking</td><td><code>parking</code></td>
+<td class="n">1604</td>
+<td class="n">0/1</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">3/2/43</td>
+<td class="n">0/2</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>city24-s8-p90-parking.part10</td><td>parking</td><td><code>parking</code></td>
+<td class="n">325</td>
+<td class="n">0/1</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">0/0/0</td>
+<td class="n">0/0</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>city24-s8-p90-parking.part11</td><td>parking</td><td><code>parking</code></td>
+<td class="n">309</td>
+<td class="n">0/1</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">0/0/0</td>
+<td class="n">0/0</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>city24-s8-p90-parking.part12</td><td>parking</td><td><code>parking</code></td>
+<td class="n">297</td>
+<td class="n">0/1</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">0/0/0</td>
+<td class="n">0/0</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>city24-s8-p90-parking.part13</td><td>parking</td><td><code>parking</code></td>
+<td class="n">293</td>
+<td class="n">0/1</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">0/0/0</td>
+<td class="n">0/0</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>city24-s8-p90-parking.part14</td><td>parking</td><td><code>parking</code></td>
+<td class="n">284</td>
+<td class="n">0/1</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">0/0/0</td>
+<td class="n">0/0</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>city24-s8-p90-parking.part2</td><td>parking</td><td><code>parking</code></td>
+<td class="n">1335</td>
+<td class="n">0/1</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">4/2/40</td>
+<td class="n">0/2</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>city24-s8-p90-parking.part3</td><td>parking</td><td><code>parking</code></td>
+<td class="n">1219</td>
+<td class="n">0/1</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">1/0/25</td>
+<td class="n">0/0</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>city24-s8-p90-parking.part4</td><td>parking</td><td><code>parking</code></td>
+<td class="n">906</td>
+<td class="n">0/1</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">4/0/26</td>
+<td class="n">0/0</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>city24-s8-p90-parking.part5</td><td>parking</td><td><code>parking</code></td>
+<td class="n">603</td>
+<td class="n">0/1</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">3/0/21</td>
+<td class="n">0/0</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>city24-s8-p90-parking.part6</td><td>parking</td><td><code>parking</code></td>
+<td class="n">160</td>
+<td class="n">0/0</td>
+<td><span class="bad">no</span></td>
+<td><span class="bad">Reason.NeedsEntrance</span></td>
+<td class="n">0/0/0</td>
+<td class="n">0/0</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>city24-s8-p90-parking.part7</td><td>parking</td><td><code>parking</code></td>
+<td class="n">425</td>
+<td class="n">0/1</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">3/0/11</td>
+<td class="n">0/0</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>city24-s8-p90-parking.part8</td><td>parking</td><td><code>parking</code></td>
+<td class="n">401</td>
+<td class="n">0/1</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">3/0/16</td>
+<td class="n">0/0</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>city24-s8-p90-parking.part9</td><td>parking</td><td><code>parking</code></td>
+<td class="n">359</td>
+<td class="n">0/1</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">0/0/0</td>
+<td class="n">0/0</td>
+<td><span class="ok">✓</span></td></tr><tr class="">
+<td>city24-s8-p90-plaza</td><td>plaza</td><td><code>none</code></td>
+<td class="n">13123</td>
+<td class="n">0/6</td>
+<td><span class="ok">ready</span></td>
+<td><span class="ok">ready</span></td>
+<td class="n">146/0/97</td>
+<td class="n">0/0</td>
+<td><span class="ok">✓</span></td></tr></table>
+<p class="mut">"给/补口" = <code>plan.markers.given / auto</code>，即输入里给的口数与建议器补的口数。
+"面/渠/物" = 引擎输出的 surfaces / nets / objects 数量。"接街" = 有 <code>startAttach/endAttach</code> 的路径条数 / 总条数。</p>
+</html>
