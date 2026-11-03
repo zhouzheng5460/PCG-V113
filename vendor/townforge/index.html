@@ -18,7 +18,6 @@
           <button class="tab" data-view="3d">三维预览</button>
         </div>
         <div class="actions">
-          <button id="btn-layers" title="图层显隐（不改生成参数）">图层</button>
           <button id="btn-export" class="primary">导出 GLB</button>
         </div>
       </header>
@@ -29,14 +28,6 @@
 
         <main id="stage">
           <canvas id="canvas2d"></canvas>
-          <!-- 地图工具条：只保留三类主操作（规范 §11）。工具真正的绘制逻辑仍在 view2d 里。 -->
-          <div id="maptools">
-            <button data-tool="select" class="active" title="选择规划区 / 片区 / 地块">选择</button>
-            <button data-tool="region" title="画一块规划区（可编辑，覆盖用途/密度/高度）">规划区</button>
-            <button data-tool="blank" title="为后续自定义建筑预留空间">禁建区</button>
-          </div>
-          <!-- 功能配色图例（规范 §12）：颜色直接对应用途，不再靠文字猜 -->
-          <div id="legend"></div>
           <div id="view3d"></div>
           <div id="hint"></div>
           <div id="stats"></div>
@@ -44,8 +35,6 @@
 
         <!-- 右：属性面板（生成参数，调完就不再动） -->
         <aside id="rightbar"></aside>
-        <!-- 图层抽屉：纯 Visibility Manager，与右侧 Inspector 完全分开（U1.2） -->
-        <div id="layer-drawer" class="drawer hidden"></div>
       </div>
     </div>
     <script type="module" src="/src/ui/app.ts"></script>

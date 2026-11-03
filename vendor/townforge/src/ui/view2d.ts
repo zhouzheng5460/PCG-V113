@@ -151,23 +151,6 @@ export class View2D {
   private layerVis: (id: LayerId) => boolean = () => true;
 
   /** 换显隐后调用：场景要重建（三维与导出共用同一份过滤） */
-  /** 当前高亮的自动片区（一组街区）—— 淡灰虚线，**只读**，表示"选择组" */
-  private districtPatches: Patch[] = [];
-  /** 规划区环（用户约束）—— 实线蓝面，**可编辑** */
-  private regionRings: Pt[][] = [];
-
-  /**
-   * 设置要绘制的规划区。
-   *
-   * 为什么和自动片区分开画：两者在界面上是**两种对象**——
-   * 自动片区是 k-means 派生的只读选择组（淡灰虚线），规划区是用户画的约束（实线蓝面）。
-   * 以前只剩一个蓝色高亮，用户会把"自动片区"误当成"我刚画的规划区"（U1 的核心歧义）。
-   */
-  setRegions(rings: Pt[][]): void {
-    this.regionRings = rings;
-    this.requestDraw();
-  }
-
   setLayerVisibility(fn: (id: LayerId) => boolean): void {
     this.layerVis = fn;
     this.scene = null;
@@ -391,18 +374,6 @@ export class View2D {
   setSelectedPatch(p: Patch | null): void {
     if (this.selPatch === p) return;
     this.selPatch = p;
-    this.requestDraw();
-  }
-
-  /**
-   * 片区高亮（2026-11-03 粗规划重构）。
-   *
-   * 为什么需要它：新界面的操作单位是"片区"而不是"地块"，用户点一下应当看到
-   * **整片**被框出来，而不是只亮一块。地块级高亮仍由 `setSelectedPatch` 负责，
-   * 两者可以同时存在（片区框 + 地块实线）。
-   */
-  setDistrict(patches: Patch[]): void {
-    this.districtPatches = patches;
     this.requestDraw();
   }
 
@@ -1163,8 +1134,6 @@ export class View2D {
 
     const px = 1 / this.cam.scale; // 1 屏幕像素对应的世界单位
 
-
-
     // 地块轮廓（结构覆盖层）
     if (this.showBlocks) {
       // 地块轮廓：浅色晕圈 + 深色主线两遍描。
@@ -1589,46 +1558,6 @@ export class View2D {
           ctx.stroke();
         }
       }
-    }
-
-    // 片区高亮画在**最后**（地块填充之后），否则会被地块盖住。
-    // 粗规划的操作单位是片区而不是地块：点一下要看到"整片"被框出来。
-    // 规划区：实线蓝面（用户约束，可编辑）
-    if (this.regionRings.length) {
-      ctx.save();
-      ctx.fillStyle = 'rgba(70, 140, 255, 0.16)';
-      ctx.strokeStyle = 'rgba(120, 175, 255, 0.95)';
-      ctx.lineWidth = 2.8 * px;
-      for (const r of this.regionRings) {
-        if (r.length < 3) continue;
-        ctx.beginPath();
-        ctx.moveTo(r[0].x, r[0].y);
-        for (let i = 1; i < r.length; i++) ctx.lineTo(r[i].x, r[i].y);
-        ctx.closePath();
-        ctx.fill();
-        ctx.stroke();
-      }
-      ctx.restore();
-    }
-
-    // 自动片区：淡灰虚线（**只读**的选择组，不要和规划区混）
-    if (this.districtPatches.length) {
-      ctx.save();
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
-      ctx.strokeStyle = 'rgba(210, 218, 230, 0.55)';
-      ctx.setLineDash([6 * px, 4 * px]);
-      ctx.lineWidth = 1.4 * px;
-      for (const dp of this.districtPatches) {
-        const pts = dp.shape;
-        if (!pts.length) continue;
-        ctx.beginPath();
-        ctx.moveTo(pts[0].x, pts[0].y);
-        for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
-        ctx.closePath();
-        ctx.fill();
-        ctx.stroke();
-      }
-      ctx.restore();
     }
 
     ctx.restore();

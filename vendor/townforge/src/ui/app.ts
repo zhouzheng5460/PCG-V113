@@ -13,17 +13,7 @@ import { Pt } from '../core/geom';
 import { Model, type TownStyle } from '../town/model';
 import type { ParkLevel } from '../town/parking';
 import type { LayoutKind } from '../town/grid';
-import { Zone, makeZone, area as polyArea, zoneToPolygon } from '../town/zones';
-import {
-  type PlanningRegion,
-  type Level3,
-  makeRegion,
-  resolveFor,
-  regionAt,
-  applyRegionGreen,
-  DENSITY_LABEL,
-  HEIGHT_LABEL,
-} from '../town/planning';
+import { Zone, makeZone, area as polyArea } from '../town/zones';
 import { Patch, patchKey, type PatchEdit } from '../town/patch';
 import { USE_LABEL } from '../town/landuse';
 import type { LandUse } from '../scene/types';
@@ -123,15 +113,6 @@ interface State {
   /** 单块地块的手动覆盖（键 = patchKey），跟着种子一起保存到 localStorage */
   patchEdits: Map<string, PatchEdit>;
   /**
-   * **规划区**（用户施加的空间约束）。
-   *
-   * 与 `districts`（k-means 派生的只读选择组）是两种东西：
-   *   · districts  ：自动片区，只读，负责"快速选择一片"
-   *   · regions    ：用户画的 polygon，可创建/改顶点/删除，负责"我要这里这样"
-   * 覆盖链：`地块 > 规划区 > 城市默认`（见 town/planning.ts 的 resolveFor）。
-   */
-  regions: PlanningRegion[];
-  /**
    * 建筑高度档位（`BUILDING_PRESETS` 的 key）。
    *
    * 它只是一个**回显标记**：选了哪档就亮哪个按钮。真正的高度值直接写进
@@ -139,13 +120,6 @@ interface State {
    * 这里会退回 'custom'（四档都不亮），面板不撒谎。
    */
   buildingPreset: string;
-  /**
-   * 绿地比例档位（low/mid/high）。
-   *
-   * 模型里没有"绿地比例"这个参数 —— 绿地是 landuse 推导的。所以这一档的真实作用是
-   * **按比例把一部分地块指定为绿地**（写进 patchEdits）。已经手动改过用途的地块不会被覆盖。
-   */
-  greenLevel: 'low' | 'mid' | 'high';
   /**
    * 楼从哪来：TownForge 自排 / Placemaker 楼位 / 两套并排。
    *
@@ -158,7 +132,6 @@ interface State {
 const state: State = {
   nPatches: 15,
   seed: 682063530,
-  greenLevel: 'mid',
   plaza: true,
   // 三档红线宽直接取 road/spec.ts 的规范表：主干路 28 m（双向六车道）、
   // 次干路 20 m（双向四车道）、支路 10.5 m（双向两车道）。
@@ -177,7 +150,6 @@ const state: State = {
   params: defaultParams(),
   vis: defaultVisibility(),
   patchEdits: new Map(),
-  regions: [],
   buildingPreset: 'mixed',
   contentSource: 'townforge',
 };
@@ -231,41 +203,6 @@ function syncRoadRow(road: RoadPick | null): void {
 
 // ---------------------------------------------------------------- 生成
 
-/**
- * 三层覆盖合并：`地块 > 规划区 > 城市默认`。
- *
- * 为什么用**上一版模型**的地块质心：区域是空间约束，得先有地块才知道谁在里面。
- * 所以"画完区域 → 重新生成"这一拍，正好用当前这版地块去解析，语义正确且不用改模型。
- */
-function effectiveEdits(): Map<string, PatchEdit> {
-  const base = new Map(state.patchEdits);
-  if (!state.regions.length || !model) return base;
-
-  // 区级绿地占比：先算出要标成 park 的地块（不覆盖已有的地块级 use）
-  const greens = applyRegionGreen(
-    model.patches
-      .filter((p) => p.withinCity)
-      .map((p) => {
-        const c = patchCenter(p);
-        return { centroid: new Pt(c.x, c.y), key: patchKey(p) };
-      }),
-    state.regions,
-    base,
-  );
-
-  const out = new Map<string, PatchEdit>();
-  for (const p of model.patches) {
-    const key = patchKey(p);
-    const c = patchCenter(p);
-    const r = resolveFor(new Pt(c.x, c.y), state.regions, base.get(key), state.params.block.parcelTargetA);
-    const edit: PatchEdit = { ...r.edit };
-    const g = greens.get(key);
-    if (g && edit.use === undefined) edit.use = g;
-    out.set(key, edit);
-  }
-  return out;
-}
-
 function createModel(): Model {
   return (() => {
     const m = new Model({
@@ -279,7 +216,7 @@ function createModel(): Model {
       layout: state.layout,
       parkingLevel: state.parkingLevel,
       params: state.params,
-      patchEdits: effectiveEdits(),
+      patchEdits: state.patchEdits,
     });
     m.generate();
     return m;
@@ -366,19 +303,12 @@ function regenerate(): void {
   try {
     model = createModel();
     view2d.setModel(model, { keepView: true });
-    buildDistricts();
-    {
-      const d = selectedDistrictObj();
-      view2d.setDistrict(d ? d.patches : []);
-    }
     syncPatchSelection();
     applyViewFlags();
     if (currentView === '3d') refresh3D();
     updateStats();
     refreshDiag();
     syncHashSoon();
-    buildLeft();
-    buildRight();
   } catch (e) {
     toast(`生成失败：${(e as Error).message}`, true);
   }
@@ -488,663 +418,27 @@ function layerGroupHtml(g: LayerGroupDef, counts: Record<string, number>, withCo
  * 默认展开置顶，九组图层一展开就把它挤出首屏 —— 用户核对时说的是"这块没人看"。
  * 已整块删除，`src/ui/hud.ts` 里只留 `diagnose`（左栏每行后面的数字靠它数）。
  */
-/**
- * 显示控制（图层显隐）。
- *
- * 2026-11-03 重构成"粗规划"界面后，它**不再是左栏主体** —— 用户日常关心的是
- * "这里大概是什么"，不是"车库顶盖这一层要不要画"。所以它整体收进右栏的「高级设置」。
- */
-function displayControlsHtml(): string {
+function buildLeft(): void {
   const counts = diag?.layerCounts ?? {};
   const sceneGroups = LAYER_GROUPS.map((g) => layerGroupHtml(g, counts, true)).join('');
   const overGroups = OVERLAY_GROUPS.map((g) => layerGroupHtml(g, counts, false)).join('');
-  return `
-    <div class="lyr-tools">
-      <button data-cact="all">要素全显</button>
-      <button data-cact="none">要素全隐</button>
-      <button data-cact="reset" title="恢复出厂显隐">默认</button>
-    </div>
-    ${sceneGroups}
-    ${overGroups}`;
-}
-
-// ---------------------------------------------------------------- 片区（粗规划的核心概念）
-//
-// 用户不该直接面对几十上百个地块。"片区"是把地块按空间聚成 4 团，
-// 让用户能说"这一片做住宅、那一片做工业"。
-//
-// 为什么用 **k-means 且固定初值**：片区划分必须是**确定性**的 ——
-// 同一座城两次打开要看到同样的 A/B/C/D，否则"改片区 A"会指向不同的地块。
-// 初值直接取"按坐标排序后的等距四个地块"，不引入随机数。
-
-interface District {
-  id: string;
-  label: string;
-  patches: Patch[];
-  cx: number;
-  cy: number;
-  /** 多数地块的实际用途（一个都没覆盖时为 null，面板显示"自动推导"） */
-  use: LandUse | null;
-}
-
-let districts: District[] = [];
-let selectedDistrict: string | null = null;
-let selectedScope: 'city' | 'district' | 'region' | 'parcel' | 'blank' = 'city';
-/** 当前选中的规划区 id（与 `selectedDistrict` 平行：一个是用户约束，一个是自动聚类） */
-let selectedRegion: string | null = null;
-/** 下一次在地图上画的多边形算「禁建区」还是「规划区」（由工具条/左栏按钮设定） */
-let pendingBlank = false;
-let pendingRegion = false;
-
-/** 六种可指定用途 —— 只列模型真有的（没有 mixed/office，办公走 cbd） */
-const USE_CHOICES: { use: LandUse; label: string; color: string }[] = [
-  { use: 'residential', label: '住宅', color: '#d8b45a' },
-  { use: 'commercial', label: '商业', color: '#cf5b4e' },
-  { use: 'cbd', label: '办公', color: '#4d7fd0' },
-  { use: 'industrial', label: '工业', color: '#8b5cb0' },
-  { use: 'civic', label: '公共', color: '#c98a3e' },
-  { use: 'park', label: '绿地', color: '#4f9e5f' },
-];
-
-const USE_FILL: Record<string, string> = Object.fromEntries(USE_CHOICES.map((u) => [u.use, u.color]));
-
-/** 地块当前用途：手改优先，其次模型推导 */
-function patchUse(p: Patch): LandUse | null {
-  const ext = p as unknown as { ward?: { lot?: { use?: LandUse } } };
-  return p.override?.use ?? ext.ward?.lot?.use ?? null;
-}
-
-/** 片区划分（确定性 k-means，k=4）。地块少于 4 块时每个地块自成一片。 */
-function buildDistricts(): void {
-  const ps = model.patches.filter((p) => p.withinCity && !p.blocked);
-  districts = [];
-  if (!ps.length) return;
-
-  const pts = ps.map((p) => {
-    const c = patchCenter(p);
-    return { p, x: c.x, y: c.y };
-  });
-  const k = Math.min(4, pts.length);
-  // 固定初值：按 (x,y) 排序后等距取 k 个
-  const ordered = pts.slice().sort((a, b) => a.x - b.x || a.y - b.y);
-  const centers = Array.from({ length: k }, (_, i) => ({
-    x: ordered[Math.floor(((i + 0.5) / k) * ordered.length)].x,
-    y: ordered[Math.floor(((i + 0.5) / k) * ordered.length)].y,
-  }));
-
-  let assign = new Array(pts.length).fill(0);
-  for (let iter = 0; iter < 12; iter++) {
-    let moved = false;
-    for (let i = 0; i < pts.length; i++) {
-      let best = 0;
-      let bd = Infinity;
-      for (let c = 0; c < k; c++) {
-        const d = (pts[i].x - centers[c].x) ** 2 + (pts[i].y - centers[c].y) ** 2;
-        if (d < bd) {
-          bd = d;
-          best = c;
-        }
-      }
-      if (assign[i] !== best) {
-        assign[i] = best;
-        moved = true;
-      }
-    }
-    for (let c = 0; c < k; c++) {
-      const mine = pts.filter((_, i) => assign[i] === c);
-      if (!mine.length) continue;
-      centers[c] = {
-        x: mine.reduce((s2, q2) => s2 + q2.x, 0) / mine.length,
-        y: mine.reduce((s2, q2) => s2 + q2.y, 0) / mine.length,
-      };
-    }
-    if (!moved) break;
-  }
-
-  const groups = Array.from({ length: k }, (_, c) => pts.filter((_, i) => assign[i] === c));
-  districts = groups
-    .filter((g) => g.length)
-    .map((g, i) => {
-      const cx = g.reduce((s2, q2) => s2 + q2.x, 0) / g.length;
-      const cy = g.reduce((s2, q2) => s2 + q2.y, 0) / g.length;
-      // 多数用途
-      const tally = new Map<LandUse, number>();
-      for (const it of g) {
-        const u = patchUse(it.p);
-        if (u) tally.set(u, (tally.get(u) ?? 0) + 1);
-      }
-      let use: LandUse | null = null;
-      let n = 0;
-      for (const [u, c] of tally) if (c > n) { n = c; use = u; }
-      return { id: `d${i}`, label: '', patches: g.map((x) => x.p), cx, cy, use };
-    })
-    // 稳定编号：按质心 x 再 y 排序，A 永远是最西边那片
-    .sort((a, b) => a.cx - b.cx || a.cy - b.cy)
-    .map((d, i) => ({ ...d, label: String.fromCharCode(65 + i) }));
-}
-
-function districtOf(patch: Patch): District | null {
-  return districts.find((d) => d.patches.includes(patch)) ?? null;
-}
-
-/** 问号提示：把原来大段的"文档式"说明换成 hover（规范 §9） */
-const q = (text: string): string => `<span class="q" title="${text.replace(/"/g, '&quot;')}">?</span>`;
-
-/** 一行三档按钮 */
-function seg3(id: string, label: string, opts: { key: string; label: string }[], active: string, tip: string): string {
-  return `<div class="row stack"><label>${label}${q(tip)}</label>
-    <div class="seg" id="${id}">
-      ${opts.map((o) => `<button data-k="${o.key}" class="${o.key === active ? 'active' : ''}">${o.label}</button>`).join('')}
-    </div></div>`;
-}
-
-/** 当前选中片区的名称（右栏与地图浮动标签共用） */
-function selectedDistrictObj(): District | null {
-  return districts.find((d) => d.id === selectedDistrict) ?? null;
-}
-
-function buildLeft(): void {
-  const scaled = [
-    { key: '10', label: '小型' },
-    { key: '15', label: '中型' },
-    { key: '24', label: '大型' },
-    { key: '40', label: '超大型' },
-  ];
-  const sizeActive = String(state.nPatches);
-  const roadKey = state.params.block.parcelPitchM >= 30 ? 'low' : state.params.block.parcelPitchM <= 22 ? 'high' : 'mid';
-  const bldKey = state.params.building.spacingM >= 16 ? 'low' : state.params.building.spacingM <= 9 ? 'high' : 'mid';
-  const dirKey = state.layout === 'grid' ? 'strong' : state.layout === 'tensor' ? 'mid' : 'weak';
-
-  // 功能目标：**只显示当前分布**（真实值来自 landuse 推导）。
-  // 不做"点一下就全城改用途"——那是区域/地块的事，放左栏只会与右侧重复（U1.1）。
-  const tally = new Map<string, number>();
-  for (const p of model.patches) {
-    if (!p.withinCity) continue;
-    const u = patchUse(p) ?? 'reserved';
-    tally.set(u, (tally.get(u) ?? 0) + 1);
-  }
-  const total = Math.max(1, [...tally.values()].reduce((a, b) => a + b, 0));
-  const shareRows = USE_CHOICES.map((u) => {
-    const n = tally.get(u.use) ?? 0;
-    return `<div class="row"><label>${u.label}</label>
-      <div class="bar"><i style="width:${((n / total) * 100).toFixed(0)}%;background:${u.color}"></i></div>
-      <span class="val">${((n / total) * 100).toFixed(0)}%</span></div>`;
-  }).join('');
 
   $('#leftbar').innerHTML = `
     <details class="sec" open>
-      <summary><span class="dot"></span>城市<span class="sec-tag">规模 · 边界</span></summary>
+      <summary><span class="dot"></span>显示控制<span class="sec-tag">画布 · 三维 · 导出</span></summary>
       <div class="sec-body">
-        ${seg3('seg-size2', '城市规模', scaled, sizeActive, '控制街区数量。')}
-        <div class="row">
-          <button class="ghost grow" id="btn-draw-blank" title="为后续自定义建筑预留空间">绘制禁建区</button>
-          <button class="ghost" id="btn-clear-blank" title="清除全部禁建区">清除</button>
+        <div class="lyr-tools">
+          <button data-cact="all">要素全显</button>
+          <button data-cact="none">要素全隐</button>
+          <button data-cact="reset" title="恢复出厂显隐">默认</button>
         </div>
-        <div class="tip">城市边界由规模与街网形态决定；需要局部排除请用<b>禁建区</b>。</div>
+        ${sceneGroups}
+        ${overGroups}
       </div>
-    </details>
+    </details>`;
 
-    <details class="sec" open>
-      <summary><span class="dot"></span>结构<span class="sec-tag">4 项</span></summary>
-      <div class="sec-body">
-        ${seg3('seg-roaddens', '道路密度', [{ key: 'low', label: '低' }, { key: 'mid', label: '中' }, { key: 'high', label: '高' }], roadKey, '控制道路数量与街区大小。')}
-        ${seg3('seg-blddens', '建筑密度', [{ key: 'low', label: '低' }, { key: 'mid', label: '中' }, { key: 'high', label: '高' }], bldKey, '影响地块覆盖率与建筑数量。')}
-        ${seg3('seg-green', '绿地目标', [{ key: 'low', label: '低' }, { key: 'mid', label: '中' }, { key: 'high', label: '高' }], state.greenLevel, '按比例把一部分地块指定为绿地。')}
-        ${seg3('seg-dir', '方向感', [{ key: 'weak', label: '弱' }, { key: 'mid', label: '中' }, { key: 'strong', label: '强' }], dirKey, '强：趋向规则方格；弱：沿场线弯曲。')}
-      </div>
-    </details>
-
-    <details class="sec" open>
-      <summary><span class="dot"></span>功能目标<span class="sec-tag">当前分布</span></summary>
-      <div class="sec-body">
-        ${shareRows}
-        <div class="tip">这是<b>当前生成结果</b>的用途分布（只读）。要改某一片，在图上画<b>规划区</b>或点<b>地块</b>，在右侧设。</div>
-      </div>
-    </details>
-
-    <details class="sec" open>
-      <summary><span class="dot"></span>高度结构<span class="sec-tag">体量</span></summary>
-      <div class="sec-body">
-        ${seg3('seg-bpreset2', '建筑高度', BUILDING_PRESETS.map((b) => ({ key: b.key, label: b.label })), state.buildingPreset, '一档把十来个高度参数一起调好。')}
-        <div class="row"><label>楼高缩放${q('只影响显示与导出，不改生成。')}</label>
-          <input type="range" id="rng-height2" min="0.5" max="3" step="0.1" value="${state.heightScale}" class="grow"/>
-          <span class="val" id="val-height2">${state.heightScale.toFixed(1)}×</span>
-        </div>
-      </div>
-    </details>
-
-    <div class="acts">
-      <button id="btn-regen2" class="primary">重新生成</button>
-    </div>`;
-
-  bindPlanning();
-  renderLegend();
-}
-
-/** 粗控的解析结果（只读）：粗控 → 实际参数 */
-function resolvedParamsHtml(): string {
-  const b = state.params.block;
-  const bd = state.params.building;
-  const rows: [string, string][] = [
-    ['城市规模', `nPatches = ${state.nPatches}`],
-    ['道路密度', `parcelPitchM = ${b.parcelPitchM} · parcelTargetA = ${b.parcelTargetA}`],
-    ['建筑密度', `spacingM = ${bd.spacingM} · maxPerParcel = ${bd.maxPerParcel}`],
-    ['绿地目标', `${state.greenLevel}`],
-    ['方向感', `layout = ${state.layout}`],
-    ['建筑高度档', `${state.buildingPreset}`],
-  ];
-  return `
-    <div class="grp-label" style="margin-top:10px">解析结果（只读）</div>
-    ${rows.map(([k, v]) => `<div class="row"><label>${k}</label><span class="val" style="font-size:11px">${v}</span></div>`).join('')}`;
-}
-
-/** 图层抽屉：纯 Visibility Manager（U1.2：与 Inspector 完全分开） */
-function renderLayerDrawer(): void {
-  const el = document.getElementById('layer-drawer');
-  if (!el) return;
-  el.innerHTML = `<div class="drawer-head">图层<span class="drawer-x" id="layer-close">×</span></div>
-    <div class="drawer-body">${displayControlsHtml()}</div>`;
   bindLeft();
-  document.getElementById('layer-close')?.addEventListener('click', () => el.classList.add('hidden'));
-  document.getElementById('btn-layers')?.addEventListener('click', () => el.classList.toggle('hidden'));
 }
-
-function renderLegend(): void {
-  const el = document.getElementById('legend');
-  if (!el) return;
-  el.innerHTML = USE_CHOICES.map((u) => `<span><i style="background:${u.color}"></i>${u.label}</span>`).join('') +
-    '<span><i style="background:#6b7280;border:1px dashed #9aa4b2"></i>留白区</span>';
-}
-
-/** 留白区列表（留白区 = 模型里的 blocked/zone 地块） */
-function renderBlankList(): void {
-  const el = document.getElementById('blank-list');
-  if (!el) return;
-  const blanks = model.patches.filter((p) => p.blocked);
-  if (!blanks.length) {
-    el.innerHTML = '<div class="tip">还没有留白区。点「绘制留白区」在地图上画一块。</div>';
-    return;
-  }
-  el.innerHTML = blanks
-    .slice(0, 8)
-    .map((p, i) => {
-      const a = Math.round(polyArea(p.shape));
-      return `<div class="card" style="margin-bottom:6px"><div class="name">留白区 ${String.fromCharCode(65 + i)}</div><div class="meta">${a} m²</div></div>`;
-    })
-    .join('');
-}
-
-
-// ---------------------------------------------------------------- 粗控制的实现
-//
-// 每一个粗控都必须映射到**真实参数**。这一路吃过"面板撒谎"的亏（选了档位但其实没生效），
-// 所以这里没有空滑杆：绿地比例写 patchEdits、道路密度改 parcelPitchM/parcelTargetA、
-// 建筑密度改 spacingM/maxPerParcel、方向感直接换街网形态。
-
-function setGreenLevel(k: 'low' | 'mid' | 'high'): void {
-  state.greenLevel = k;
-  const ratio = k === 'low' ? 0.06 : k === 'mid' ? 0.12 : 0.22;
-  const pool = model.patches
-    .filter((p) => p.withinCity && !p.blocked)
-    .slice()
-    .sort((a, b) => (patchKey(a) < patchKey(b) ? -1 : 1));
-  const n = Math.round(pool.length * ratio);
-  for (let i = 0; i < pool.length; i++) {
-    const key = patchKey(pool[i]);
-    const cur = state.patchEdits.get(key);
-    // 不覆盖用户手动指定过的用途
-    if (i < n && !cur?.use) state.patchEdits.set(key, { ...(cur ?? {}), use: 'park' });
-    else if (i >= n && cur?.use === 'park') {
-      const next = { ...cur };
-      delete next.use;
-      if (Object.keys(next).length) state.patchEdits.set(key, next);
-      else state.patchEdits.delete(key);
-    }
-  }
-  regenerate();
-}
-
-function setRoadDensity(k: 'low' | 'mid' | 'high'): void {
-  const m = { low: { pitch: 34, target: 90 }, mid: { pitch: 26, target: 60 }, high: { pitch: 20, target: 40 } }[k];
-  state.params.block = { ...state.params.block, parcelPitchM: m.pitch, parcelTargetA: m.target };
-  regenerate();
-}
-
-function setBuildingDensity(k: 'low' | 'mid' | 'high'): void {
-  const m = { low: { spacingM: 18, maxPerParcel: 2 }, mid: { spacingM: 12, maxPerParcel: 3 }, high: { spacingM: 8, maxPerParcel: 5 } }[k];
-  state.params.building = { ...state.params.building, ...m };
-  regenerate();
-}
-
-function setDirection(k: 'weak' | 'mid' | 'strong'): void {
-  // 方向感落在街网形态上：强 = 方格网，中 = 张量场，弱 = 场线
-  state.layout = k === 'strong' ? 'grid' : k === 'mid' ? 'tensor' : 'field';
-  regenerate();
-}
-
-/** 把某个用途应用到选中片区的所有地块 */
-function applyUseToDistrict(use: LandUse): void {
-  const d = selectedDistrictObj();
-  if (!d) {
-    toast('先在图上点一个片区');
-    return;
-  }
-  for (const p of d.patches) {
-    const key = patchKey(p);
-    state.patchEdits.set(key, { ...(state.patchEdits.get(key) ?? {}), use });
-  }
-  regenerate();
-}
-
-/** 片区的建筑高度倍率 */
-function applyHeightToDistrict(k: 'low' | 'mid' | 'high'): void {
-  const d = selectedDistrictObj();
-  if (!d) return;
-  const heightK = k === 'low' ? 0.55 : k === 'mid' ? 1 : 1.8;
-  for (const p of d.patches) {
-    const key = patchKey(p);
-    state.patchEdits.set(key, { ...(state.patchEdits.get(key) ?? {}), heightK });
-  }
-  regenerate();
-}
-
-// ---------------------------------------------------------------- 左栏绑定
-
-function bindSeg<T extends string>(id: string, fn: (k: T) => void): void {
-  const el = document.getElementById(id);
-  if (!el) return;
-  el.querySelectorAll<HTMLButtonElement>('button').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const k = (btn.dataset.k ?? btn.dataset.use ?? btn.dataset.m) as T;
-      if (k) fn(k);
-    });
-  });
-}
-
-function bindPlanning(): void {
-  bindSeg<'low' | 'mid' | 'high'>('seg-roaddens', setRoadDensity);
-  bindSeg<'low' | 'mid' | 'high'>('seg-blddens', setBuildingDensity);
-  bindSeg<'low' | 'mid' | 'high'>('seg-green', setGreenLevel);
-  bindSeg<'weak' | 'mid' | 'strong'>('seg-dir', setDirection);
-
-  const size = document.getElementById('seg-size2');
-  size?.querySelectorAll<HTMLButtonElement>('button').forEach((btn) => {
-    btn.addEventListener('click', () => setSize(Number(btn.dataset.k)));
-  });
-
-  document.getElementById('btn-draw-blank')?.addEventListener('click', () => {
-    pendingBlank = true;
-    view2d.setMode('poly');
-    toast('画一块禁建区：点顶点，双击闭合');
-  });
-  document.getElementById('btn-clear-blank')?.addEventListener('click', () => {
-    updateZones([]);
-    toast('已清除全部禁建区');
-  });
-
-  const bp = document.getElementById('seg-bpreset2');
-  bp?.querySelectorAll<HTMLButtonElement>('button').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const key = btn.dataset.k as string;
-      const preset = BUILDING_PRESETS.find((b) => b.key === key);
-      if (!preset) return;
-      state.buildingPreset = key;
-      state.params.building = { ...state.params.building, ...(preset.apply ?? {}) };
-      regenerate();
-    });
-  });
-
-  const h = document.getElementById('rng-height2') as HTMLInputElement | null;
-  const hv = document.getElementById('val-height2');
-  h?.addEventListener('input', () => {
-    state.heightScale = Number(h.value);
-    if (hv) hv.textContent = state.heightScale.toFixed(1) + '×';
-  });
-  h?.addEventListener('change', () => {
-    view2d.draw();
-    if (currentView === '3d') refresh3D();
-  });
-
-  document.getElementById('btn-regen2')?.addEventListener('click', () => regenerate());
-}
-
-// ---------------------------------------------------------------- 右栏：五个层级
-
-const SCOPE_LABEL = {
-  city: '城市',
-  district: '自动片区',
-  region: '规划区',
-  parcel: '地块',
-  blank: '禁建区',
-} as const;
-
-function scopeTabsHtml(): string {
-  return '<div class="scopes">' + (Object.keys(SCOPE_LABEL) as (keyof typeof SCOPE_LABEL)[])
-    .map((k) => '<button data-scope="' + k + '" class="' + (k === selectedScope ? 'active' : '') + '">' + SCOPE_LABEL[k] + '</button>')
-    .join('') + '</div>';
-}
-
-/** 一行"值 + 来源"：U1.5 的核心显示 —— 用户要能回答"这个值来自哪一层" */
-function provRow(label: string, value: string, source: string): string {
-  return `<div class="row prov"><label>${label}</label><span class="val">${value}</span><span class="src">${source}</span></div>`;
-}
-
-function selectedRegionObj(): PlanningRegion | null {
-  return state.regions.find((r) => r.id === selectedRegion) ?? null;
-}
-
-function scopeBodyHtml(): string {
-  // ── 自动片区（只读，可一键转成规划区）
-  if (selectedScope === 'district') {
-    const d = selectedDistrictObj();
-    if (!d) return '<div class="tip">在中间地图上点一个街区，会自动定位它所属的自动片区。</div>';
-    return `
-      <div class="card" style="margin-bottom:8px">
-        <div class="name">自动片区 ${d.label}<span class="tag-ro">只读</span></div>
-        <div class="meta">${d.patches.length} 个地块 · 主要用途 ${d.use ? USE_LABEL[d.use] : '—'}</div>
-      </div>
-      <div class="tip">自动片区是 k-means 派生出来的<b>选择组</b>，不能编辑。</div>
-      <div class="row" style="margin-top:8px"><button class="ghost grow" id="btn-dist-to-region">转换为规划区</button></div>`;
-  }
-  // ── 规划区（用户约束，可编辑）
-  if (selectedScope === 'region') {
-    const r = selectedRegionObj();
-    if (!r) return '<div class="tip">还没有选中规划区。点工具栏「规划区」在地图上画一块。</div>';
-    const area = Math.round(polyArea(r.ring));
-    const o = r.overrides;
-    return `
-      <div class="card" style="margin-bottom:8px">
-        <div class="name">${r.label}<span class="tag-ed">可编辑</span></div>
-        <div class="meta">${area} m² · ${r.source === 'manual' ? '手绘' : '由自动片区转换'}</div>
-      </div>
-      <div class="row"><label>用途</label><div class="seg wrap" id="seg-reg-use">
-        ${USE_CHOICES.map((u) => `<button data-use="${u.use}" class="${o.use === u.use ? 'active' : ''}">${u.label}</button>`).join('')}
-      </div></div>
-      ${seg3('seg-reg-dens', '密度', [{ key: 'low', label: DENSITY_LABEL.low }, { key: 'mid', label: DENSITY_LABEL.mid }, { key: 'high', label: DENSITY_LABEL.high }], o.density ?? '', '落成目标宗地面积：高=40 m²/块，密。')}
-      ${seg3('seg-reg-h', '建筑高度', [{ key: 'low', label: HEIGHT_LABEL.low }, { key: 'mid', label: HEIGHT_LABEL.mid }, { key: 'high', label: HEIGHT_LABEL.high }], o.heightBand ?? '', '落成高度倍率：低 0.55× / 中 1× / 高 1.8×。')}
-      <div class="row"><label>绿地占比</label>
-        <input type="range" id="rng-reg-green" min="0" max="80" step="5" value="${Math.round((o.greenRatio ?? 0) * 100)}" class="grow"/>
-        <span class="val" id="val-reg-green">${Math.round((o.greenRatio ?? 0) * 100)}%</span>
-      </div>
-      <div class="row" style="margin-top:8px"><button class="ghost grow" id="btn-reg-apply">仅重新生成此区域</button></div>
-      <div class="row" style="margin-top:6px"><button class="ghost" id="btn-reg-del">删除规划区</button></div>
-      <div class="tip">覆盖链：<b>地块 &gt; 规划区 &gt; 城市默认</b>。这里设的值会写进区内所有<b>没有单独覆盖</b>的地块。</div>`;
-  }
-  // ── 地块（可覆盖，显示来源）
-  if (selectedScope === 'parcel') {
-    const p = findPatchByKey(selectedPatchKey ?? '');
-    if (!p) return '<div class="tip">在图上点一块地。</div>';
-    const c = patchCenter(p);
-    const key = patchKey(p);
-    const cur = state.patchEdits.get(key);
-    const r = resolveFor(new Pt(c.x, c.y), state.regions, cur, state.params.block.parcelTargetA);
-    const blds = (p.ward as unknown as { geometry?: unknown[] } | null)?.geometry?.length ?? 0;
-    return `
-      <div class="card" style="margin-bottom:8px">
-        <div class="name">地块</div>
-        <div class="meta">${Math.round(polyArea(p.shape))} m² · ${blds} 栋 · ${r.region ? '属于 ' + r.region.label : '不在任何规划区'}</div>
-      </div>
-      ${provRow('用途', USE_LABEL[r.use.value ?? 'reserved'], r.use.source)}
-      ${provRow('高度', r.height.value === undefined ? '—' : r.height.value.toFixed(2) + '×', r.height.source)}
-      ${provRow('宗地目标', r.targetA.value === undefined ? '—' : Math.round(r.targetA.value) + ' m²', r.targetA.source)}
-      <div class="row" style="margin-top:8px"><label>用途覆盖</label><div class="seg wrap" id="seg-parcel-use">
-        ${USE_CHOICES.map((u) => `<button data-use="${u.use}" class="${cur?.use === u.use ? 'active' : ''}">${u.label}</button>`).join('')}
-      </div></div>
-      <div class="row" style="margin-top:6px"><button class="ghost grow" id="btn-parcel-clear">清除本块覆盖</button></div>`;
-  }
-  // ── 禁建区
-  if (selectedScope === 'blank') {
-    const blanks = model.patches.filter((x) => x.blocked);
-    if (!blanks.length) return '<div class="tip">还没有禁建区。左栏「城市 → 绘制禁建区」。</div>';
-    return blanks
-      .slice(0, 6)
-      .map((x, i) => {
-        const a = Math.round(polyArea(x.shape));
-        return '<div class="card" style="margin-bottom:6px"><div class="name">禁建区 ' + String.fromCharCode(65 + i) + '</div><div class="meta">' + a + ' m²</div></div>';
-      })
-      .join('');
-  }
-  // ── 城市
-  const st = model.stats();
-  return `
-    <div class="card" style="margin-bottom:8px">
-      <div class="name">城市</div>
-      <div class="meta">${st.patches} 个地块 · ${districts.length} 个自动片区 · ${state.regions.length} 个规划区${st.blocked ? ` · ${st.blocked} 禁建` : ''}</div>
-    </div>
-    ${provRow('建筑', st.buildings + ' 栋', '城市默认')}
-    ${provRow('街区', st.patches + ' 个', '城市默认')}
-    <div class="tip">左侧调规模 / 结构 / 高度；要改某一片请在图上画<b>规划区</b>。</div>`;
-}
-
-function bindScopes(): void {
-  const bar = document.getElementById('rightbar');
-  bar?.querySelectorAll<HTMLButtonElement>('[data-scope]').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      selectedScope = btn.dataset.scope as typeof selectedScope;
-      buildRight();
-    });
-  });
-
-  // 自动片区 → 规划区（union 它的地块）
-  document.getElementById('btn-dist-to-region')?.addEventListener('click', () => {
-    const d = selectedDistrictObj();
-    if (!d) return;
-    // 用各地块的顶点做一个简单外轮廓（不引入新几何：取所有顶点的凸包式极值点到质心连线）
-    const pts: Pt[] = [];
-    for (const p of d.patches) for (const v of p.shape) pts.push(v);
-    const c = { x: d.cx, y: d.cy };
-    // 按极角排序取"最外圈"的 24 个方向上的最远点 —— 够用的凸包近似，避免引入新算法
-    const bins = new Map<number, Pt>();
-    for (const v of pts) {
-      const a = Math.round(((Math.atan2(v.y - c.y, v.x - c.x) + Math.PI) / (Math.PI * 2)) * 24) % 24;
-      const dist = (v.x - c.x) ** 2 + (v.y - c.y) ** 2;
-      const prev = bins.get(a);
-      if (!prev || dist > (prev.x - c.x) ** 2 + (prev.y - c.y) ** 2) bins.set(a, v);
-    }
-    const ring = [...bins.entries()].sort((x, y) => x[0] - y[0]).map((x) => x[1]);
-    if (ring.length < 3) {
-      toast('这个片区太碎，无法转成规划区');
-      return;
-    }
-    const reg = makeRegion(ring, { use: d.use ?? undefined }, 'generated');
-    reg.label = `规划区（自动片区 ${d.label}）`;
-    state.regions.push(reg);
-    selectedRegion = reg.id;
-    selectedScope = 'region';
-    selectedDistrict = null;
-    view2d.setDistrict([]);
-    regenerate();
-    toast(`已转换：${reg.label}`);
-  });
-
-  // 规划区属性
-  document.getElementById('seg-reg-use')?.querySelectorAll<HTMLButtonElement>('button').forEach((btn) => {
-    btn.addEventListener('click', () => updateRegion((r) => ({ ...r, overrides: { ...r.overrides, use: btn.dataset.use as LandUse } })));
-  });
-  bindSeg<'low' | 'mid' | 'high'>('seg-reg-dens', (k) => updateRegion((r) => ({ ...r, overrides: { ...r.overrides, density: k } })));
-  bindSeg<'low' | 'mid' | 'high'>('seg-reg-h', (k) => updateRegion((r) => ({ ...r, overrides: { ...r.overrides, heightBand: k } })));
-  const rg = document.getElementById('rng-reg-green') as HTMLInputElement | null;
-  const rgv = document.getElementById('val-reg-green');
-  rg?.addEventListener('input', () => {
-    if (rgv) rgv.textContent = rg.value + '%';
-  });
-  rg?.addEventListener('change', () => {
-    const v = Number(rg.value) / 100;
-    updateRegion((r) => ({ ...r, overrides: { ...r.overrides, greenRatio: v > 0 ? v : undefined } }));
-  });
-  document.getElementById('btn-reg-apply')?.addEventListener('click', () => {
-    regenerate();
-    toast('已按规划区重新生成（当前为整城重算）');
-  });
-  document.getElementById('btn-reg-del')?.addEventListener('click', () => {
-    if (!selectedRegion) return;
-    state.regions = state.regions.filter((r) => r.id !== selectedRegion);
-    selectedRegion = null;
-    selectedScope = 'city';
-    view2d.setDistrict([]);
-    regenerate();
-  });
-
-  // 地块覆盖
-  document.getElementById('seg-parcel-use')?.querySelectorAll<HTMLButtonElement>('button').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      if (!selectedPatchKey) return;
-      const cur = state.patchEdits.get(selectedPatchKey) ?? {};
-      state.patchEdits.set(selectedPatchKey, { ...cur, use: btn.dataset.use as LandUse });
-      regenerate();
-    });
-  });
-  document.getElementById('btn-parcel-clear')?.addEventListener('click', () => {
-    if (!selectedPatchKey) return;
-    state.patchEdits.delete(selectedPatchKey);
-    regenerate();
-  });
-}
-
-/** 改当前规划区的 overrides 并重建面板（不重算城市，等用户点"仅重新生成此区域"） */
-function updateRegion(fn: (r: PlanningRegion) => PlanningRegion): void {
-  const i = state.regions.findIndex((r) => r.id === selectedRegion);
-  if (i < 0) return;
-  state.regions[i] = fn(state.regions[i]);
-  buildRight();
-}
-
-// ---------------------------------------------------------------- 地图工具条
-
-function bindMapTools(): void {
-  const bar = document.getElementById('maptools');
-  if (!bar) return;
-  const sync = (tool: string): void => {
-    bar.querySelectorAll<HTMLButtonElement>('button').forEach((b) => {
-      b.classList.toggle('active', b.dataset.tool === tool);
-    });
-  };
-  bar.querySelectorAll<HTMLButtonElement>('button').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const tool = btn.dataset.tool;
-      if (tool === 'select') {
-        pendingRegion = false;
-        pendingBlank = false;
-        view2d.setMode('select');
-      } else if (tool === 'region') {
-        pendingRegion = true;
-        pendingBlank = false;
-        view2d.setMode('poly');
-        toast('画一块规划区：点顶点，双击闭合；画完在右栏设用途/密度/高度');
-      } else if (tool === 'blank') {
-        pendingBlank = true;
-        pendingRegion = false;
-        view2d.setMode('poly');
-        toast('画一块禁建区：点顶点，双击闭合');
-      }
-      if (tool) sync(tool);
-    });
-  });
-  syncMapTool = (m) => sync(m === 'poly' ? (pendingRegion ? 'region' : 'blank') : 'select');
-}
-
-/** 地图工具条的高亮同步钩子：view2d 画完会自动回到"选择"，这个回调把它同步回去 */
-let syncMapTool: ((m: DrawMode) => void) | null = null;
 
 /** 重数一遍各图层有多少个要素，刷到左栏每行后面的数字上 */
 function refreshDiag(): void {
@@ -1165,8 +459,7 @@ function refreshDiag(): void {
 }
 
 function bindLeft(): void {
-  // 显示控制住在顶栏的「图层」抽屉里（U1.2：View/Layer Manager 与 Inspector 分开）
-  const bar = $('#layer-drawer');
+  const bar = $('#leftbar');
 
   // 单个图层
   bar.querySelectorAll<HTMLInputElement>('input[data-layer]').forEach((el) => {
@@ -1783,18 +1076,9 @@ function buildRight(): void {
     `
   );
 
-  // 右栏 = 当前选中对象的属性（粗）；所有算法参数收进「高级设置」，默认收起。
-  $('#rightbar').innerHTML =
-    scopeTabsHtml() +
-    `<div id="scope-body">${scopeBodyHtml()}</div>` +
-    `<details class="sec" id="adv-settings"><summary><span class="dot"></span>高级生成参数<span class="sec-tag">算法 · 默认折叠</span></summary>` +
-    `<div class="sec-body">${sel}${city}${road}${guide}${zone}${parcel}${building}${io}${resolvedParamsHtml()}</div></details>`;
+  $('#rightbar').innerHTML = sel + city + road + guide + zone + parcel + building + io;
 
-  bindScopes();
   bindRight();
-  // boot 早期 buildRight 会先跑一次（那时 view2d 还没造出来），所以这里要防一手
-  (view2d as View2D | undefined)?.setRegions(state.regions.map((r) => r.ring));
-  renderLayerDrawer();
   renderZoneList();
   renderGuideList();
   if (sel) bindPatchPanel();
@@ -2461,8 +1745,6 @@ function boot(): void {
     model = createModel();
   }
 
-  buildDistricts();
-
   // 先算一遍体检：左栏的图层计数要用
   try {
     diag = diagnose(model, { contentSource: state.contentSource });
@@ -2476,45 +1758,19 @@ function boot(): void {
 
   view2d = new View2D(canvas, model, {
     onRebuild: rebuildGeometry,
-    onZonesChanged: (zones) => {
-      // 画多边形时，看这次是"禁建区"还是"规划区"：规划区不进 zones，而是变成 PlanningRegion
-      if (pendingRegion && zones.length > state.zones.length) {
-        const reg = makeRegion(zoneToPolygon(zones[zones.length - 1]), {}, 'manual');
-        state.regions.push(reg);
-        selectedRegion = reg.id;
-        selectedScope = 'region';
-        pendingRegion = false;
-        updateZones(state.zones); // 还原禁建区列表（区域已单独存下）
-        return;
-      }
-      pendingBlank = false;
-      updateZones(zones);
-    },
+    onZonesChanged: updateZones,
     onGuidesChanged: (guides) => updateGuides(guides),
     onSelection: (p) => syncRoadRow(p.road),
     // 点中地块：选中态记在 app 层（key），面板重建后滚回顶部不影响画布
     onPatchSelect: (p) => {
       selectedPatchKey = p ? patchKey(p) : null;
-      if (p) {
-        // 点地块时顺带定位它属于哪个片区：粗规划的操作单位是片区，
-        // 但用户仍然可以从"某一块地"开始（右栏再切到「地块」看细节）。
-        const d = districtOf(p);
-        selectedDistrict = d ? d.id : selectedDistrict;
-        // 点任何一块地 = 选中它所属的片区（粗规划的操作单位），右栏直接切到「片区」
-        selectedScope = 'district';
-        view2d.setDistrict(d ? d.patches : []);
-      }
       buildRight();
-      buildLeft();
       if (selectedPatchKey) $('#rightbar').scrollTop = 0;
     },
     onStatus: (text) => {
       $('#hint').textContent = text;
     },
-    onModeChanged: (mode) => {
-      syncModeButtons(mode);
-      syncMapTool?.(mode);
-    },
+    onModeChanged: (mode) => syncModeButtons(mode),
   });
   view2d.setZones(state.zones);
   view2d.setGuides(state.guides);
@@ -2529,8 +1785,6 @@ function boot(): void {
   if (state.contentSource !== 'townforge') applyContentSource();
   // 面板是在这之前渲染的（buildRight 在 URL 解析之前），必须重建一次，
   // 否则会出现"画面是 Placemaker、面板却亮着 TownForge"（这一版踩过）
-  bindMapTools();
-  buildLeft();
   buildRight();
   updateStats();
   syncHashSoon();
