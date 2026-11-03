@@ -1063,3 +1063,69 @@ details.adv-sub > summary {
   white-space: nowrap;
 }
 .seg.wrap { flex-wrap: wrap; }
+
+/* ── U1：图层抽屉 / 值来源 / 只读与可编辑标签 ─────────────────── */
+
+#layer-drawer {
+  position: fixed;
+  right: 12px;
+  top: 58px;
+  width: 268px;
+  max-height: calc(100vh - 76px);
+  overflow: auto;
+  z-index: 60;
+  border-radius: 10px;
+  background: rgba(22, 26, 33, 0.98);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  box-shadow: 0 18px 46px rgba(0, 0, 0, 0.5);
+}
+#layer-drawer.hidden { display: none; }
+.drawer-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 12px;
+  font-size: 12px;
+  color: #d7dee9;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  position: sticky;
+  top: 0;
+  background: rgba(22, 26, 33, 0.98);
+}
+.drawer-x { cursor: pointer; color: #8b95a5; font-size: 15px; line-height: 1; }
+.drawer-x:hover { color: #fff; }
+.drawer-body { padding: 10px 12px 14px; }
+
+/* 值 + 来源 */
+.row.prov { align-items: baseline; }
+.row.prov .src {
+  margin-left: auto;
+  font-size: 10px;
+  color: #7d8798;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  padding: 1px 5px;
+  white-space: nowrap;
+}
+
+/* 只读 / 可编辑标签 */
+.tag-ro,
+.tag-ed {
+  margin-left: 6px;
+  font-size: 10px;
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-weight: 400;
+}
+.tag-ro { background: rgba(255, 255, 255, 0.08); color: #96a0b0; }
+.tag-ed { background: rgba(58, 110, 216, 0.22); color: #8fb4ff; }
+
+/* 功能目标条形 */
+.bar {
+  flex: 1 1 auto;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.07);
+  overflow: hidden;
+}
+.bar > i { display: block; height: 100%; border-radius: 3px; }

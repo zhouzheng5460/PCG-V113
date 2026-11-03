@@ -1,0 +1,73 @@
+{
+ "generator": "formalGarden",
+ "seed": 1234,
+ "note": "100×80 规则矩形、无障碍。对照真实用例，看主轴与花坛排布是否只由场地决定。",
+ "settings": {},
+ "shape": {
+  "ring": [
+   [
+    0,
+    0
+   ],
+   [
+    100,
+    0
+   ],
+   [
+    100,
+    80
+   ],
+   [
+    0,
+    80
+   ]
+  ]
+ },
+ "streets": [
+  {
+   "id": 1,
+   "a": [
+    0,
+    -6
+   ],
+   "b": [
+    100,
+    -6
+   ],
+   "width": 12,
+   "category": "road",
+   "sidewalk": true,
+   "speed": 50
+  },
+  {
+   "id": 2,
+   "a": [
+    106,
+    0
+   ],
+   "b": [
+    106,
+    80
+   ],
+   "width": 12,
+   "category": "road",
+   "sidewalk": true,
+   "speed": 50
+  },
+  {
+   "id": 3,
+   "a": [
+    -6,
+    80
+   ],
+   "b": [
+    -6,
+    0
+   ],
+   "width": 12,
+   "category": "road",
+   "sidewalk": true,
+   "speed": 50
+  }
+ ]
+}

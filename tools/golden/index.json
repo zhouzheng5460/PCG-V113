@@ -2,10 +2,10 @@
  "protocol": "site-gen-golden/1",
  "bySource": {
   "bake": 54,
-  "synth": 9
+  "synth": 12
  },
  "note": "由 tools/golden/emit.mjs 生成。plans/ 是 C# 的权威输出，用来做原生 TS 实现的对照基准。",
- "generatedAt": "2026-11-03 03:41:26",
+ "generatedAt": "2026-11-03 04:51:58",
  "channels": [
   "surfaces",
   "nets",
@@ -18,7 +18,7 @@
   "stats",
   "issues"
  ],
- "count": 63,
+ "count": 66,
  "byGenerator": {
   "parking": 19,
   "pitch": 2,
@@ -28,7 +28,7 @@
   "carYard": 2,
   "communityGarden": 1,
   "dogPark": 1,
-  "formalGarden": 1,
+  "formalGarden": 4,
   "greenwayPark": 1,
   "junkYard": 1,
   "mallPark": 1,
@@ -1511,6 +1511,87 @@
     "markers": 6
    },
    "bytes": 81763
+  },
+  {
+   "name": "garden-r0-rect",
+   "generator": "formalGarden",
+   "source": "synth",
+   "ok": true,
+   "why": "",
+   "ready": true,
+   "channels": {
+    "surfaces": 50,
+    "nets": 20,
+    "objects": 348,
+    "areas": 0,
+    "regions": 5,
+    "zoning": 0,
+    "paint": 0,
+    "terraform": 0,
+    "stats": 5,
+    "issues": 0
+   },
+   "input": {
+    "ring": 4,
+    "nets": 3,
+    "settings": 26,
+    "markers": 2
+   },
+   "bytes": 54213
+  },
+  {
+   "name": "garden-r1-obstacles",
+   "generator": "formalGarden",
+   "source": "synth",
+   "ok": true,
+   "why": "",
+   "ready": true,
+   "channels": {
+    "surfaces": 13,
+    "nets": 13,
+    "objects": 91,
+    "areas": 0,
+    "regions": 5,
+    "zoning": 0,
+    "paint": 0,
+    "terraform": 0,
+    "stats": 5,
+    "issues": 0
+   },
+   "input": {
+    "ring": 4,
+    "nets": 2,
+    "settings": 26,
+    "markers": 2
+   },
+   "bytes": 17129
+  },
+  {
+   "name": "garden-r2-lshape",
+   "generator": "formalGarden",
+   "source": "synth",
+   "ok": true,
+   "why": "",
+   "ready": true,
+   "channels": {
+    "surfaces": 2,
+    "nets": 15,
+    "objects": 35,
+    "areas": 0,
+    "regions": 1,
+    "zoning": 0,
+    "paint": 0,
+    "terraform": 0,
+    "stats": 5,
+    "issues": 1
+   },
+   "input": {
+    "ring": 6,
+    "nets": 3,
+    "settings": 26,
+    "markers": 2
+   },
+   "bytes": 9371
   },
   {
    "name": "plaza-r0-rect",

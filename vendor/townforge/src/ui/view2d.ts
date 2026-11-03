@@ -151,8 +151,22 @@ export class View2D {
   private layerVis: (id: LayerId) => boolean = () => true;
 
   /** 换显隐后调用：场景要重建（三维与导出共用同一份过滤） */
-  /** 当前高亮的片区（一组街区）。空数组 = 不高亮 */
+  /** 当前高亮的自动片区（一组街区）—— 淡灰虚线，**只读**，表示"选择组" */
   private districtPatches: Patch[] = [];
+  /** 规划区环（用户约束）—— 实线蓝面，**可编辑** */
+  private regionRings: Pt[][] = [];
+
+  /**
+   * 设置要绘制的规划区。
+   *
+   * 为什么和自动片区分开画：两者在界面上是**两种对象**——
+   * 自动片区是 k-means 派生的只读选择组（淡灰虚线），规划区是用户画的约束（实线蓝面）。
+   * 以前只剩一个蓝色高亮，用户会把"自动片区"误当成"我刚画的规划区"（U1 的核心歧义）。
+   */
+  setRegions(rings: Pt[][]): void {
+    this.regionRings = rings;
+    this.requestDraw();
+  }
 
   setLayerVisibility(fn: (id: LayerId) => boolean): void {
     this.layerVis = fn;
@@ -1579,11 +1593,31 @@ export class View2D {
 
     // 片区高亮画在**最后**（地块填充之后），否则会被地块盖住。
     // 粗规划的操作单位是片区而不是地块：点一下要看到"整片"被框出来。
+    // 规划区：实线蓝面（用户约束，可编辑）
+    if (this.regionRings.length) {
+      ctx.save();
+      ctx.fillStyle = 'rgba(70, 140, 255, 0.16)';
+      ctx.strokeStyle = 'rgba(120, 175, 255, 0.95)';
+      ctx.lineWidth = 2.8 * px;
+      for (const r of this.regionRings) {
+        if (r.length < 3) continue;
+        ctx.beginPath();
+        ctx.moveTo(r[0].x, r[0].y);
+        for (let i = 1; i < r.length; i++) ctx.lineTo(r[i].x, r[i].y);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    // 自动片区：淡灰虚线（**只读**的选择组，不要和规划区混）
     if (this.districtPatches.length) {
       ctx.save();
-      ctx.fillStyle = 'rgba(90, 160, 255, 0.14)';
-      ctx.strokeStyle = 'rgba(90, 160, 255, 0.95)';
-      ctx.lineWidth = 2.4 * px;
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+      ctx.strokeStyle = 'rgba(210, 218, 230, 0.55)';
+      ctx.setLineDash([6 * px, 4 * px]);
+      ctx.lineWidth = 1.4 * px;
       for (const dp of this.districtPatches) {
         const pts = dp.shape;
         if (!pts.length) continue;

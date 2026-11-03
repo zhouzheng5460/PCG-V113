@@ -1,0 +1,178 @@
+{
+ "protocol": "placemaker-input/1",
+ "generator": "formalGarden",
+ "seed": 1234,
+ "shape": {
+  "ring": [
+   [
+    0,
+    0
+   ],
+   [
+    120,
+    0
+   ],
+   [
+    120,
+    100
+   ],
+   [
+    0,
+    100
+   ]
+  ]
+ },
+ "layoutScale": 1,
+ "edgeMargin": 2,
+ "nearbyNets": [
+  {
+   "externalId": 1,
+   "a": [
+    0,
+    -6
+   ],
+   "b": [
+    40,
+    -6
+   ],
+   "c": [
+    80,
+    -6
+   ],
+   "d": [
+    120,
+    -6
+   ],
+   "width": 12,
+   "category": "road",
+   "hasSidewalk": true,
+   "isOneWay": false,
+   "isHighway": false,
+   "speedLimit": 50
+  },
+  {
+   "externalId": 2,
+   "a": [
+    126,
+    0
+   ],
+   "b": [
+    126,
+    33.333
+   ],
+   "c": [
+    126,
+    66.667
+   ],
+   "d": [
+    126,
+    100
+   ],
+   "width": 12,
+   "category": "road",
+   "hasSidewalk": true,
+   "isOneWay": false,
+   "isHighway": false,
+   "speedLimit": 50
+  }
+ ],
+ "zoneGrids": [],
+ "obstacles": [
+  {
+   "quad": [
+    [
+     16,
+     60
+    ],
+    [
+     40,
+     60
+    ],
+    [
+     40,
+     84
+    ],
+    [
+     16,
+     84
+    ]
+   ],
+   "kind": "building"
+  },
+  {
+   "quad": [
+    [
+     78,
+     14
+    ],
+    [
+     104,
+     14
+    ],
+    [
+     104,
+     38
+    ],
+    [
+     78,
+     38
+    ]
+   ],
+   "kind": "building"
+  }
+ ],
+ "settings": {
+  "bedSize": 10,
+  "hedges": true,
+  "fountain": true,
+  "allees": true,
+  "topiary": true,
+  "walks": 4.5,
+  "hedgeAsset": "",
+  "flowerAssets": [],
+  "fountainAsset": "",
+  "treeAsset": "",
+  "bushAsset": "",
+  "benchAsset": "",
+  "lampAsset": "",
+  "pathAsset": "",
+  "fence": true,
+  "fenceAsset": "",
+  "shopAmount": "some",
+  "shopLayout": "band",
+  "shopDepth": 24,
+  "dressStyle": "clean",
+  "dressLawn": "surface",
+  "dressPaintWear": 100,
+  "dressDesirePaths": false,
+  "dressMulch": true,
+  "dressLawnTint": true,
+  "dressPaintClear": false
+ },
+ "markers": [
+  {
+   "kind": "pedestrian",
+   "ringSegment": 0,
+   "ringT": 0.275,
+   "position": [
+    33,
+    0
+   ],
+   "crosswalk": false
+  },
+  {
+   "kind": "pedestrian",
+   "ringSegment": 1,
+   "ringT": 0.69,
+   "position": [
+    120,
+    69
+   ],
+   "crosswalk": false
+  }
+ ],
+ "regionTags": [
+  "root"
+ ],
+ "water": null
+}

@@ -16,9 +16,13 @@ import { fileURLToPath } from 'node:url';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const index = JSON.parse(readFileSync(join(HERE, 'index.json'), 'utf8'));
-const declared = existsSync(join(HERE, 'plaza-cohorts.json'))
-  ? JSON.parse(readFileSync(join(HERE, 'plaza-cohorts.json'), 'utf8')).cases
-  : {};
+// 生成时声明的 cohort 优先：每个生成器可以有自己的 <gen>-cohorts.json
+const declared = {};
+for (const f of ['plaza-cohorts.json', 'garden-cohorts.json']) {
+  const fp = join(HERE, f);
+  if (!existsSync(fp)) continue;
+  for (const [k, v] of Object.entries(JSON.parse(readFileSync(fp, 'utf8')).cases ?? {})) declared[k] = v;
+}
 
 const cases = {};
 for (const c of index.cases) {

@@ -1,0 +1,20 @@
+{
+ "protocol": "site-gen-cohorts/1",
+ "cases": {
+  "garden-r0-rect": {
+   "generator": "formalGarden",
+   "cohort": "primary",
+   "note": "100×80 规则矩形、无障碍。对照真实用例，看主轴与花坛排布是否只由场地决定。"
+  },
+  "garden-r1-obstacles": {
+   "generator": "formalGarden",
+   "cohort": "primary-critical",
+   "note": "120×100 地块内有 2 栋既有建筑。**这是唯一能回答\"障碍物进入后如何反应\"的用例。**"
+  },
+  "garden-r2-lshape": {
+   "generator": "formalGarden",
+   "cohort": "primary",
+   "note": "L 形（100×50 + 40×40）。看对称轴/主轴在地块两段走向不同时怎么选。"
+  }
+ }
+}

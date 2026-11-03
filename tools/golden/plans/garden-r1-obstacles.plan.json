@@ -1,0 +1,1567 @@
+{
+ "protocol": "placemaker-plan/1",
+ "generator": "formalGarden",
+ "units": "meters",
+ "seed": 1234,
+ "area": 12000,
+ "ready": true,
+ "markers": {
+  "given": 0,
+  "auto": 2
+ },
+ "settings": {
+  "bedSize": 10,
+  "hedges": true,
+  "fountain": true,
+  "allees": true,
+  "topiary": true,
+  "walks": 4.5,
+  "hedgeAsset": "",
+  "flowerAssets": [],
+  "fountainAsset": "",
+  "treeAsset": "",
+  "bushAsset": "",
+  "benchAsset": "",
+  "lampAsset": "",
+  "pathAsset": "",
+  "fence": true,
+  "fenceAsset": "",
+  "shopAmount": "some",
+  "shopLayout": "band",
+  "shopDepth": 24,
+  "dressStyle": "clean",
+  "dressLawn": "surface",
+  "dressPaintWear": 100,
+  "dressDesirePaths": false,
+  "dressMulch": true,
+  "dressLawnTint": true,
+  "dressPaintClear": false
+ },
+ "surfaces": [
+  {
+   "role": "grass",
+   "y": 0,
+   "ring": [
+    [
+     120,
+     26
+    ],
+    [
+     120,
+     72
+    ],
+    [
+     40.5,
+     72
+    ],
+    [
+     40.5,
+     59.5
+    ],
+    [
+     15.5,
+     59.5
+    ],
+    [
+     15.5,
+     72
+    ],
+    [
+     0,
+     72
+    ],
+    [
+     0,
+     26
+    ],
+    [
+     77.5,
+     26
+    ],
+    [
+     77.5,
+     38.5
+    ],
+    [
+     104.5,
+     38.5
+    ],
+    [
+     104.5,
+     26
+    ]
+   ]
+  },
+  {
+   "role": "grass",
+   "y": 0,
+   "ring": [
+    [
+     120,
+     72
+    ],
+    [
+     120,
+     100
+    ],
+    [
+     0,
+     100
+    ],
+    [
+     0,
+     72
+    ],
+    [
+     15.5,
+     72
+    ],
+    [
+     15.5,
+     84.5
+    ],
+    [
+     40.5,
+     84.5
+    ],
+    [
+     40.5,
+     72
+    ]
+   ]
+  },
+  {
+   "role": "grass",
+   "y": 0,
+   "ring": [
+    [
+     0,
+     0
+    ],
+    [
+     120,
+     0
+    ],
+    [
+     120,
+     26
+    ],
+    [
+     104.5,
+     26
+    ],
+    [
+     104.5,
+     13.5
+    ],
+    [
+     77.5,
+     13.5
+    ],
+    [
+     77.5,
+     26
+    ],
+    [
+     0,
+     26
+    ]
+   ]
+  },
+  {
+   "role": "plaza",
+   "y": 0,
+   "ring": [
+    [
+     44,
+     69
+    ],
+    [
+     43.625,
+     71.847
+    ],
+    [
+     42.526,
+     74.5
+    ],
+    [
+     40.778,
+     76.778
+    ],
+    [
+     40.5,
+     61.008
+    ],
+    [
+     42.526,
+     63.5
+    ],
+    [
+     43.625,
+     66.153
+    ]
+   ],
+   "category": "surface.paving"
+  },
+  {
+   "role": "plaza",
+   "y": 0,
+   "ring": [
+    [
+     27.466,
+     59.5
+    ],
+    [
+     30.153,
+     58.375
+    ],
+    [
+     33,
+     58
+    ],
+    [
+     35.847,
+     58.375
+    ],
+    [
+     38.534,
+     59.5
+    ]
+   ],
+   "category": "surface.paving"
+  },
+  {
+   "role": "paving",
+   "y": 0,
+   "ring": [
+    [
+     11.5,
+     84.5
+    ],
+    [
+     11.5,
+     94.5
+    ],
+    [
+     5.5,
+     94.5
+    ],
+    [
+     5.5,
+     84.5
+    ]
+   ],
+   "category": "surface.gravel"
+  },
+  {
+   "role": "grass",
+   "y": 0,
+   "ring": [
+    [
+     10.4,
+     85.6
+    ],
+    [
+     10.4,
+     93.4
+    ],
+    [
+     6.6,
+     93.4
+    ],
+    [
+     6.6,
+     85.6
+    ]
+   ],
+   "category": "surface.grass"
+  },
+  {
+   "role": "paving",
+   "y": 0,
+   "ring": [
+    [
+     11.5,
+     43.5
+    ],
+    [
+     11.5,
+     53.5
+    ],
+    [
+     5.5,
+     53.5
+    ],
+    [
+     5.5,
+     43.5
+    ]
+   ],
+   "category": "surface.gravel"
+  },
+  {
+   "role": "grass",
+   "y": 0,
+   "ring": [
+    [
+     10.4,
+     44.6
+    ],
+    [
+     10.4,
+     52.4
+    ],
+    [
+     6.6,
+     52.4
+    ],
+    [
+     6.6,
+     44.6
+    ]
+   ],
+   "category": "surface.grass"
+  },
+  {
+   "role": "paving",
+   "y": 0,
+   "ring": [
+    [
+     60.5,
+     84.5
+    ],
+    [
+     60.5,
+     94.5
+    ],
+    [
+     54.5,
+     94.5
+    ],
+    [
+     54.5,
+     84.5
+    ]
+   ],
+   "category": "surface.gravel"
+  },
+  {
+   "role": "grass",
+   "y": 0,
+   "ring": [
+    [
+     59.4,
+     85.6
+    ],
+    [
+     59.4,
+     93.4
+    ],
+    [
+     55.6,
+     93.4
+    ],
+    [
+     55.6,
+     85.6
+    ]
+   ],
+   "category": "surface.grass"
+  },
+  {
+   "role": "paving",
+   "y": 0,
+   "ring": [
+    [
+     60.5,
+     43.5
+    ],
+    [
+     60.5,
+     53.5
+    ],
+    [
+     54.5,
+     53.5
+    ],
+    [
+     54.5,
+     43.5
+    ]
+   ],
+   "category": "surface.gravel"
+  },
+  {
+   "role": "grass",
+   "y": 0,
+   "ring": [
+    [
+     59.4,
+     44.6
+    ],
+    [
+     59.4,
+     52.4
+    ],
+    [
+     55.6,
+     52.4
+    ],
+    [
+     55.6,
+     44.6
+    ]
+   ],
+   "category": "surface.grass"
+  }
+ ],
+ "nets": [
+  {
+   "role": "pathway",
+   "a": [
+    120,
+    69
+   ],
+   "b": [
+    97.422,
+    69
+   ],
+   "c": [
+    68.335,
+    69
+   ],
+   "d": [
+    44,
+    69
+   ],
+   "startAttach": 2,
+   "endAttach": -1
+  },
+  {
+   "role": "pathway",
+   "a": [
+    33,
+    55.75
+   ],
+   "b": [
+    23.833,
+    55.75
+   ],
+   "c": [
+    14.667,
+    55.75
+   ],
+   "d": [
+    5.5,
+    55.75
+   ],
+   "startAttach": -1,
+   "endAttach": -1
+  },
+  {
+   "role": "pathway",
+   "a": [
+    33,
+    55.75
+   ],
+   "b": [
+    42.167,
+    55.75
+   ],
+   "c": [
+    51.333,
+    55.75
+   ],
+   "d": [
+    60.5,
+    55.75
+   ],
+   "startAttach": -1,
+   "endAttach": -1
+  },
+  {
+   "role": "fence",
+   "a": [
+    0.2,
+    0.2
+   ],
+   "b": [
+    9.883,
+    0.2
+   ],
+   "c": [
+    19.567,
+    0.2
+   ],
+   "d": [
+    29.25,
+    0.2
+   ],
+   "startAttach": -1,
+   "endAttach": -1
+  },
+  {
+   "role": "fence",
+   "a": [
+    36.75,
+    0.2
+   ],
+   "b": [
+    50.592,
+    0.2
+   ],
+   "c": [
+    64.433,
+    0.2
+   ],
+   "d": [
+    78.275,
+    0.2
+   ],
+   "startAttach": -1,
+   "endAttach": -1
+  },
+  {
+   "role": "fence",
+   "a": [
+    78.275,
+    0.2
+   ],
+   "b": [
+    92.117,
+    0.2
+   ],
+   "c": [
+    105.958,
+    0.2
+   ],
+   "d": [
+    119.8,
+    0.2
+   ],
+   "startAttach": -1,
+   "endAttach": -1
+  },
+  {
+   "role": "fence",
+   "a": [
+    119.8,
+    0.2
+   ],
+   "b": [
+    119.8,
+    11.042
+   ],
+   "c": [
+    119.8,
+    21.883
+   ],
+   "d": [
+    119.8,
+    32.725
+   ],
+   "startAttach": -1,
+   "endAttach": -1
+  },
+  {
+   "role": "fence",
+   "a": [
+    119.8,
+    32.725
+   ],
+   "b": [
+    119.8,
+    43.567
+   ],
+   "c": [
+    119.8,
+    54.408
+   ],
+   "d": [
+    119.8,
+    65.25
+   ],
+   "startAttach": -1,
+   "endAttach": -1
+  },
+  {
+   "role": "fence",
+   "a": [
+    119.8,
+    72.75
+   ],
+   "b": [
+    119.8,
+    81.767
+   ],
+   "c": [
+    119.8,
+    90.783
+   ],
+   "d": [
+    119.8,
+    99.8
+   ],
+   "startAttach": -1,
+   "endAttach": -1
+  },
+  {
+   "role": "fence",
+   "a": [
+    119.8,
+    99.8
+   ],
+   "b": [
+    99.867,
+    99.8
+   ],
+   "c": [
+    79.933,
+    99.8
+   ],
+   "d": [
+    60,
+    99.8
+   ],
+   "startAttach": -1,
+   "endAttach": -1
+  },
+  {
+   "role": "fence",
+   "a": [
+    60,
+    99.8
+   ],
+   "b": [
+    40.067,
+    99.8
+   ],
+   "c": [
+    20.133,
+    99.8
+   ],
+   "d": [
+    0.2,
+    99.8
+   ],
+   "startAttach": -1,
+   "endAttach": -1
+  },
+  {
+   "role": "fence",
+   "a": [
+    0.2,
+    99.8
+   ],
+   "b": [
+    0.2,
+    83.2
+   ],
+   "c": [
+    0.2,
+    66.6
+   ],
+   "d": [
+    0.2,
+    50
+   ],
+   "startAttach": -1,
+   "endAttach": -1
+  },
+  {
+   "role": "fence",
+   "a": [
+    0.2,
+    50
+   ],
+   "b": [
+    0.2,
+    33.4
+   ],
+   "c": [
+    0.2,
+    16.8
+   ],
+   "d": [
+    0.2,
+    0.2
+   ],
+   "startAttach": -1,
+   "endAttach": -1
+  }
+ ],
+ "objects": [
+  {
+   "role": "bush",
+   "x": 11.5,
+   "z": 86.167,
+   "yaw": 0,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 11.5,
+   "z": 89.5,
+   "yaw": 0,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 11.5,
+   "z": 92.833,
+   "yaw": 0,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 10,
+   "z": 94.5,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 7,
+   "z": 94.5,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 5.5,
+   "z": 92.833,
+   "yaw": 3.1416,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 5.5,
+   "z": 89.5,
+   "yaw": 3.1416,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 5.5,
+   "z": 86.167,
+   "yaw": 3.1416,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 7,
+   "z": 84.5,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 10,
+   "z": 84.5,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "planter",
+   "x": 8.5,
+   "z": 87.25,
+   "yaw": 0,
+   "category": "flowerbed"
+  },
+  {
+   "role": "planter",
+   "x": 8.5,
+   "z": 91.75,
+   "yaw": 0,
+   "category": "flowerbed"
+  },
+  {
+   "role": "bush",
+   "x": 10.6,
+   "z": 85.4,
+   "yaw": 0
+  },
+  {
+   "role": "bush",
+   "x": 6.4,
+   "z": 93.6,
+   "yaw": 0
+  },
+  {
+   "role": "bush",
+   "x": 11.5,
+   "z": 45.167,
+   "yaw": 0,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 11.5,
+   "z": 48.5,
+   "yaw": 0,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 11.5,
+   "z": 51.833,
+   "yaw": 0,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 10,
+   "z": 53.5,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 7,
+   "z": 53.5,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 5.5,
+   "z": 51.833,
+   "yaw": 3.1416,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 5.5,
+   "z": 48.5,
+   "yaw": 3.1416,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 5.5,
+   "z": 45.167,
+   "yaw": 3.1416,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 7,
+   "z": 43.5,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 10,
+   "z": 43.5,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "planter",
+   "x": 8.5,
+   "z": 46.25,
+   "yaw": 0,
+   "category": "flowerbed"
+  },
+  {
+   "role": "planter",
+   "x": 8.5,
+   "z": 50.75,
+   "yaw": 0,
+   "category": "flowerbed"
+  },
+  {
+   "role": "bush",
+   "x": 10.6,
+   "z": 44.4,
+   "yaw": 0
+  },
+  {
+   "role": "bush",
+   "x": 6.4,
+   "z": 52.6,
+   "yaw": 0
+  },
+  {
+   "role": "bush",
+   "x": 60.5,
+   "z": 86.167,
+   "yaw": 0,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 60.5,
+   "z": 89.5,
+   "yaw": 0,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 60.5,
+   "z": 92.833,
+   "yaw": 0,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 59,
+   "z": 94.5,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 56,
+   "z": 94.5,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 54.5,
+   "z": 92.833,
+   "yaw": 3.1416,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 54.5,
+   "z": 89.5,
+   "yaw": 3.1416,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 54.5,
+   "z": 86.167,
+   "yaw": 3.1416,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 56,
+   "z": 84.5,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 59,
+   "z": 84.5,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "planter",
+   "x": 57.5,
+   "z": 87.25,
+   "yaw": 0,
+   "category": "flowerbed"
+  },
+  {
+   "role": "planter",
+   "x": 57.5,
+   "z": 91.75,
+   "yaw": 0,
+   "category": "flowerbed"
+  },
+  {
+   "role": "bush",
+   "x": 59.6,
+   "z": 85.4,
+   "yaw": 0
+  },
+  {
+   "role": "bush",
+   "x": 55.4,
+   "z": 93.6,
+   "yaw": 0
+  },
+  {
+   "role": "bush",
+   "x": 60.5,
+   "z": 45.167,
+   "yaw": 0,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 60.5,
+   "z": 48.5,
+   "yaw": 0,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 60.5,
+   "z": 51.833,
+   "yaw": 0,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 59,
+   "z": 53.5,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 56,
+   "z": 53.5,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 54.5,
+   "z": 51.833,
+   "yaw": 3.1416,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 54.5,
+   "z": 48.5,
+   "yaw": 3.1416,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 54.5,
+   "z": 45.167,
+   "yaw": 3.1416,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 56,
+   "z": 43.5,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 59,
+   "z": 43.5,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "planter",
+   "x": 57.5,
+   "z": 46.25,
+   "yaw": 0,
+   "category": "flowerbed"
+  },
+  {
+   "role": "planter",
+   "x": 57.5,
+   "z": 50.75,
+   "yaw": 0,
+   "category": "flowerbed"
+  },
+  {
+   "role": "bush",
+   "x": 59.6,
+   "z": 44.4,
+   "yaw": 0
+  },
+  {
+   "role": "bush",
+   "x": 55.4,
+   "z": 52.6,
+   "yaw": 0
+  },
+  {
+   "role": "tree",
+   "x": 37.5,
+   "z": 44,
+   "yaw": 0
+  },
+  {
+   "role": "tree",
+   "x": 28.5,
+   "z": 44,
+   "yaw": 0
+  },
+  {
+   "role": "tree",
+   "x": 37.5,
+   "z": 94,
+   "yaw": 0
+  },
+  {
+   "role": "tree",
+   "x": 28.5,
+   "z": 94,
+   "yaw": 0
+  },
+  {
+   "role": "tree",
+   "x": 37.5,
+   "z": 36,
+   "yaw": 0
+  },
+  {
+   "role": "tree",
+   "x": 28.5,
+   "z": 36,
+   "yaw": 0
+  },
+  {
+   "role": "tree",
+   "x": 37.5,
+   "z": 28,
+   "yaw": 0
+  },
+  {
+   "role": "tree",
+   "x": 28.5,
+   "z": 28,
+   "yaw": 0
+  },
+  {
+   "role": "bench",
+   "x": 42.051,
+   "z": 59.949,
+   "yaw": -0.7854
+  },
+  {
+   "role": "bench",
+   "x": 42.051,
+   "z": 78.051,
+   "yaw": -2.3562
+  },
+  {
+   "role": "lamp",
+   "x": 30.7,
+   "z": 3.33,
+   "yaw": 0
+  },
+  {
+   "role": "lamp",
+   "x": 35.3,
+   "z": 19.33,
+   "yaw": 0
+  },
+  {
+   "role": "lamp",
+   "x": 35.3,
+   "z": 51.33,
+   "yaw": 0
+  },
+  {
+   "role": "lamp",
+   "x": 115.625,
+   "z": 66.7,
+   "yaw": 0
+  },
+  {
+   "role": "lamp",
+   "x": 99.625,
+   "z": 71.3,
+   "yaw": 0
+  },
+  {
+   "role": "lamp",
+   "x": 83.625,
+   "z": 66.7,
+   "yaw": 0
+  },
+  {
+   "role": "lamp",
+   "x": 67.625,
+   "z": 71.3,
+   "yaw": 0
+  },
+  {
+   "role": "lamp",
+   "x": 51.625,
+   "z": 66.7,
+   "yaw": 0
+  },
+  {
+   "role": "lamp",
+   "x": 35.3,
+   "z": 88,
+   "yaw": 0
+  },
+  {
+   "role": "lamp",
+   "x": 41,
+   "z": 84.55,
+   "yaw": 0
+  },
+  {
+   "role": "lamp",
+   "x": 57,
+   "z": 79.95,
+   "yaw": 0
+  },
+  {
+   "role": "lamp",
+   "x": 25,
+   "z": 53.45,
+   "yaw": 0
+  },
+  {
+   "role": "lamp",
+   "x": 9,
+   "z": 58.05,
+   "yaw": 0
+  },
+  {
+   "role": "lamp",
+   "x": 41,
+   "z": 58.05,
+   "yaw": 0
+  },
+  {
+   "role": "bench",
+   "x": 117,
+   "z": 72.2,
+   "yaw": 3.1416
+  },
+  {
+   "role": "bench",
+   "x": 6,
+   "z": 58.95,
+   "yaw": 3.1416
+  },
+  {
+   "role": "bench",
+   "x": 36.2,
+   "z": 3,
+   "yaw": -1.5708
+  },
+  {
+   "role": "bench",
+   "x": 60,
+   "z": 79.05,
+   "yaw": 0
+  },
+  {
+   "role": "bench",
+   "x": 42,
+   "z": 52.55,
+   "yaw": 0
+  },
+  {
+   "role": "bench",
+   "x": 29.8,
+   "z": 89,
+   "yaw": 1.5708
+  },
+  {
+   "role": "bench",
+   "x": 89.448,
+   "z": 65.8,
+   "yaw": 0
+  },
+  {
+   "role": "bench",
+   "x": 29.8,
+   "z": 23.952,
+   "yaw": 1.5708
+  },
+  {
+   "role": "bin",
+   "x": 35.4,
+   "z": 9.661,
+   "yaw": -1.5708
+  },
+  {
+   "role": "bin",
+   "x": 108.25,
+   "z": 71.4,
+   "yaw": 3.1416
+  },
+  {
+   "role": "bin",
+   "x": 6,
+   "z": 79.85,
+   "yaw": 0
+  }
+ ],
+ "areas": [],
+ "regions": [
+  {
+   "key": "green:0",
+   "tags": [
+    "green",
+    "core"
+   ],
+   "ring": [
+    [
+     35,
+     2.5
+    ],
+    [
+     117.5,
+     2.5
+    ],
+    [
+     117.5,
+     67.5
+    ],
+    [
+     42.5,
+     67.5
+    ],
+    [
+     42.5,
+     70
+    ],
+    [
+     117.5,
+     70
+    ],
+    [
+     117.5,
+     97.5
+    ],
+    [
+     60,
+     97.5
+    ],
+    [
+     62.5,
+     80
+    ],
+    [
+     40,
+     80
+    ],
+    [
+     40,
+     60
+    ],
+    [
+     35,
+     60
+    ],
+    [
+     35,
+     57.5
+    ],
+    [
+     62.5,
+     57.5
+    ],
+    [
+     62.5,
+     52.5
+    ],
+    [
+     60,
+     52.5
+    ],
+    [
+     60,
+     40
+    ],
+    [
+     55,
+     40
+    ],
+    [
+     55,
+     52.5
+    ],
+    [
+     35,
+     52.5
+    ],
+    [
+     35,
+     15
+    ],
+    [
+     77.5,
+     15
+    ],
+    [
+     77.5,
+     37.5
+    ],
+    [
+     105,
+     37.5
+    ],
+    [
+     105,
+     12.5
+    ],
+    [
+     35,
+     12.5
+    ]
+   ]
+  },
+  {
+   "key": "green:1",
+   "tags": [
+    "green"
+   ],
+   "ring": [
+    [
+     2.5,
+     2.5
+    ],
+    [
+     30,
+     2.5
+    ],
+    [
+     30,
+     52.5
+    ],
+    [
+     12.5,
+     52.5
+    ],
+    [
+     12.5,
+     40
+    ],
+    [
+     5,
+     40
+    ],
+    [
+     5,
+     55
+    ],
+    [
+     2.5,
+     55
+    ]
+   ]
+  },
+  {
+   "key": "green:2",
+   "tags": [
+    "green"
+   ],
+   "ring": [
+    [
+     2.5,
+     57.5
+    ],
+    [
+     30,
+     57.5
+    ],
+    [
+     30,
+     60
+    ],
+    [
+     15,
+     60
+    ],
+    [
+     15,
+     80
+    ],
+    [
+     2.5,
+     80
+    ]
+   ]
+  },
+  {
+   "key": "green:3",
+   "tags": [
+    "green"
+   ],
+   "ring": [
+    [
+     35,
+     85
+    ],
+    [
+     55,
+     85
+    ],
+    [
+     55,
+     97.5
+    ],
+    [
+     35,
+     97.5
+    ]
+   ]
+  },
+  {
+   "key": "green:4",
+   "tags": [
+    "green"
+   ],
+   "ring": [
+    [
+     12.5,
+     85
+    ],
+    [
+     30,
+     85
+    ],
+    [
+     30,
+     97.5
+    ],
+    [
+     12.5,
+     97.5
+    ]
+   ]
+  }
+ ],
+ "zoning": [],
+ "paint": [],
+ "terraform": [],
+ "unknownRoles": {
+  "surfaces": 0,
+  "nets": 0,
+  "objects": 0,
+  "areas": 0
+ },
+ "stats": [
+  {
+   "key": "Area",
+   "value": 12000,
+   "unit": "m2"
+  },
+  {
+   "key": "Trees",
+   "value": 8,
+   "unit": "count"
+  },
+  {
+   "key": "Benches",
+   "value": 10,
+   "unit": "count"
+  },
+  {
+   "key": "PathLength",
+   "value": 260,
+   "unit": "m"
+  },
+  {
+   "key": "Parterres",
+   "value": 4,
+   "unit": "count"
+  }
+ ],
+ "facts": {
+  "crossWalks": 4,
+  "pathBenches": 8,
+  "pathBins": 3
+ },
+ "issues": []
+}

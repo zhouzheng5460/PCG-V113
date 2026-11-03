@@ -1,0 +1,4474 @@
+{
+ "protocol": "placemaker-plan/1",
+ "generator": "formalGarden",
+ "units": "meters",
+ "seed": 1234,
+ "area": 8000,
+ "ready": true,
+ "markers": {
+  "given": 0,
+  "auto": 2
+ },
+ "settings": {
+  "bedSize": 10,
+  "hedges": true,
+  "fountain": true,
+  "allees": true,
+  "topiary": true,
+  "walks": 4.5,
+  "hedgeAsset": "",
+  "flowerAssets": [],
+  "fountainAsset": "",
+  "treeAsset": "",
+  "bushAsset": "",
+  "benchAsset": "",
+  "lampAsset": "",
+  "pathAsset": "",
+  "fence": true,
+  "fenceAsset": "",
+  "shopAmount": "some",
+  "shopLayout": "band",
+  "shopDepth": 24,
+  "dressStyle": "clean",
+  "dressLawn": "surface",
+  "dressPaintWear": 100,
+  "dressDesirePaths": false,
+  "dressMulch": true,
+  "dressLawnTint": true,
+  "dressPaintClear": false
+ },
+ "surfaces": [
+  {
+   "role": "grass",
+   "y": 0,
+   "ring": [
+    [
+     0,
+     0
+    ],
+    [
+     100,
+     0
+    ],
+    [
+     100,
+     80
+    ],
+    [
+     0,
+     80
+    ]
+   ]
+  },
+  {
+   "role": "plaza",
+   "y": 0,
+   "ring": [
+    [
+     58.8,
+     40.333
+    ],
+    [
+     58.5,
+     42.611
+    ],
+    [
+     57.621,
+     44.733
+    ],
+    [
+     56.223,
+     46.556
+    ],
+    [
+     54.4,
+     47.954
+    ],
+    [
+     52.278,
+     48.834
+    ],
+    [
+     50,
+     49.133
+    ],
+    [
+     47.722,
+     48.834
+    ],
+    [
+     45.6,
+     47.954
+    ],
+    [
+     43.777,
+     46.556
+    ],
+    [
+     42.379,
+     44.733
+    ],
+    [
+     41.5,
+     42.611
+    ],
+    [
+     41.2,
+     40.333
+    ],
+    [
+     41.5,
+     38.056
+    ],
+    [
+     42.379,
+     35.933
+    ],
+    [
+     43.777,
+     34.111
+    ],
+    [
+     45.6,
+     32.712
+    ],
+    [
+     47.722,
+     31.833
+    ],
+    [
+     50,
+     31.533
+    ],
+    [
+     52.278,
+     31.833
+    ],
+    [
+     54.4,
+     32.712
+    ],
+    [
+     56.223,
+     34.111
+    ],
+    [
+     57.621,
+     35.933
+    ],
+    [
+     58.5,
+     38.056
+    ]
+   ],
+   "category": "surface.paving"
+  },
+  {
+   "role": "paving",
+   "y": 0,
+   "ring": [
+    [
+     63.3,
+     51.333
+    ],
+    [
+     73.3,
+     51.333
+    ],
+    [
+     73.3,
+     57.333
+    ],
+    [
+     63.3,
+     57.333
+    ]
+   ],
+   "category": "surface.gravel"
+  },
+  {
+   "role": "grass",
+   "y": 0,
+   "ring": [
+    [
+     64.4,
+     52.433
+    ],
+    [
+     72.2,
+     52.433
+    ],
+    [
+     72.2,
+     56.233
+    ],
+    [
+     64.4,
+     56.233
+    ]
+   ],
+   "category": "surface.grass"
+  },
+  {
+   "role": "paving",
+   "y": 0,
+   "ring": [
+    [
+     26.7,
+     51.333
+    ],
+    [
+     36.7,
+     51.333
+    ],
+    [
+     36.7,
+     57.333
+    ],
+    [
+     26.7,
+     57.333
+    ]
+   ],
+   "category": "surface.gravel"
+  },
+  {
+   "role": "grass",
+   "y": 0,
+   "ring": [
+    [
+     27.8,
+     52.433
+    ],
+    [
+     35.6,
+     52.433
+    ],
+    [
+     35.6,
+     56.233
+    ],
+    [
+     27.8,
+     56.233
+    ]
+   ],
+   "category": "surface.grass"
+  },
+  {
+   "role": "paving",
+   "y": 0,
+   "ring": [
+    [
+     63.3,
+     23.333
+    ],
+    [
+     73.3,
+     23.333
+    ],
+    [
+     73.3,
+     29.333
+    ],
+    [
+     63.3,
+     29.333
+    ]
+   ],
+   "category": "surface.gravel"
+  },
+  {
+   "role": "grass",
+   "y": 0,
+   "ring": [
+    [
+     64.4,
+     24.433
+    ],
+    [
+     72.2,
+     24.433
+    ],
+    [
+     72.2,
+     28.233
+    ],
+    [
+     64.4,
+     28.233
+    ]
+   ],
+   "category": "surface.grass"
+  },
+  {
+   "role": "paving",
+   "y": 0,
+   "ring": [
+    [
+     26.7,
+     23.333
+    ],
+    [
+     36.7,
+     23.333
+    ],
+    [
+     36.7,
+     29.333
+    ],
+    [
+     26.7,
+     29.333
+    ]
+   ],
+   "category": "surface.gravel"
+  },
+  {
+   "role": "grass",
+   "y": 0,
+   "ring": [
+    [
+     27.8,
+     24.433
+    ],
+    [
+     35.6,
+     24.433
+    ],
+    [
+     35.6,
+     28.233
+    ],
+    [
+     27.8,
+     28.233
+    ]
+   ],
+   "category": "surface.grass"
+  },
+  {
+   "role": "paving",
+   "y": 0,
+   "ring": [
+    [
+     63.3,
+     61.833
+    ],
+    [
+     73.3,
+     61.833
+    ],
+    [
+     73.3,
+     67.833
+    ],
+    [
+     63.3,
+     67.833
+    ]
+   ],
+   "category": "surface.gravel"
+  },
+  {
+   "role": "grass",
+   "y": 0,
+   "ring": [
+    [
+     64.4,
+     62.933
+    ],
+    [
+     72.2,
+     62.933
+    ],
+    [
+     72.2,
+     66.733
+    ],
+    [
+     64.4,
+     66.733
+    ]
+   ],
+   "category": "surface.grass"
+  },
+  {
+   "role": "paving",
+   "y": 0,
+   "ring": [
+    [
+     26.7,
+     61.833
+    ],
+    [
+     36.7,
+     61.833
+    ],
+    [
+     36.7,
+     67.833
+    ],
+    [
+     26.7,
+     67.833
+    ]
+   ],
+   "category": "surface.gravel"
+  },
+  {
+   "role": "grass",
+   "y": 0,
+   "ring": [
+    [
+     27.8,
+     62.933
+    ],
+    [
+     35.6,
+     62.933
+    ],
+    [
+     35.6,
+     66.733
+    ],
+    [
+     27.8,
+     66.733
+    ]
+   ],
+   "category": "surface.grass"
+  },
+  {
+   "role": "paving",
+   "y": 0,
+   "ring": [
+    [
+     63.3,
+     12.833
+    ],
+    [
+     73.3,
+     12.833
+    ],
+    [
+     73.3,
+     18.833
+    ],
+    [
+     63.3,
+     18.833
+    ]
+   ],
+   "category": "surface.gravel"
+  },
+  {
+   "role": "grass",
+   "y": 0,
+   "ring": [
+    [
+     64.4,
+     13.933
+    ],
+    [
+     72.2,
+     13.933
+    ],
+    [
+     72.2,
+     17.733
+    ],
+    [
+     64.4,
+     17.733
+    ]
+   ],
+   "category": "surface.grass"
+  },
+  {
+   "role": "paving",
+   "y": 0,
+   "ring": [
+    [
+     26.7,
+     12.833
+    ],
+    [
+     36.7,
+     12.833
+    ],
+    [
+     36.7,
+     18.833
+    ],
+    [
+     26.7,
+     18.833
+    ]
+   ],
+   "category": "surface.gravel"
+  },
+  {
+   "role": "grass",
+   "y": 0,
+   "ring": [
+    [
+     27.8,
+     13.933
+    ],
+    [
+     35.6,
+     13.933
+    ],
+    [
+     35.6,
+     17.733
+    ],
+    [
+     27.8,
+     17.733
+    ]
+   ],
+   "category": "surface.grass"
+  },
+  {
+   "role": "paving",
+   "y": 0,
+   "ring": [
+    [
+     63.3,
+     72.333
+    ],
+    [
+     73.3,
+     72.333
+    ],
+    [
+     73.3,
+     78.333
+    ],
+    [
+     63.3,
+     78.333
+    ]
+   ],
+   "category": "surface.gravel"
+  },
+  {
+   "role": "grass",
+   "y": 0,
+   "ring": [
+    [
+     64.4,
+     73.433
+    ],
+    [
+     72.2,
+     73.433
+    ],
+    [
+     72.2,
+     77.233
+    ],
+    [
+     64.4,
+     77.233
+    ]
+   ],
+   "category": "surface.grass"
+  },
+  {
+   "role": "paving",
+   "y": 0,
+   "ring": [
+    [
+     26.7,
+     72.333
+    ],
+    [
+     36.7,
+     72.333
+    ],
+    [
+     36.7,
+     78.333
+    ],
+    [
+     26.7,
+     78.333
+    ]
+   ],
+   "category": "surface.gravel"
+  },
+  {
+   "role": "grass",
+   "y": 0,
+   "ring": [
+    [
+     27.8,
+     73.433
+    ],
+    [
+     35.6,
+     73.433
+    ],
+    [
+     35.6,
+     77.233
+    ],
+    [
+     27.8,
+     77.233
+    ]
+   ],
+   "category": "surface.grass"
+  },
+  {
+   "role": "paving",
+   "y": 0,
+   "ring": [
+    [
+     63.3,
+     2.333
+    ],
+    [
+     73.3,
+     2.333
+    ],
+    [
+     73.3,
+     8.333
+    ],
+    [
+     63.3,
+     8.333
+    ]
+   ],
+   "category": "surface.gravel"
+  },
+  {
+   "role": "grass",
+   "y": 0,
+   "ring": [
+    [
+     64.4,
+     3.433
+    ],
+    [
+     72.2,
+     3.433
+    ],
+    [
+     72.2,
+     7.233
+    ],
+    [
+     64.4,
+     7.233
+    ]
+   ],
+   "category": "surface.grass"
+  },
+  {
+   "role": "paving",
+   "y": 0,
+   "ring": [
+    [
+     26.7,
+     2.333
+    ],
+    [
+     36.7,
+     2.333
+    ],
+    [
+     36.7,
+     8.333
+    ],
+    [
+     26.7,
+     8.333
+    ]
+   ],
+   "category": "surface.gravel"
+  },
+  {
+   "role": "grass",
+   "y": 0,
+   "ring": [
+    [
+     27.8,
+     3.433
+    ],
+    [
+     35.6,
+     3.433
+    ],
+    [
+     35.6,
+     7.233
+    ],
+    [
+     27.8,
+     7.233
+    ]
+   ],
+   "category": "surface.grass"
+  },
+  {
+   "role": "paving",
+   "y": 0,
+   "ring": [
+    [
+     77.8,
+     51.333
+    ],
+    [
+     87.8,
+     51.333
+    ],
+    [
+     87.8,
+     57.333
+    ],
+    [
+     77.8,
+     57.333
+    ]
+   ],
+   "category": "surface.gravel"
+  },
+  {
+   "role": "grass",
+   "y": 0,
+   "ring": [
+    [
+     78.9,
+     52.433
+    ],
+    [
+     86.7,
+     52.433
+    ],
+    [
+     86.7,
+     56.233
+    ],
+    [
+     78.9,
+     56.233
+    ]
+   ],
+   "category": "surface.grass"
+  },
+  {
+   "role": "paving",
+   "y": 0,
+   "ring": [
+    [
+     12.2,
+     51.333
+    ],
+    [
+     22.2,
+     51.333
+    ],
+    [
+     22.2,
+     57.333
+    ],
+    [
+     12.2,
+     57.333
+    ]
+   ],
+   "category": "surface.gravel"
+  },
+  {
+   "role": "grass",
+   "y": 0,
+   "ring": [
+    [
+     13.3,
+     52.433
+    ],
+    [
+     21.1,
+     52.433
+    ],
+    [
+     21.1,
+     56.233
+    ],
+    [
+     13.3,
+     56.233
+    ]
+   ],
+   "category": "surface.grass"
+  },
+  {
+   "role": "paving",
+   "y": 0,
+   "ring": [
+    [
+     77.8,
+     23.333
+    ],
+    [
+     87.8,
+     23.333
+    ],
+    [
+     87.8,
+     29.333
+    ],
+    [
+     77.8,
+     29.333
+    ]
+   ],
+   "category": "surface.gravel"
+  },
+  {
+   "role": "grass",
+   "y": 0,
+   "ring": [
+    [
+     78.9,
+     24.433
+    ],
+    [
+     86.7,
+     24.433
+    ],
+    [
+     86.7,
+     28.233
+    ],
+    [
+     78.9,
+     28.233
+    ]
+   ],
+   "category": "surface.grass"
+  },
+  {
+   "role": "paving",
+   "y": 0,
+   "ring": [
+    [
+     12.2,
+     23.333
+    ],
+    [
+     22.2,
+     23.333
+    ],
+    [
+     22.2,
+     29.333
+    ],
+    [
+     12.2,
+     29.333
+    ]
+   ],
+   "category": "surface.gravel"
+  },
+  {
+   "role": "grass",
+   "y": 0,
+   "ring": [
+    [
+     13.3,
+     24.433
+    ],
+    [
+     21.1,
+     24.433
+    ],
+    [
+     21.1,
+     28.233
+    ],
+    [
+     13.3,
+     28.233
+    ]
+   ],
+   "category": "surface.grass"
+  },
+  {
+   "role": "paving",
+   "y": 0,
+   "ring": [
+    [
+     77.8,
+     61.833
+    ],
+    [
+     87.8,
+     61.833
+    ],
+    [
+     87.8,
+     67.833
+    ],
+    [
+     77.8,
+     67.833
+    ]
+   ],
+   "category": "surface.gravel"
+  },
+  {
+   "role": "grass",
+   "y": 0,
+   "ring": [
+    [
+     78.9,
+     62.933
+    ],
+    [
+     86.7,
+     62.933
+    ],
+    [
+     86.7,
+     66.733
+    ],
+    [
+     78.9,
+     66.733
+    ]
+   ],
+   "category": "surface.grass"
+  },
+  {
+   "role": "paving",
+   "y": 0,
+   "ring": [
+    [
+     12.2,
+     61.833
+    ],
+    [
+     22.2,
+     61.833
+    ],
+    [
+     22.2,
+     67.833
+    ],
+    [
+     12.2,
+     67.833
+    ]
+   ],
+   "category": "surface.gravel"
+  },
+  {
+   "role": "grass",
+   "y": 0,
+   "ring": [
+    [
+     13.3,
+     62.933
+    ],
+    [
+     21.1,
+     62.933
+    ],
+    [
+     21.1,
+     66.733
+    ],
+    [
+     13.3,
+     66.733
+    ]
+   ],
+   "category": "surface.grass"
+  },
+  {
+   "role": "paving",
+   "y": 0,
+   "ring": [
+    [
+     77.8,
+     12.833
+    ],
+    [
+     87.8,
+     12.833
+    ],
+    [
+     87.8,
+     18.833
+    ],
+    [
+     77.8,
+     18.833
+    ]
+   ],
+   "category": "surface.gravel"
+  },
+  {
+   "role": "grass",
+   "y": 0,
+   "ring": [
+    [
+     78.9,
+     13.933
+    ],
+    [
+     86.7,
+     13.933
+    ],
+    [
+     86.7,
+     17.733
+    ],
+    [
+     78.9,
+     17.733
+    ]
+   ],
+   "category": "surface.grass"
+  },
+  {
+   "role": "paving",
+   "y": 0,
+   "ring": [
+    [
+     12.2,
+     12.833
+    ],
+    [
+     22.2,
+     12.833
+    ],
+    [
+     22.2,
+     18.833
+    ],
+    [
+     12.2,
+     18.833
+    ]
+   ],
+   "category": "surface.gravel"
+  },
+  {
+   "role": "grass",
+   "y": 0,
+   "ring": [
+    [
+     13.3,
+     13.933
+    ],
+    [
+     21.1,
+     13.933
+    ],
+    [
+     21.1,
+     17.733
+    ],
+    [
+     13.3,
+     17.733
+    ]
+   ],
+   "category": "surface.grass"
+  },
+  {
+   "role": "paving",
+   "y": 0,
+   "ring": [
+    [
+     77.8,
+     72.333
+    ],
+    [
+     87.8,
+     72.333
+    ],
+    [
+     87.8,
+     78.333
+    ],
+    [
+     77.8,
+     78.333
+    ]
+   ],
+   "category": "surface.gravel"
+  },
+  {
+   "role": "grass",
+   "y": 0,
+   "ring": [
+    [
+     78.9,
+     73.433
+    ],
+    [
+     86.7,
+     73.433
+    ],
+    [
+     86.7,
+     77.233
+    ],
+    [
+     78.9,
+     77.233
+    ]
+   ],
+   "category": "surface.grass"
+  },
+  {
+   "role": "paving",
+   "y": 0,
+   "ring": [
+    [
+     12.2,
+     72.333
+    ],
+    [
+     22.2,
+     72.333
+    ],
+    [
+     22.2,
+     78.333
+    ],
+    [
+     12.2,
+     78.333
+    ]
+   ],
+   "category": "surface.gravel"
+  },
+  {
+   "role": "grass",
+   "y": 0,
+   "ring": [
+    [
+     13.3,
+     73.433
+    ],
+    [
+     21.1,
+     73.433
+    ],
+    [
+     21.1,
+     77.233
+    ],
+    [
+     13.3,
+     77.233
+    ]
+   ],
+   "category": "surface.grass"
+  },
+  {
+   "role": "paving",
+   "y": 0,
+   "ring": [
+    [
+     77.8,
+     2.333
+    ],
+    [
+     87.8,
+     2.333
+    ],
+    [
+     87.8,
+     8.333
+    ],
+    [
+     77.8,
+     8.333
+    ]
+   ],
+   "category": "surface.gravel"
+  },
+  {
+   "role": "grass",
+   "y": 0,
+   "ring": [
+    [
+     78.9,
+     3.433
+    ],
+    [
+     86.7,
+     3.433
+    ],
+    [
+     86.7,
+     7.233
+    ],
+    [
+     78.9,
+     7.233
+    ]
+   ],
+   "category": "surface.grass"
+  },
+  {
+   "role": "paving",
+   "y": 0,
+   "ring": [
+    [
+     12.2,
+     2.333
+    ],
+    [
+     22.2,
+     2.333
+    ],
+    [
+     22.2,
+     8.333
+    ],
+    [
+     12.2,
+     8.333
+    ]
+   ],
+   "category": "surface.gravel"
+  },
+  {
+   "role": "grass",
+   "y": 0,
+   "ring": [
+    [
+     13.3,
+     3.433
+    ],
+    [
+     21.1,
+     3.433
+    ],
+    [
+     21.1,
+     7.233
+    ],
+    [
+     13.3,
+     7.233
+    ]
+   ],
+   "category": "surface.grass"
+  }
+ ],
+ "nets": [
+  {
+   "role": "pathway",
+   "a": [
+    100,
+    42.333
+   ],
+   "b": [
+    98.8,
+    42.333
+   ],
+   "c": [
+    97.2,
+    42.333
+   ],
+   "d": [
+    96,
+    42.333
+   ],
+   "startAttach": 2,
+   "endAttach": -1
+  },
+  {
+   "role": "pathway",
+   "a": [
+    96,
+    42.333
+   ],
+   "b": [
+    95.4,
+    41.733
+   ],
+   "c": [
+    94.6,
+    40.933
+   ],
+   "d": [
+    94,
+    40.333
+   ],
+   "startAttach": -1,
+   "endAttach": -1
+  },
+  {
+   "role": "pathway",
+   "a": [
+    94,
+    40.333
+   ],
+   "b": [
+    83.281,
+    40.333
+   ],
+   "c": [
+    71.203,
+    40.333
+   ],
+   "d": [
+    58.8,
+    40.333
+   ],
+   "startAttach": -1,
+   "endAttach": -1
+  },
+  {
+   "role": "pathway",
+   "a": [
+    41.2,
+    40.333
+   ],
+   "b": [
+    26.713,
+    40.333
+   ],
+   "c": [
+    12.442,
+    40.333
+   ],
+   "d": [
+    0,
+    40.333
+   ],
+   "startAttach": -1,
+   "endAttach": 3
+  },
+  {
+   "role": "pathway",
+   "a": [
+    61.05,
+    40.333
+   ],
+   "b": [
+    61.05,
+    53
+   ],
+   "c": [
+    61.05,
+    65.667
+   ],
+   "d": [
+    61.05,
+    78.333
+   ],
+   "startAttach": -1,
+   "endAttach": -1
+  },
+  {
+   "role": "pathway",
+   "a": [
+    61.05,
+    40.333
+   ],
+   "b": [
+    61.05,
+    27.667
+   ],
+   "c": [
+    61.05,
+    15
+   ],
+   "d": [
+    61.05,
+    2.333
+   ],
+   "startAttach": -1,
+   "endAttach": -1
+  },
+  {
+   "role": "pathway",
+   "a": [
+    38.95,
+    40.333
+   ],
+   "b": [
+    38.95,
+    53
+   ],
+   "c": [
+    38.95,
+    65.667
+   ],
+   "d": [
+    38.95,
+    78.333
+   ],
+   "startAttach": -1,
+   "endAttach": -1
+  },
+  {
+   "role": "pathway",
+   "a": [
+    38.95,
+    40.333
+   ],
+   "b": [
+    38.95,
+    27.667
+   ],
+   "c": [
+    38.95,
+    15
+   ],
+   "d": [
+    38.95,
+    2.333
+   ],
+   "startAttach": -1,
+   "endAttach": -1
+  },
+  {
+   "role": "pathway",
+   "a": [
+    75.55,
+    40.333
+   ],
+   "b": [
+    75.55,
+    53
+   ],
+   "c": [
+    75.55,
+    65.667
+   ],
+   "d": [
+    75.55,
+    78.333
+   ],
+   "startAttach": -1,
+   "endAttach": -1
+  },
+  {
+   "role": "pathway",
+   "a": [
+    75.55,
+    40.333
+   ],
+   "b": [
+    75.55,
+    27.667
+   ],
+   "c": [
+    75.55,
+    15
+   ],
+   "d": [
+    75.55,
+    2.333
+   ],
+   "startAttach": -1,
+   "endAttach": -1
+  },
+  {
+   "role": "pathway",
+   "a": [
+    24.45,
+    40.333
+   ],
+   "b": [
+    24.45,
+    53
+   ],
+   "c": [
+    24.45,
+    65.667
+   ],
+   "d": [
+    24.45,
+    78.333
+   ],
+   "startAttach": -1,
+   "endAttach": -1
+  },
+  {
+   "role": "pathway",
+   "a": [
+    24.45,
+    40.333
+   ],
+   "b": [
+    24.45,
+    27.667
+   ],
+   "c": [
+    24.45,
+    15
+   ],
+   "d": [
+    24.45,
+    2.333
+   ],
+   "startAttach": -1,
+   "endAttach": -1
+  },
+  {
+   "role": "fence",
+   "a": [
+    0.2,
+    0.2
+   ],
+   "b": [
+    16.8,
+    0.2
+   ],
+   "c": [
+    33.4,
+    0.2
+   ],
+   "d": [
+    50,
+    0.2
+   ],
+   "startAttach": -1,
+   "endAttach": -1
+  },
+  {
+   "role": "fence",
+   "a": [
+    50,
+    0.2
+   ],
+   "b": [
+    66.6,
+    0.2
+   ],
+   "c": [
+    83.2,
+    0.2
+   ],
+   "d": [
+    99.8,
+    0.2
+   ],
+   "startAttach": -1,
+   "endAttach": -1
+  },
+  {
+   "role": "fence",
+   "a": [
+    99.8,
+    0.2
+   ],
+   "b": [
+    99.8,
+    12.994
+   ],
+   "c": [
+    99.8,
+    25.789
+   ],
+   "d": [
+    99.8,
+    38.583
+   ],
+   "startAttach": -1,
+   "endAttach": -1
+  },
+  {
+   "role": "fence",
+   "a": [
+    99.8,
+    46.083
+   ],
+   "b": [
+    99.8,
+    57.322
+   ],
+   "c": [
+    99.8,
+    68.561
+   ],
+   "d": [
+    99.8,
+    79.8
+   ],
+   "startAttach": -1,
+   "endAttach": -1
+  },
+  {
+   "role": "fence",
+   "a": [
+    99.8,
+    79.8
+   ],
+   "b": [
+    83.2,
+    79.8
+   ],
+   "c": [
+    66.6,
+    79.8
+   ],
+   "d": [
+    50,
+    79.8
+   ],
+   "startAttach": -1,
+   "endAttach": -1
+  },
+  {
+   "role": "fence",
+   "a": [
+    50,
+    79.8
+   ],
+   "b": [
+    33.4,
+    79.8
+   ],
+   "c": [
+    16.8,
+    79.8
+   ],
+   "d": [
+    0.2,
+    79.8
+   ],
+   "startAttach": -1,
+   "endAttach": -1
+  },
+  {
+   "role": "fence",
+   "a": [
+    0.2,
+    79.8
+   ],
+   "b": [
+    0.2,
+    67.894
+   ],
+   "c": [
+    0.2,
+    55.989
+   ],
+   "d": [
+    0.2,
+    44.083
+   ],
+   "startAttach": -1,
+   "endAttach": -1
+  },
+  {
+   "role": "fence",
+   "a": [
+    0.2,
+    36.583
+   ],
+   "b": [
+    0.2,
+    24.456
+   ],
+   "c": [
+    0.2,
+    12.328
+   ],
+   "d": [
+    0.2,
+    0.2
+   ],
+   "startAttach": -1,
+   "endAttach": -1
+  }
+ ],
+ "objects": [
+  {
+   "role": "centerpiece",
+   "x": 50,
+   "z": 40.333,
+   "yaw": 1.5708,
+   "category": "centerpiece.fountain"
+  },
+  {
+   "role": "bush",
+   "x": 64.967,
+   "z": 51.333,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 68.3,
+   "z": 51.333,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 71.633,
+   "z": 51.333,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 73.3,
+   "z": 52.833,
+   "yaw": 0,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 73.3,
+   "z": 55.833,
+   "yaw": 0,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 71.633,
+   "z": 57.333,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 68.3,
+   "z": 57.333,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 64.967,
+   "z": 57.333,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 63.3,
+   "z": 55.833,
+   "yaw": 3.1416,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 63.3,
+   "z": 52.833,
+   "yaw": 3.1416,
+   "category": "hedge"
+  },
+  {
+   "role": "planter",
+   "x": 66.05,
+   "z": 54.333,
+   "yaw": 1.5708,
+   "category": "flowerbed"
+  },
+  {
+   "role": "planter",
+   "x": 70.55,
+   "z": 54.333,
+   "yaw": 1.5708,
+   "category": "flowerbed"
+  },
+  {
+   "role": "bush",
+   "x": 64.2,
+   "z": 52.233,
+   "yaw": 0
+  },
+  {
+   "role": "bush",
+   "x": 72.4,
+   "z": 56.433,
+   "yaw": 0
+  },
+  {
+   "role": "bush",
+   "x": 28.367,
+   "z": 51.333,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 31.7,
+   "z": 51.333,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 35.033,
+   "z": 51.333,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 36.7,
+   "z": 52.833,
+   "yaw": 0,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 36.7,
+   "z": 55.833,
+   "yaw": 0,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 35.033,
+   "z": 57.333,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 31.7,
+   "z": 57.333,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 28.367,
+   "z": 57.333,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 26.7,
+   "z": 55.833,
+   "yaw": 3.1416,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 26.7,
+   "z": 52.833,
+   "yaw": 3.1416,
+   "category": "hedge"
+  },
+  {
+   "role": "planter",
+   "x": 29.45,
+   "z": 54.333,
+   "yaw": 1.5708,
+   "category": "flowerbed"
+  },
+  {
+   "role": "planter",
+   "x": 33.95,
+   "z": 54.333,
+   "yaw": 1.5708,
+   "category": "flowerbed"
+  },
+  {
+   "role": "bush",
+   "x": 27.6,
+   "z": 52.233,
+   "yaw": 0
+  },
+  {
+   "role": "bush",
+   "x": 35.8,
+   "z": 56.433,
+   "yaw": 0
+  },
+  {
+   "role": "bush",
+   "x": 64.967,
+   "z": 23.333,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 68.3,
+   "z": 23.333,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 71.633,
+   "z": 23.333,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 73.3,
+   "z": 24.833,
+   "yaw": 0,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 73.3,
+   "z": 27.833,
+   "yaw": 0,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 71.633,
+   "z": 29.333,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 68.3,
+   "z": 29.333,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 64.967,
+   "z": 29.333,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 63.3,
+   "z": 27.833,
+   "yaw": 3.1416,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 63.3,
+   "z": 24.833,
+   "yaw": 3.1416,
+   "category": "hedge"
+  },
+  {
+   "role": "planter",
+   "x": 66.05,
+   "z": 26.333,
+   "yaw": 1.5708,
+   "category": "flowerbed"
+  },
+  {
+   "role": "planter",
+   "x": 70.55,
+   "z": 26.333,
+   "yaw": 1.5708,
+   "category": "flowerbed"
+  },
+  {
+   "role": "bush",
+   "x": 64.2,
+   "z": 24.233,
+   "yaw": 0
+  },
+  {
+   "role": "bush",
+   "x": 72.4,
+   "z": 28.433,
+   "yaw": 0
+  },
+  {
+   "role": "bush",
+   "x": 28.367,
+   "z": 23.333,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 31.7,
+   "z": 23.333,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 35.033,
+   "z": 23.333,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 36.7,
+   "z": 24.833,
+   "yaw": 0,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 36.7,
+   "z": 27.833,
+   "yaw": 0,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 35.033,
+   "z": 29.333,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 31.7,
+   "z": 29.333,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 28.367,
+   "z": 29.333,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 26.7,
+   "z": 27.833,
+   "yaw": 3.1416,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 26.7,
+   "z": 24.833,
+   "yaw": 3.1416,
+   "category": "hedge"
+  },
+  {
+   "role": "planter",
+   "x": 29.45,
+   "z": 26.333,
+   "yaw": 1.5708,
+   "category": "flowerbed"
+  },
+  {
+   "role": "planter",
+   "x": 33.95,
+   "z": 26.333,
+   "yaw": 1.5708,
+   "category": "flowerbed"
+  },
+  {
+   "role": "bush",
+   "x": 27.6,
+   "z": 24.233,
+   "yaw": 0
+  },
+  {
+   "role": "bush",
+   "x": 35.8,
+   "z": 28.433,
+   "yaw": 0
+  },
+  {
+   "role": "bush",
+   "x": 64.967,
+   "z": 61.833,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 68.3,
+   "z": 61.833,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 71.633,
+   "z": 61.833,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 73.3,
+   "z": 63.333,
+   "yaw": 0,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 73.3,
+   "z": 66.333,
+   "yaw": 0,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 71.633,
+   "z": 67.833,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 68.3,
+   "z": 67.833,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 64.967,
+   "z": 67.833,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 63.3,
+   "z": 66.333,
+   "yaw": 3.1416,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 63.3,
+   "z": 63.333,
+   "yaw": 3.1416,
+   "category": "hedge"
+  },
+  {
+   "role": "planter",
+   "x": 66.05,
+   "z": 64.833,
+   "yaw": 1.5708,
+   "category": "flowerbed"
+  },
+  {
+   "role": "planter",
+   "x": 70.55,
+   "z": 64.833,
+   "yaw": 1.5708,
+   "category": "flowerbed"
+  },
+  {
+   "role": "bush",
+   "x": 64.2,
+   "z": 62.733,
+   "yaw": 0
+  },
+  {
+   "role": "bush",
+   "x": 72.4,
+   "z": 66.933,
+   "yaw": 0
+  },
+  {
+   "role": "bush",
+   "x": 28.367,
+   "z": 61.833,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 31.7,
+   "z": 61.833,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 35.033,
+   "z": 61.833,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 36.7,
+   "z": 63.333,
+   "yaw": 0,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 36.7,
+   "z": 66.333,
+   "yaw": 0,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 35.033,
+   "z": 67.833,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 31.7,
+   "z": 67.833,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 28.367,
+   "z": 67.833,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 26.7,
+   "z": 66.333,
+   "yaw": 3.1416,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 26.7,
+   "z": 63.333,
+   "yaw": 3.1416,
+   "category": "hedge"
+  },
+  {
+   "role": "planter",
+   "x": 29.45,
+   "z": 64.833,
+   "yaw": 1.5708,
+   "category": "flowerbed"
+  },
+  {
+   "role": "planter",
+   "x": 33.95,
+   "z": 64.833,
+   "yaw": 1.5708,
+   "category": "flowerbed"
+  },
+  {
+   "role": "bush",
+   "x": 27.6,
+   "z": 62.733,
+   "yaw": 0
+  },
+  {
+   "role": "bush",
+   "x": 35.8,
+   "z": 66.933,
+   "yaw": 0
+  },
+  {
+   "role": "bush",
+   "x": 64.967,
+   "z": 12.833,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 68.3,
+   "z": 12.833,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 71.633,
+   "z": 12.833,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 73.3,
+   "z": 14.333,
+   "yaw": 0,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 73.3,
+   "z": 17.333,
+   "yaw": 0,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 71.633,
+   "z": 18.833,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 68.3,
+   "z": 18.833,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 64.967,
+   "z": 18.833,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 63.3,
+   "z": 17.333,
+   "yaw": 3.1416,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 63.3,
+   "z": 14.333,
+   "yaw": 3.1416,
+   "category": "hedge"
+  },
+  {
+   "role": "planter",
+   "x": 66.05,
+   "z": 15.833,
+   "yaw": 1.5708,
+   "category": "flowerbed"
+  },
+  {
+   "role": "planter",
+   "x": 70.55,
+   "z": 15.833,
+   "yaw": 1.5708,
+   "category": "flowerbed"
+  },
+  {
+   "role": "bush",
+   "x": 64.2,
+   "z": 13.733,
+   "yaw": 0
+  },
+  {
+   "role": "bush",
+   "x": 72.4,
+   "z": 17.933,
+   "yaw": 0
+  },
+  {
+   "role": "bush",
+   "x": 28.367,
+   "z": 12.833,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 31.7,
+   "z": 12.833,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 35.033,
+   "z": 12.833,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 36.7,
+   "z": 14.333,
+   "yaw": 0,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 36.7,
+   "z": 17.333,
+   "yaw": 0,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 35.033,
+   "z": 18.833,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 31.7,
+   "z": 18.833,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 28.367,
+   "z": 18.833,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 26.7,
+   "z": 17.333,
+   "yaw": 3.1416,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 26.7,
+   "z": 14.333,
+   "yaw": 3.1416,
+   "category": "hedge"
+  },
+  {
+   "role": "planter",
+   "x": 29.45,
+   "z": 15.833,
+   "yaw": 1.5708,
+   "category": "flowerbed"
+  },
+  {
+   "role": "planter",
+   "x": 33.95,
+   "z": 15.833,
+   "yaw": 1.5708,
+   "category": "flowerbed"
+  },
+  {
+   "role": "bush",
+   "x": 27.6,
+   "z": 13.733,
+   "yaw": 0
+  },
+  {
+   "role": "bush",
+   "x": 35.8,
+   "z": 17.933,
+   "yaw": 0
+  },
+  {
+   "role": "bush",
+   "x": 64.967,
+   "z": 72.333,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 68.3,
+   "z": 72.333,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 71.633,
+   "z": 72.333,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 73.3,
+   "z": 73.833,
+   "yaw": 0,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 73.3,
+   "z": 76.833,
+   "yaw": 0,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 71.633,
+   "z": 78.333,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 68.3,
+   "z": 78.333,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 64.967,
+   "z": 78.333,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 63.3,
+   "z": 76.833,
+   "yaw": 3.1416,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 63.3,
+   "z": 73.833,
+   "yaw": 3.1416,
+   "category": "hedge"
+  },
+  {
+   "role": "planter",
+   "x": 66.05,
+   "z": 75.333,
+   "yaw": 1.5708,
+   "category": "flowerbed"
+  },
+  {
+   "role": "planter",
+   "x": 70.55,
+   "z": 75.333,
+   "yaw": 1.5708,
+   "category": "flowerbed"
+  },
+  {
+   "role": "bush",
+   "x": 64.2,
+   "z": 73.233,
+   "yaw": 0
+  },
+  {
+   "role": "bush",
+   "x": 72.4,
+   "z": 77.433,
+   "yaw": 0
+  },
+  {
+   "role": "bush",
+   "x": 28.367,
+   "z": 72.333,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 31.7,
+   "z": 72.333,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 35.033,
+   "z": 72.333,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 36.7,
+   "z": 73.833,
+   "yaw": 0,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 36.7,
+   "z": 76.833,
+   "yaw": 0,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 35.033,
+   "z": 78.333,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 31.7,
+   "z": 78.333,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 28.367,
+   "z": 78.333,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 26.7,
+   "z": 76.833,
+   "yaw": 3.1416,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 26.7,
+   "z": 73.833,
+   "yaw": 3.1416,
+   "category": "hedge"
+  },
+  {
+   "role": "planter",
+   "x": 29.45,
+   "z": 75.333,
+   "yaw": 1.5708,
+   "category": "flowerbed"
+  },
+  {
+   "role": "planter",
+   "x": 33.95,
+   "z": 75.333,
+   "yaw": 1.5708,
+   "category": "flowerbed"
+  },
+  {
+   "role": "bush",
+   "x": 27.6,
+   "z": 73.233,
+   "yaw": 0
+  },
+  {
+   "role": "bush",
+   "x": 35.8,
+   "z": 77.433,
+   "yaw": 0
+  },
+  {
+   "role": "bush",
+   "x": 64.967,
+   "z": 2.333,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 68.3,
+   "z": 2.333,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 71.633,
+   "z": 2.333,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 73.3,
+   "z": 3.833,
+   "yaw": 0,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 73.3,
+   "z": 6.833,
+   "yaw": 0,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 71.633,
+   "z": 8.333,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 68.3,
+   "z": 8.333,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 64.967,
+   "z": 8.333,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 63.3,
+   "z": 6.833,
+   "yaw": 3.1416,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 63.3,
+   "z": 3.833,
+   "yaw": 3.1416,
+   "category": "hedge"
+  },
+  {
+   "role": "planter",
+   "x": 66.05,
+   "z": 5.333,
+   "yaw": 1.5708,
+   "category": "flowerbed"
+  },
+  {
+   "role": "planter",
+   "x": 70.55,
+   "z": 5.333,
+   "yaw": 1.5708,
+   "category": "flowerbed"
+  },
+  {
+   "role": "bush",
+   "x": 64.2,
+   "z": 3.233,
+   "yaw": 0
+  },
+  {
+   "role": "bush",
+   "x": 72.4,
+   "z": 7.433,
+   "yaw": 0
+  },
+  {
+   "role": "bush",
+   "x": 28.367,
+   "z": 2.333,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 31.7,
+   "z": 2.333,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 35.033,
+   "z": 2.333,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 36.7,
+   "z": 3.833,
+   "yaw": 0,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 36.7,
+   "z": 6.833,
+   "yaw": 0,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 35.033,
+   "z": 8.333,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 31.7,
+   "z": 8.333,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 28.367,
+   "z": 8.333,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 26.7,
+   "z": 6.833,
+   "yaw": 3.1416,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 26.7,
+   "z": 3.833,
+   "yaw": 3.1416,
+   "category": "hedge"
+  },
+  {
+   "role": "planter",
+   "x": 29.45,
+   "z": 5.333,
+   "yaw": 1.5708,
+   "category": "flowerbed"
+  },
+  {
+   "role": "planter",
+   "x": 33.95,
+   "z": 5.333,
+   "yaw": 1.5708,
+   "category": "flowerbed"
+  },
+  {
+   "role": "bush",
+   "x": 27.6,
+   "z": 3.233,
+   "yaw": 0
+  },
+  {
+   "role": "bush",
+   "x": 35.8,
+   "z": 7.433,
+   "yaw": 0
+  },
+  {
+   "role": "bush",
+   "x": 79.467,
+   "z": 51.333,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 82.8,
+   "z": 51.333,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 86.133,
+   "z": 51.333,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 87.8,
+   "z": 52.833,
+   "yaw": 0,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 87.8,
+   "z": 55.833,
+   "yaw": 0,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 86.133,
+   "z": 57.333,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 82.8,
+   "z": 57.333,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 79.467,
+   "z": 57.333,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 77.8,
+   "z": 55.833,
+   "yaw": 3.1416,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 77.8,
+   "z": 52.833,
+   "yaw": 3.1416,
+   "category": "hedge"
+  },
+  {
+   "role": "planter",
+   "x": 80.55,
+   "z": 54.333,
+   "yaw": 1.5708,
+   "category": "flowerbed"
+  },
+  {
+   "role": "planter",
+   "x": 85.05,
+   "z": 54.333,
+   "yaw": 1.5708,
+   "category": "flowerbed"
+  },
+  {
+   "role": "bush",
+   "x": 13.867,
+   "z": 51.333,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 17.2,
+   "z": 51.333,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 20.533,
+   "z": 51.333,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 22.2,
+   "z": 52.833,
+   "yaw": 0,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 22.2,
+   "z": 55.833,
+   "yaw": 0,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 20.533,
+   "z": 57.333,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 17.2,
+   "z": 57.333,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 13.867,
+   "z": 57.333,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 12.2,
+   "z": 55.833,
+   "yaw": 3.1416,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 12.2,
+   "z": 52.833,
+   "yaw": 3.1416,
+   "category": "hedge"
+  },
+  {
+   "role": "planter",
+   "x": 14.95,
+   "z": 54.333,
+   "yaw": 1.5708,
+   "category": "flowerbed"
+  },
+  {
+   "role": "planter",
+   "x": 19.45,
+   "z": 54.333,
+   "yaw": 1.5708,
+   "category": "flowerbed"
+  },
+  {
+   "role": "bush",
+   "x": 79.467,
+   "z": 23.333,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 82.8,
+   "z": 23.333,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 86.133,
+   "z": 23.333,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 87.8,
+   "z": 24.833,
+   "yaw": 0,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 87.8,
+   "z": 27.833,
+   "yaw": 0,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 86.133,
+   "z": 29.333,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 82.8,
+   "z": 29.333,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 79.467,
+   "z": 29.333,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 77.8,
+   "z": 27.833,
+   "yaw": 3.1416,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 77.8,
+   "z": 24.833,
+   "yaw": 3.1416,
+   "category": "hedge"
+  },
+  {
+   "role": "planter",
+   "x": 80.55,
+   "z": 26.333,
+   "yaw": 1.5708,
+   "category": "flowerbed"
+  },
+  {
+   "role": "planter",
+   "x": 85.05,
+   "z": 26.333,
+   "yaw": 1.5708,
+   "category": "flowerbed"
+  },
+  {
+   "role": "bush",
+   "x": 13.867,
+   "z": 23.333,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 17.2,
+   "z": 23.333,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 20.533,
+   "z": 23.333,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 22.2,
+   "z": 24.833,
+   "yaw": 0,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 22.2,
+   "z": 27.833,
+   "yaw": 0,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 20.533,
+   "z": 29.333,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 17.2,
+   "z": 29.333,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 13.867,
+   "z": 29.333,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 12.2,
+   "z": 27.833,
+   "yaw": 3.1416,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 12.2,
+   "z": 24.833,
+   "yaw": 3.1416,
+   "category": "hedge"
+  },
+  {
+   "role": "planter",
+   "x": 14.95,
+   "z": 26.333,
+   "yaw": 1.5708,
+   "category": "flowerbed"
+  },
+  {
+   "role": "planter",
+   "x": 19.45,
+   "z": 26.333,
+   "yaw": 1.5708,
+   "category": "flowerbed"
+  },
+  {
+   "role": "bush",
+   "x": 79.467,
+   "z": 61.833,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 82.8,
+   "z": 61.833,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 86.133,
+   "z": 61.833,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 87.8,
+   "z": 63.333,
+   "yaw": 0,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 87.8,
+   "z": 66.333,
+   "yaw": 0,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 86.133,
+   "z": 67.833,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 82.8,
+   "z": 67.833,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 79.467,
+   "z": 67.833,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 77.8,
+   "z": 66.333,
+   "yaw": 3.1416,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 77.8,
+   "z": 63.333,
+   "yaw": 3.1416,
+   "category": "hedge"
+  },
+  {
+   "role": "planter",
+   "x": 80.55,
+   "z": 64.833,
+   "yaw": 1.5708,
+   "category": "flowerbed"
+  },
+  {
+   "role": "planter",
+   "x": 85.05,
+   "z": 64.833,
+   "yaw": 1.5708,
+   "category": "flowerbed"
+  },
+  {
+   "role": "bush",
+   "x": 13.867,
+   "z": 61.833,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 17.2,
+   "z": 61.833,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 20.533,
+   "z": 61.833,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 22.2,
+   "z": 63.333,
+   "yaw": 0,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 22.2,
+   "z": 66.333,
+   "yaw": 0,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 20.533,
+   "z": 67.833,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 17.2,
+   "z": 67.833,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 13.867,
+   "z": 67.833,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 12.2,
+   "z": 66.333,
+   "yaw": 3.1416,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 12.2,
+   "z": 63.333,
+   "yaw": 3.1416,
+   "category": "hedge"
+  },
+  {
+   "role": "planter",
+   "x": 14.95,
+   "z": 64.833,
+   "yaw": 1.5708,
+   "category": "flowerbed"
+  },
+  {
+   "role": "planter",
+   "x": 19.45,
+   "z": 64.833,
+   "yaw": 1.5708,
+   "category": "flowerbed"
+  },
+  {
+   "role": "bush",
+   "x": 79.467,
+   "z": 12.833,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 82.8,
+   "z": 12.833,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 86.133,
+   "z": 12.833,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 87.8,
+   "z": 14.333,
+   "yaw": 0,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 87.8,
+   "z": 17.333,
+   "yaw": 0,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 86.133,
+   "z": 18.833,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 82.8,
+   "z": 18.833,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 79.467,
+   "z": 18.833,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 77.8,
+   "z": 17.333,
+   "yaw": 3.1416,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 77.8,
+   "z": 14.333,
+   "yaw": 3.1416,
+   "category": "hedge"
+  },
+  {
+   "role": "planter",
+   "x": 80.55,
+   "z": 15.833,
+   "yaw": 1.5708,
+   "category": "flowerbed"
+  },
+  {
+   "role": "planter",
+   "x": 85.05,
+   "z": 15.833,
+   "yaw": 1.5708,
+   "category": "flowerbed"
+  },
+  {
+   "role": "bush",
+   "x": 13.867,
+   "z": 12.833,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 17.2,
+   "z": 12.833,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 20.533,
+   "z": 12.833,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 22.2,
+   "z": 14.333,
+   "yaw": 0,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 22.2,
+   "z": 17.333,
+   "yaw": 0,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 20.533,
+   "z": 18.833,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 17.2,
+   "z": 18.833,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 13.867,
+   "z": 18.833,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 12.2,
+   "z": 17.333,
+   "yaw": 3.1416,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 12.2,
+   "z": 14.333,
+   "yaw": 3.1416,
+   "category": "hedge"
+  },
+  {
+   "role": "planter",
+   "x": 14.95,
+   "z": 15.833,
+   "yaw": 1.5708,
+   "category": "flowerbed"
+  },
+  {
+   "role": "planter",
+   "x": 19.45,
+   "z": 15.833,
+   "yaw": 1.5708,
+   "category": "flowerbed"
+  },
+  {
+   "role": "bush",
+   "x": 79.467,
+   "z": 72.333,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 82.8,
+   "z": 72.333,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 86.133,
+   "z": 72.333,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 87.8,
+   "z": 73.833,
+   "yaw": 0,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 87.8,
+   "z": 76.833,
+   "yaw": 0,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 86.133,
+   "z": 78.333,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 82.8,
+   "z": 78.333,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 79.467,
+   "z": 78.333,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 77.8,
+   "z": 76.833,
+   "yaw": 3.1416,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 77.8,
+   "z": 73.833,
+   "yaw": 3.1416,
+   "category": "hedge"
+  },
+  {
+   "role": "planter",
+   "x": 80.55,
+   "z": 75.333,
+   "yaw": 1.5708,
+   "category": "flowerbed"
+  },
+  {
+   "role": "planter",
+   "x": 85.05,
+   "z": 75.333,
+   "yaw": 1.5708,
+   "category": "flowerbed"
+  },
+  {
+   "role": "bush",
+   "x": 13.867,
+   "z": 72.333,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 17.2,
+   "z": 72.333,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 20.533,
+   "z": 72.333,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 22.2,
+   "z": 73.833,
+   "yaw": 0,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 22.2,
+   "z": 76.833,
+   "yaw": 0,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 20.533,
+   "z": 78.333,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 17.2,
+   "z": 78.333,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 13.867,
+   "z": 78.333,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 12.2,
+   "z": 76.833,
+   "yaw": 3.1416,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 12.2,
+   "z": 73.833,
+   "yaw": 3.1416,
+   "category": "hedge"
+  },
+  {
+   "role": "planter",
+   "x": 14.95,
+   "z": 75.333,
+   "yaw": 1.5708,
+   "category": "flowerbed"
+  },
+  {
+   "role": "planter",
+   "x": 19.45,
+   "z": 75.333,
+   "yaw": 1.5708,
+   "category": "flowerbed"
+  },
+  {
+   "role": "bush",
+   "x": 79.467,
+   "z": 2.333,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 82.8,
+   "z": 2.333,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 86.133,
+   "z": 2.333,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 87.8,
+   "z": 3.833,
+   "yaw": 0,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 87.8,
+   "z": 6.833,
+   "yaw": 0,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 86.133,
+   "z": 8.333,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 82.8,
+   "z": 8.333,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 79.467,
+   "z": 8.333,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 77.8,
+   "z": 6.833,
+   "yaw": 3.1416,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 77.8,
+   "z": 3.833,
+   "yaw": 3.1416,
+   "category": "hedge"
+  },
+  {
+   "role": "planter",
+   "x": 80.55,
+   "z": 5.333,
+   "yaw": 1.5708,
+   "category": "flowerbed"
+  },
+  {
+   "role": "planter",
+   "x": 85.05,
+   "z": 5.333,
+   "yaw": 1.5708,
+   "category": "flowerbed"
+  },
+  {
+   "role": "bush",
+   "x": 13.867,
+   "z": 2.333,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 17.2,
+   "z": 2.333,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 20.533,
+   "z": 2.333,
+   "yaw": 1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 22.2,
+   "z": 3.833,
+   "yaw": 0,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 22.2,
+   "z": 6.833,
+   "yaw": 0,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 20.533,
+   "z": 8.333,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 17.2,
+   "z": 8.333,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 13.867,
+   "z": 8.333,
+   "yaw": -1.5708,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 12.2,
+   "z": 6.833,
+   "yaw": 3.1416,
+   "category": "hedge"
+  },
+  {
+   "role": "bush",
+   "x": 12.2,
+   "z": 3.833,
+   "yaw": 3.1416,
+   "category": "hedge"
+  },
+  {
+   "role": "planter",
+   "x": 14.95,
+   "z": 5.333,
+   "yaw": 1.5708,
+   "category": "flowerbed"
+  },
+  {
+   "role": "planter",
+   "x": 19.45,
+   "z": 5.333,
+   "yaw": 1.5708,
+   "category": "flowerbed"
+  },
+  {
+   "role": "tree",
+   "x": 19.2,
+   "z": 35.833,
+   "yaw": 0
+  },
+  {
+   "role": "tree",
+   "x": 19.2,
+   "z": 44.833,
+   "yaw": 0
+  },
+  {
+   "role": "tree",
+   "x": 80.8,
+   "z": 35.833,
+   "yaw": 0
+  },
+  {
+   "role": "tree",
+   "x": 80.8,
+   "z": 44.833,
+   "yaw": 0
+  },
+  {
+   "role": "tree",
+   "x": 11.2,
+   "z": 35.833,
+   "yaw": 0
+  },
+  {
+   "role": "tree",
+   "x": 11.2,
+   "z": 44.833,
+   "yaw": 0
+  },
+  {
+   "role": "tree",
+   "x": 88.8,
+   "z": 35.833,
+   "yaw": 0
+  },
+  {
+   "role": "tree",
+   "x": 88.8,
+   "z": 44.833,
+   "yaw": 0
+  },
+  {
+   "role": "bench",
+   "x": 57.495,
+   "z": 47.829,
+   "yaw": -2.3562
+  },
+  {
+   "role": "bench",
+   "x": 42.505,
+   "z": 47.829,
+   "yaw": 2.3562
+  },
+  {
+   "role": "bench",
+   "x": 42.505,
+   "z": 32.838,
+   "yaw": 0.7854
+  },
+  {
+   "role": "bench",
+   "x": 57.495,
+   "z": 32.838,
+   "yaw": -0.7854
+  },
+  {
+   "role": "lamp",
+   "x": 84.595,
+   "z": 42.633,
+   "yaw": 0
+  },
+  {
+   "role": "lamp",
+   "x": 68.595,
+   "z": 38.033,
+   "yaw": 0
+  },
+  {
+   "role": "lamp",
+   "x": 6.49,
+   "z": 42.633,
+   "yaw": 0
+  },
+  {
+   "role": "lamp",
+   "x": 63.35,
+   "z": 32.333,
+   "yaw": 0
+  },
+  {
+   "role": "lamp",
+   "x": 58.75,
+   "z": 16.333,
+   "yaw": 0
+  },
+  {
+   "role": "lamp",
+   "x": 36.65,
+   "z": 48.333,
+   "yaw": 0
+  },
+  {
+   "role": "lamp",
+   "x": 41.25,
+   "z": 64.333,
+   "yaw": 0
+  },
+  {
+   "role": "lamp",
+   "x": 73.25,
+   "z": 48.333,
+   "yaw": 0
+  },
+  {
+   "role": "lamp",
+   "x": 77.85,
+   "z": 32.333,
+   "yaw": 0
+  },
+  {
+   "role": "lamp",
+   "x": 22.15,
+   "z": 48.333,
+   "yaw": 0
+  },
+  {
+   "role": "lamp",
+   "x": 26.75,
+   "z": 32.333,
+   "yaw": 0
+  },
+  {
+   "role": "bench",
+   "x": 98.262,
+   "z": 39.133,
+   "yaw": 0
+  },
+  {
+   "role": "bench",
+   "x": 2.374,
+   "z": 43.533,
+   "yaw": 3.1416
+  },
+  {
+   "role": "bench",
+   "x": 42.15,
+   "z": 7.333,
+   "yaw": -1.5708
+  },
+  {
+   "role": "bench",
+   "x": 57.85,
+   "z": 73.333,
+   "yaw": 1.5708
+  },
+  {
+   "role": "bench",
+   "x": 65.73,
+   "z": 37.133,
+   "yaw": 0
+  },
+  {
+   "role": "bench",
+   "x": 33.091,
+   "z": 37.133,
+   "yaw": 0
+  },
+  {
+   "role": "bench",
+   "x": 42.15,
+   "z": 55.333,
+   "yaw": -1.5708
+  },
+  {
+   "role": "bench",
+   "x": 57.85,
+   "z": 19.333,
+   "yaw": 1.5708
+  },
+  {
+   "role": "bin",
+   "x": 98.78,
+   "z": 44.733,
+   "yaw": -3.1416
+  },
+  {
+   "role": "bin",
+   "x": 2.374,
+   "z": 37.933,
+   "yaw": 0
+  },
+  {
+   "role": "bin",
+   "x": 58.65,
+   "z": 7.333,
+   "yaw": 1.5708
+  },
+  {
+   "role": "bin",
+   "x": 41.35,
+   "z": 73.333,
+   "yaw": -1.5708
+  }
+ ],
+ "areas": [],
+ "regions": [
+  {
+   "key": "green:0",
+   "tags": [
+    "green",
+    "core"
+   ],
+   "ring": [
+    [
+     40,
+     2.5
+    ],
+    [
+     60,
+     2.5
+    ],
+    [
+     60,
+     37.5
+    ],
+    [
+     57.5,
+     37.5
+    ],
+    [
+     57.5,
+     42.5
+    ],
+    [
+     60,
+     42.5
+    ],
+    [
+     60,
+     77.5
+    ],
+    [
+     40,
+     77.5
+    ],
+    [
+     40,
+     42.5
+    ],
+    [
+     42.5,
+     42.5
+    ],
+    [
+     42.5,
+     37.5
+    ],
+    [
+     40,
+     37.5
+    ]
+   ]
+  },
+  {
+   "key": "green:1",
+   "tags": [
+    "green"
+   ],
+   "ring": [
+    [
+     77.5,
+     42.5
+    ],
+    [
+     95,
+     42.5
+    ],
+    [
+     97.5,
+     45
+    ],
+    [
+     97.5,
+     77.5
+    ],
+    [
+     92.5,
+     77.5
+    ],
+    [
+     90,
+     72.5
+    ],
+    [
+     77.5,
+     72.5
+    ],
+    [
+     77.5,
+     67.5
+    ],
+    [
+     92.5,
+     67.5
+    ],
+    [
+     90,
+     60
+    ],
+    [
+     77.5,
+     60
+    ],
+    [
+     77.5,
+     57.5
+    ],
+    [
+     90,
+     57.5
+    ],
+    [
+     92.5,
+     55
+    ],
+    [
+     90,
+     50
+    ],
+    [
+     77.5,
+     50
+    ]
+   ]
+  },
+  {
+   "key": "green:2",
+   "tags": [
+    "green"
+   ],
+   "ring": [
+    [
+     2.5,
+     42.5
+    ],
+    [
+     22.5,
+     42.5
+    ],
+    [
+     22.5,
+     50
+    ],
+    [
+     10,
+     50
+    ],
+    [
+     7.5,
+     52.5
+    ],
+    [
+     10,
+     57.5
+    ],
+    [
+     22.5,
+     57.5
+    ],
+    [
+     22.5,
+     60
+    ],
+    [
+     10,
+     60
+    ],
+    [
+     7.5,
+     62.5
+    ],
+    [
+     7.5,
+     67.5
+    ],
+    [
+     22.5,
+     67.5
+    ],
+    [
+     22.5,
+     72.5
+    ],
+    [
+     10,
+     72.5
+    ],
+    [
+     7.5,
+     77.5
+    ],
+    [
+     2.5,
+     77.5
+    ]
+   ]
+  },
+  {
+   "key": "green:3",
+   "tags": [
+    "green"
+   ],
+   "ring": [
+    [
+     90,
+     2.5
+    ],
+    [
+     97.5,
+     2.5
+    ],
+    [
+     97.5,
+     40
+    ],
+    [
+     95,
+     37.5
+    ],
+    [
+     77.5,
+     37.5
+    ],
+    [
+     77.5,
+     30
+    ],
+    [
+     90,
+     30
+    ],
+    [
+     92.5,
+     27.5
+    ],
+    [
+     90,
+     22.5
+    ],
+    [
+     77.5,
+     22.5
+    ],
+    [
+     77.5,
+     20
+    ],
+    [
+     90,
+     20
+    ],
+    [
+     92.5,
+     17.5
+    ],
+    [
+     90,
+     12.5
+    ],
+    [
+     77.5,
+     12.5
+    ],
+    [
+     77.5,
+     10
+    ],
+    [
+     90,
+     10
+    ],
+    [
+     92.5,
+     7.5
+    ]
+   ]
+  },
+  {
+   "key": "green:4",
+   "tags": [
+    "green"
+   ],
+   "ring": [
+    [
+     2.5,
+     2.5
+    ],
+    [
+     10,
+     2.5
+    ],
+    [
+     7.5,
+     5
+    ],
+    [
+     10,
+     10
+    ],
+    [
+     22.5,
+     10
+    ],
+    [
+     22.5,
+     12.5
+    ],
+    [
+     10,
+     12.5
+    ],
+    [
+     7.5,
+     15
+    ],
+    [
+     10,
+     20
+    ],
+    [
+     22.5,
+     20
+    ],
+    [
+     22.5,
+     22.5
+    ],
+    [
+     10,
+     22.5
+    ],
+    [
+     7.5,
+     25
+    ],
+    [
+     10,
+     30
+    ],
+    [
+     22.5,
+     30
+    ],
+    [
+     22.5,
+     37.5
+    ],
+    [
+     2.5,
+     37.5
+    ]
+   ]
+  }
+ ],
+ "zoning": [],
+ "paint": [],
+ "terraform": [],
+ "unknownRoles": {
+  "surfaces": 0,
+  "nets": 0,
+  "objects": 0,
+  "areas": 0
+ },
+ "stats": [
+  {
+   "key": "Area",
+   "value": 8000,
+   "unit": "m2"
+  },
+  {
+   "key": "Trees",
+   "value": 8,
+   "unit": "count"
+  },
+  {
+   "key": "Benches",
+   "value": 12,
+   "unit": "count"
+  },
+  {
+   "key": "PathLength",
+   "value": 387,
+   "unit": "m"
+  },
+  {
+   "key": "Parterres",
+   "value": 24,
+   "unit": "count"
+  }
+ ],
+ "facts": {
+  "crossWalks": 8,
+  "pathBenches": 8,
+  "pathBins": 4
+ },
+ "issues": []
+}
