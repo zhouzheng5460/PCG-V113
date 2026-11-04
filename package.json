@@ -22,7 +22,9 @@
     "sgen:boolean": "node packages/site-gen/test/boolean.test.ts",
     "sgen:feasibility": "node packages/site-gen/src/cli/feasibility.ts",
     "urban:recon": "cd vendor/townforge && node node_modules/tsx/dist/cli.mjs src/diag/cli.ts",
-    "urban:check": "cd vendor/townforge && node node_modules/tsx/dist/cli.mjs src/diag/cli.ts --check"
+    "urban:check": "cd vendor/townforge && node node_modules/tsx/dist/cli.mjs src/diag/cli.ts --check",
+    "pm:build": "dotnet build tools/oracle/driver/Driver.csproj -c Release -v q --nologo",
+    "pm:serve": "dotnet tools/oracle/driver/bin/Release/net6.0/PlacemakerDriver.dll --serve 8787"
   },
   "engines": {
     "node": ">=22.18"

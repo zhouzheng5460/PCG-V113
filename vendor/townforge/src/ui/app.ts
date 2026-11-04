@@ -24,6 +24,7 @@ import { View3D } from './view3d';
 import { buildTownMeshes } from '../export/build3d';
 import type { ContentSource } from '../scene/build';
 import { bridgeOfModel, buildScene } from '../scene/build';
+import { caseFromPatch, health as csharpHealth, planCase, planCounts, SERVICE_URL } from '../bridge/live';
 import { summarizeAssets, summarizeBridge } from '../bridge/solids';
 import { ZONE_CN } from '../bridge/zone';
 import { ROAD_SPECS, u } from '../road/spec';
@@ -750,6 +751,10 @@ function patchPanel(): string {
               <div class="tip" style="margin-top:6px">「模式」这一栏只作用于这块地：不选就跟全局「切分模式比重」一起抽签，选了就固定用那一种。想看清某种切法长什么样，选一个再对比就最快。</div>`
         }
         <div class="row" style="margin-top:8px">
+          <button class="ghost grow" id="sel-csharp">用 C# 跑这一块</button>
+        </div>
+        <div class="tip" style="margin-top:6px" id="sel-csharp-out">真 Placemaker：把这块地送上本机服务，返回真实的面/网/物件计数。</div>
+        <div class="row" style="margin-top:8px">
           <button class="ghost grow" id="sel-clear">清除这块的改动</button>
         </div>
         <div class="tip" style="margin-top:6px">按住 Shift 拖动画布可以平移，滚轮缩放。点空白处取消选中。</div>
@@ -759,6 +764,26 @@ function patchPanel(): string {
 
 /** 把选中地块面板接到事件上（每次重建右栏后调用） */
 function bindPatchPanel(): void {
+  // C# 服务：把这一块地送上去跑真算法，回报计数（不替换现有场景，只做验证与对账）
+  document.getElementById('sel-csharp')?.addEventListener('click', async () => {
+    const p = model.patches.find((q) => patchKey(q) === selectedPatchKey);
+    if (!p) return;
+    const out = document.getElementById('sel-csharp-out');
+    if (out) out.textContent = '请求中…';
+    const c = caseFromPatch(model, p, 'parking');
+    const r = await planCase(c);
+    if (!r.ok) {
+      if (out) out.textContent = `失败：${r.error}（先跑 npm run pm:serve）`;
+      toast(`C# 调用失败：${r.error}`, true);
+      return;
+    }
+    const n = planCounts(r.plan);
+    const txt = `C# 返回：面 ${n.sur} · 网 ${n.net} · 物件 ${n.obj}（${r.ms.toFixed(0)} ms）`;
+    if (out) out.textContent = txt;
+    toast(txt);
+    console.log('[csharp] plan', { case: c, plan: r.plan });
+  });
+
   const useSel = document.getElementById('sel-use') as HTMLSelectElement | null;
   if (useSel) {
     useSel.addEventListener('change', () => {
@@ -863,6 +888,14 @@ function buildRight(): void {
       <button class="ghost" id="btn-dice" title="随机种子">随机</button>
     </div>
     <div class="row"><label class="check"><input type="checkbox" id="chk-plaza" ${state.plaza ? 'checked' : ''}/>中心广场</label></div>
+    <div class="row"><label>C# 服务</label>
+      <span class="val grow" id="val-csharp">未检测</span>
+      <button class="ghost" id="btn-csharp-ping">检测</button>
+    </div>
+    <div class="tip" style="margin-top:4px">
+      真 Placemaker 需要本机服务：<code>npm run pm:serve</code>（127.0.0.1:8787）。
+      没起也不影响其它功能——「楼的来源」用的是 TS 复刻。
+    </div>
     <div class="row" style="margin-top:10px"><button class="ghost grow" id="btn-regen">重新生成</button></div>
     <div class="tip" style="margin-top:8px">${LAYOUT_TIP[state.layout]}</div>
     `,
@@ -1235,6 +1268,19 @@ function bindRight(): void {
   });
   sizeRng?.addEventListener('change', () => {
     setSize(Number(sizeRng.value));
+  });
+
+  // ---- C# 服务探活
+  $('#btn-csharp-ping')?.addEventListener('click', async () => {
+    const el = document.getElementById('val-csharp');
+    if (el) el.textContent = '检测中…';
+    const st = await csharpHealth();
+    if (el) {
+      el.textContent = st.ok ? `已连接 · ${st.ms.toFixed(0)} ms` : `未启动（${st.error ?? '连不上'}）`;
+      el.style.color = st.ok ? '#7fb262' : '#c4553f';
+    }
+    if (st.ok) toast(`C# 服务已连接：${SERVICE_URL}（${(st.generators ?? []).length} 个生成器可用）`);
+    else toast(`C# 服务未启动：先跑 npm run pm:serve`, true);
   });
 
   // ---- 布局

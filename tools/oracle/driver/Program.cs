@@ -78,6 +78,15 @@ namespace Placemaker.Driver
             //   --no-sweep  只跑停车场景
             //   --recipes   只跑配方嵌套
             //   --emit      导出一个通用 Plan JSON（给 TownForge 之类的消费方），不跑其它任何东西
+            // --serve [端口]：起常驻服务（给编辑器用真 C# 算法），默认 8787
+            int serveAt = Array.IndexOf(args, "--serve");
+            if (serveAt >= 0)
+            {
+                int port = 8787;
+                if (args.Length > serveAt + 1 && int.TryParse(args[serveAt + 1], out var pp) && pp > 0) port = pp;
+                return Serve.Run(port);
+            }
+
             int emitAt = Array.IndexOf(args, "--emit");
             if (emitAt >= 0)
             {

@@ -500,3 +500,65 @@ PASS — 1 个生成器，0 处违规
 2. **不新增中间协议**。Plan JSON 就是唯一契约；`SiteInput` 只是它的输入侧对偶。
 3. **不把"差不多"当验收**。有分数的就用分数，没分数的先别迁移。
 4. **不在没有 golden 的生成器上先写代码**。这是 19 份 parking 语料换来的第一条经验。
+
+---
+
+## 8. 本地 C# 服务（方案 B，2026-11-04）
+
+### 为什么加它
+
+编辑器里「楼的来源 = Placemaker」原本是 `vendor/townforge/src/bridge/` 里的 **TS 复刻**。
+复刻永远是近似的；用户要求"确实用 C# 算法"，于是加一个本机常驻服务。
+
+**注意这与 README 的"零服务"定位冲突**：零服务仍是默认路径（不含 C#），
+C# 服务是**可选增强**，不起也不影响其它功能。
+
+### 实现
+
+`tools/oracle/driver/Serve.cs` + `Program.cs` 的 `--serve [端口]` 分支：
+
+```
+GET  /health  → { ok, service:"placemaker", protocol:"placemaker-service/1",
+                  planProtocol:"placemaker-plan/1", generators:[...] }
+POST /plan    → body = case JSON（与 --emit 的输入同格式），返回 plan JSON
+```
+
+三个刻意的决定：
+
+1. **完全复用 `Emit.Run`**：请求体写临时文件 → 跑同一条 CLI 管线 → 读完删。
+   不重写一遍核心调用 —— 这套项目已经因为"两份实现"栽过（TS 复刻 vs C#）。
+2. **默认只监听 127.0.0.1**，不放 `0.0.0.0`：本机工具，不对外暴露。
+3. **CORS `*` + OPTIONS 204**：编辑器跑在 vite dev 的另一个端口，不放行就跨不过去。
+
+实测：冷启首请求 1.28 s（JIT），**热请求 ~90 ms**；输出与 `--emit` 逐字段一致
+（44 面 / 62 网 / 649 物件）。
+
+### 前端客户端
+
+`vendor/townforge/src/bridge/live.ts`：`health()` / `caseFromPatch()` / `planCase()` / `planCounts()`。
+只做"探活、组装 case、取 plan"，**不做任何几何**。
+
+UI 两处入口：
+
+| 位置 | 作用 |
+| --- | --- |
+| 右栏「城市 → C# 服务」 | 探活，显示 `已连接 · N ms` 或 `未启动（原因）` |
+| 右栏「本块 → 用 C# 跑这一块」 | 把选中地块送上服务，回报真实的面/网/物件计数 |
+
+### 踩到的坑（D-089）
+
+**跨到 C# 必须换单位**。TF 世界单位 1 = 7 m，第一版直接把单位发过去，地块缩成 1/7，
+`EntranceSuggest` 找不到临街面 → `CheckReady` 报 `NeedsEntrance` → 返回空方案。
+换成米之后：9515 m² 的地块 → ready true / 9 面 / 22 网 / 407 物件（176 车位）。
+
+**这是同一天第三次踩"7 倍"**（诊断仪器、桥、现在服务）。凡跨模块取数，先问单位。
+
+### 还没做
+
+1. **只通了管道，没把结果接回场景**：现在返回的是计数（并 `console.log` 全文），
+   没有把 C# 的 parking/宗地画进 2D/3D。
+2. **没有整城批量**：一次只跑选中地块。整城 84 块 × 90 ms ≈ 7.6 s（并发 4 可到 ~2 s），
+   需要缓存 + 进度条。
+3. **`zoning*` 那 9 个生成器（宗地/楼位）目前返回空**：它们走栅格分区（`facts.polishZoneCells`
+   恒为 0），需要补 `zoneGrids` 或栅格设置才能出宗地 —— 这才是"楼位"的真正来源，
+   比 `parking` 更贴近「楼的来源 = Placemaker」的语义。
